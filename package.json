@@ -1,0 +1,32 @@
+{
+    "name": "minecraft-launcher-lib",
+    "version": "0.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "start": "tsc"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/maksimetny/minecraft-launcher-lib.git"
+    },
+    "keywords": [
+        "minecraft",
+        "minecraft-launcher-lib",
+        "launcher"
+    ],
+    "author": {
+        "email": "maksimetny@gmail.com",
+        "url": "https://maksimetny.com",
+        "name": "Dmitry Maksimetny"
+    },
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/maksimetny/minecraft-launcher-lib/issues"
+    },
+    "homepage": "https://github.com/maksimetny/minecraft-launcher-lib#readme",
+    "devDependencies": {
+        "tslint": "^6.1.0",
+        "typescript": "^3.8.3"
+    }
+}
