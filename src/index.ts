@@ -4,4 +4,4 @@
     https://github.com/maksimetny/MinecraftLauncherLib
 */
 
-export { urls } from './constants'
+export { urls, events } from './constants'
