@@ -4,7 +4,7 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "start": "tsc"
+        "build": "tsc"
     },
     "repository": {
         "type": "git",
@@ -25,7 +25,17 @@
         "url": "https://github.com/maksimetny/minecraft-launcher-lib/issues"
     },
     "homepage": "https://github.com/maksimetny/minecraft-launcher-lib#readme",
+    "dependencies": {
+        "request": "^2.88.2",
+        "request-promise": "^4.2.5",
+        "shelljs": "^0.8.3",
+        "uuid": "^7.0.2"
+    },
     "devDependencies": {
+        "@types/node": "^13.9.3",
+        "@types/request-promise": "^4.1.46",
+        "@types/shelljs": "^0.8.7",
+        "@types/uuid": "^7.0.2",
         "tslint": "^6.1.0",
         "typescript": "^3.8.3"
     }
