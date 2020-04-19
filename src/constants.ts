@@ -1,5 +1,9 @@
 
-export const enum events { DEBUG = 'debug', ERROR = 'error' }
+export const enum events {
+    DEBUG = 'debug',
+    ERROR = 'error',
+    DOWNLOAD_STATUS = 'download-status'
+}
 
 export const enum urls {
     DEFAULT_MANIFEST_URL = 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
