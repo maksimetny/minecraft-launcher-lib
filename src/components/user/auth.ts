@@ -46,6 +46,15 @@ export interface IAuthException {
     errorMessage: string
 }
 
+export interface IAuthAPI {
+    readonly base: string
+    readonly _authenticate: string
+    readonly _refresh: string
+    readonly _validate: string
+    readonly _invalidate: string
+    readonly _signout: string
+}
+
 import axios, { AxiosPromise, AxiosResponse, AxiosError } from 'axios'
 import * as UUID from 'uuid'
 import { urls, events } from '../../constants'
@@ -150,7 +159,7 @@ export class Authenticator {
      *
      * @throws This may throw the error object with type AxiosError<IAuthException>.
      */
-    static logout(
+    static signout(
         username: string,
         password: string,
         url = `${urls.DEFAULT_AUTH_URL}/signout`
@@ -209,6 +218,28 @@ export class Authenticator {
         } catch {
             return false
         }
+    }
+
+    constructor(readonly clientToken: string, private api: IAuthAPI) { }
+
+    authenticate(username: string, password: string, requestUser = false) {
+        return Authenticator.authenticate(username, password, this.clientToken, requestUser, this.api.base + this.api._authenticate)
+    }
+
+    refresh(accessToken: string, requestUser = false) {
+        return Authenticator.refresh(accessToken, this.clientToken, requestUser, this.api.base + this.api._refresh)
+    }
+
+    signout(username: string, password: string) {
+        return Authenticator.signout(username, password, this.api.base + this.api._signout)
+    }
+
+    validate(accessToken: string) {
+        return Authenticator.validate(accessToken, this.clientToken, this.api.base + this.api._validate)
+    }
+
+    invalidate(accessToken: string) {
+        return Authenticator.invalidate(accessToken, this.clientToken, this.api.base + this.api._invalidate)
     }
 
 }

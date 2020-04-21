@@ -1,20 +1,19 @@
 
 import * as nock from 'nock'
-import { Authenticator, IAuthResponse, IAuthException } from './auth'
+import { Authenticator, IAuthResponse, IAuthException, IAuthAPI } from './auth'
+
+const API: IAuthAPI = {
+    base: 'http://localhost:25560/authserver',
+    _validate: '/validate',
+    _invalidate: '/invalidate',
+    _refresh: '/refresh',
+    _authenticate: '/authenticate',
+    _signout: '/signout'
+}
 
 describe('Authenticator', () => {
 
-    const clientToken = Authenticator.newToken()
-    // const authenticator = new Authenticator(clientToken)
-
-    const enum API {
-        base = 'http://localhost:25560/authserver',
-        _validate = '/validate',
-        _invalidate = '/invalidate',
-        _refresh = '/refresh',
-        _authenticate = '/authenticate',
-        _signout = '/signout'
-    }
+    const authenticator = new Authenticator(Authenticator.newToken(), API)
 
     describe('#newToken', () => {
 
@@ -32,20 +31,20 @@ describe('Authenticator', () => {
             const password = '12345'
 
             nock(API.base).post(API._authenticate, {
-                clientToken,
+                clientToken: authenticator.clientToken,
                 requestUser: false,
                 username,
                 password,
                 agent: { name: 'minecraft', version: 1 }
             }).reply(200, {
-                clientToken,
+                clientToken: authenticator.clientToken,
                 accessToken: 'abc'
             })
 
-            const auth = (await Authenticator.authenticate(username, password, clientToken, false, API.base + API._authenticate)).data
+            const auth = (await authenticator.authenticate(username, password, false)).data
             expect((auth)).toBeTruthy()
             expect((auth).accessToken).toBeTruthy()
-            expect((auth).clientToken).toEqual(clientToken)
+            expect((auth).clientToken).toEqual(authenticator.clientToken)
         })
 
     })
@@ -54,20 +53,20 @@ describe('Authenticator', () => {
 
         it('should be able to valid access token with response 204', async () => {
             nock(API.base).post(API._validate, {
-                clientToken,
+                clientToken: authenticator.clientToken,
                 accessToken: 'abc'
             }).reply(204)
 
-            expect(await Authenticator.validate('abc', clientToken, API.base + API._validate)).toBeTruthy()
+            expect(await authenticator.validate('abc')).toBeTruthy()
         })
 
         it('should return `false` when validate an invalid access token with response 400', async () => {
             nock(API.base).post(API._validate, {
-                clientToken,
+                clientToken: authenticator.clientToken,
                 accessToken: 'abc'
             }).reply(400)
 
-            expect(await Authenticator.validate('abc', clientToken, API.base + API._validate)).toBeFalsy()
+            expect(await authenticator.validate('abc')).toBeFalsy()
         })
 
     })
