@@ -1,6 +1,6 @@
 
 import { dirname, basename } from 'path'
-import axios, { AxiosResponse } from 'axios'
+import axios, { AxiosResponse, AxiosInstance } from 'axios'
 import { EventEmitter } from 'events'
 import { mkdir } from 'shelljs'
 import { createHash } from 'crypto'
@@ -49,7 +49,7 @@ export class Resource extends EventEmitter implements IResource {
         return JSON.parse(readFileSync(path, 'utf-8'))
     }
 
-    constructor(readonly url: string, readonly path: string, readonly sha1: string) { super() }
+    constructor(readonly url: string, readonly path: string, readonly sha1: string, private request: AxiosInstance = axios) { super() }
 
     /**
      * @returns This download is success?
@@ -64,7 +64,7 @@ export class Resource extends EventEmitter implements IResource {
         }
 
         try {
-            const { headers, data }: IAxiosResponse = await axios({
+            const { headers, data }: IAxiosResponse = await this.request({
                 url: this.url,
                 method: 'GET',
                 responseType: 'stream'
