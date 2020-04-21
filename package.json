@@ -6,7 +6,8 @@
     "scripts": {
         "build": "tsc",
         "start": "tsc",
-        "test": "npm run build && jest ./dist"
+        "test": "npm run build && npm run jest",
+        "jest": "jest ./dist --env=node"
     },
     "repository": {
         "type": "git",
@@ -28,15 +29,14 @@
     },
     "homepage": "https://github.com/maksimetny/minecraft-launcher-lib#readme",
     "dependencies": {
-        "request": "^2.88.2",
-        "request-promise": "^4.2.5",
+        "axios": "^0.19.2",
         "shelljs": "^0.8.3",
         "uuid": "^7.0.2"
     },
     "devDependencies": {
+        "@types/axios": "^0.14.0",
         "@types/jest": "^25.2.1",
         "@types/node": "^13.9.3",
-        "@types/request-promise": "^4.1.46",
         "@types/shelljs": "^0.8.7",
         "@types/uuid": "^7.0.2",
         "dotenv": "^8.2.0",

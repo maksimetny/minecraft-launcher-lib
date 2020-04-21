@@ -1,6 +1,6 @@
 
 export {
-    IResourceStatus,
+    IResourceDownloadingProgress,
     Resource,
     IResource
 } from './resource'

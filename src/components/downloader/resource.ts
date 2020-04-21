@@ -1,6 +1,6 @@
 
 import { dirname, basename } from 'path'
-import * as request from 'request'
+import axios, { AxiosResponse } from 'axios'
 import { EventEmitter } from 'events'
 import { mkdir } from 'shelljs'
 import { createHash } from 'crypto'
@@ -11,15 +11,32 @@ import {
     readFileSync
 } from 'fs'
 
-export interface IResourceStatus {
+interface IAxiosResponseData {
+    on(e: 'data', listener: (data: Buffer) => void): this
+    pipe<T>(destination: T): T
+}
+
+interface IAxiosResponse extends AxiosResponse {
+    headers: { [key: string]: string }
+    data: IAxiosResponseData
+}
+
+export interface IResourceDownloadingProgress {
     current: number
-    total: number
+    total: {
+        expected: number
+        received: number
+    }
 }
 
 export interface IResource {
     path: string
     url: string
     sha1: string
+}
+
+const handleError = (err: Partial<Error>) => {
+    return err.message ? err.message.toLocaleLowerCase() : 'unknown'
 }
 
 export class Resource extends EventEmitter implements IResource {
@@ -32,75 +49,67 @@ export class Resource extends EventEmitter implements IResource {
         return JSON.parse(readFileSync(path, 'utf-8'))
     }
 
-    static request = request.defaults({
-        pool: {
-            maxSockets: 2
-        },
-        timeout: 1e4
-    }) // base request
-
     constructor(readonly url: string, readonly path: string, readonly sha1: string) { super() }
 
     /**
-     * @param checkHashAfter Check hash after downloading?
-     * @returns Download success?
+     * @returns This download is success?
      */
-    downloadAsync(checkHashAfter = false) {
-        return new Promise<boolean>(resolve => {
-            if (!existsSync(this.directory)) {
-                try {
-                    mkdir('-p', this.directory)
-                } catch (err) {
-                    this.emit(events.ERROR, `An error occurred while create directory for ${this.path}!`, err)
-                    resolve(false)
-                    return
-                }
-            }
+    async downloadAsync(checkAfter = false): Promise<boolean> {
+        try {
+            if (!existsSync(this.directory)) mkdir('-p', this.directory)
+        } catch (err) {
+            const message = handleError(err)
+            this.emit(events.ERROR, `An error occurred while create directory for ${this.path} due to ${message}!`, err)
+            return false
+        }
 
-            const req = Resource.request(this.url), stream = createWriteStream(this.path)
-            const status = { current: 0, total: 0 } as IResourceStatus
+        try {
+            const { headers, data }: IAxiosResponse = await axios({
+                url: this.url,
+                method: 'GET',
+                responseType: 'stream'
+            })
 
-            req.on('response', ({ headers, statusCode }) => {
-                if (statusCode !== 200) {
-                    this.emit(events.ERROR, `An error occurred while download! (${statusCode})`)
-                    resolve(false)
-                    return
-                }
+            this.emit(events.DEBUG, `Downloading ${this.path} from ${this.url}`.concat(this.sha1 ? `, with hash: ${this.sha1}..` : '..'))
 
-                this.emit(events.DEBUG, `Downloading ${this.path} from ${this.url}`.concat(this.sha1 ? `, with hash: ${this.sha1}..` : '..'))
-
+            {
                 const { ['content-length']: contentLength = '0' } = headers
-                status.total = parseInt(contentLength, 10)
-            })
 
-            req.on('error', err => {
-                this.emit(events.ERROR, `An error occurred while download ${this.url} due to ${err.message}`, err)
-                resolve(false)
-            })
-
-            req.on('data', data => {
-                status.current += data.length
-                this.emit(events.DOWNLOAD_STATUS, status)
-            })
-
-            req.pipe(stream)
-
-            stream.once('finish', () => {
-                if (checkHashAfter) {
-                    if (!this.isSuccess) {
-                        resolve(false)
-                        return
+                const _progress: IResourceDownloadingProgress = {
+                    current: 0,
+                    total: {
+                        expected: 0,
+                        received: parseInt(contentLength, 10)
                     }
                 }
 
-                resolve(true)
+                data.on('data', chunk => {
+                    _progress.current += chunk.length
+                    this.emit(events.DOWNLOAD_STATUS, _progress)
+                })
+            }
+
+            const stream = createWriteStream(this.path)
+
+            data.pipe(stream)
+
+            return new Promise(resolve => {
+                stream.on('finish', () => {
+                    resolve(checkAfter ? (this.isSuccess ? true : false) : true)
+                })
+
+                stream.on('error', err => {
+                    const message = handleError(err)
+                    this.emit(events.ERROR, `An error occurred while write ${this.path} due to ${message}`, err)
+                    resolve(false)
+                })
             })
 
-            stream.once('error', err => {
-                this.emit(events.ERROR, `An error occurred while write ${this.path} due to ${err.message}`, err)
-                resolve(false)
-            })
-        })
+        } catch (err) {
+            const message = handleError(err)
+            this.emit(events.ERROR, `An error occurred while downloading ${this.url} due to ${message}`, err)
+            return false
+        }
     }
 
     calculateHash(algorithm: string): string {

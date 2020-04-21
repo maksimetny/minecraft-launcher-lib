@@ -2,7 +2,7 @@
 export interface IAuthResponse {
     accessToken: string              // hexadecimal
     clientToken: string              // identical to one received
-    availableProfiles?: IProfile[]
+    availableProfiles: IProfile[]
     selectedProfile: IProfile        // only present if agent field was received
     user?: IUser                     // only present if requestUser was true in request payload
 }
@@ -37,10 +37,7 @@ interface IUser {
     legacyUser: boolean
     verifiedByParent: boolean
     properties: {
-        [index: number]: {
-            name: string
-            value: string
-        }
+        [index: number]: { name: string, value: string }
     }
 }
 
@@ -49,68 +46,116 @@ export interface IAuthException {
     errorMessage: string
 }
 
-import { post, RequestPromise } from 'request-promise'
-import { urls } from '../../constants'
-import { v4 as generateUUID } from 'uuid'
+import axios, { AxiosPromise, AxiosResponse, AxiosError } from 'axios'
+import * as UUID from 'uuid'
+import { urls, events } from '../../constants'
 
 export class Authenticator {
 
     /**
-     * Random generate a new token by uuid v4.
+     * Random generate a new token by UUID v4.
      * @returns a new token.
      */
-    static newToken = () => generateUUID().replace(/-/g, '')
+    static newToken = () => UUID.v4().replace(/-/g, '')
 
     /**
-     * Create an offline auth.
-     * @param username The user's username.
+     * Create a new default auth response.
+     * @param username a nickname.
      */
-    static default(username: string) {
-        const auth: IAuthResponse = {
-            accessToken: Authenticator.newToken(),
-            clientToken: Authenticator.newToken(),
-            selectedProfile: { name: username, id: Authenticator.newToken() }
+    static default(username: string): IAuthResponse {
+        const _profile: IProfile = {
+            name: username,
+            id: Authenticator.newToken()
         }
 
-        return auth
+        return {
+            accessToken: Authenticator.newToken(),
+            clientToken: Authenticator.newToken(),
+            selectedProfile: _profile,
+            availableProfiles: [
+                _profile
+            ]
+        }
     }
 
     /**
      * Authenticate a user with their Mojang credentials.
      *
-     * @param username The user's username, this is often an email.
-     * @param password The user's password.
-     * @param clientToken The launcher's clientToken.
-     * @param requestUser Adds user object to the reponse (optional).
+     * @param username a username or email address of Mojang account.
+     * @param clientToken a launcher's token.
+     * @param requestUser Adds user object to response (optional).
      * @param url of auth API (default: authserver.mojang.com/authenticate).
      *
      * @see http://wiki.vg/Authentication#Authenticate
+     *
+     * @throws This may throw the error object with type AxiosError<IAuthException>.
      */
-    static login(username: string, password: string, clientToken: string, requestUser = false, url = `${urls.DEFAULT_AUTH_URL}/authenticate`) {
-        const requestObject = {
-            json: true,
-            body: {
+    static authenticate(username: string, password: string, clientToken: string, requestUser = false, url = `${urls.DEFAULT_AUTH_URL}/authenticate`) {
+        return axios({
+            method: 'POST',
+            url,
+            data: {
                 clientToken,
                 requestUser,
                 username,
                 password,
                 agent: { name: 'minecraft', version: 1 }
             }
-        }
+        }) as AxiosPromise<IAuthResponse>
 
-        return post(url, requestObject) as RequestPromise<IAuthResponse>
+        // try {
+        //     // return response data
+        // } catch (err) {
+        //     const {
+        //         message,
+        //         response = { data: { error: 'RequestError', errorMessage: message } as IAuthException }
+        //     } = err as AxiosError<IAuthException>
+
+        //     console.log(response.data)
+        // }
+    }
+
+    /**
+     * Refresh a user's authentication.
+     * This should be used to keep a user logged in without asking them for their credentials again.
+     * A new access token will be generated using a recent invalid access token.
+     *
+     * @param accessToken a old access token.
+     * @param clientToken a launcher's client token.
+     * @param requestUser Adds user object to reponse (optional).
+     * @param url of auth API (default: authserver.mojang.com/refresh).
+     *
+     * @throws This may throw the error object with type AxiosError<IAuthException>.
+     *
+     * @see http://wiki.vg/Authentication#Refresh
+     */
+    static refresh(
+        accessToken: string,
+        clientToken: string,
+        requestUser = true,
+        url = `${urls.DEFAULT_AUTH_URL}/refresh`
+    ) {
+        return axios({
+            method: 'POST',
+            url,
+            data: { accessToken, clientToken, requestUser }
+        }) as AxiosPromise<IAuthResponse>
     }
 
     /**
      * Делает недействительными токен доступа, используя имя пользователя и пароль.
      *
-     * @param username The user's username, this is often an email.
-     * @param password The user's password.
+     * @param username a username or this is often an email of Mojang account.
      * @param url of auth API (default: authserver.mojang.com/signout).
+     *
+     * @throws This may throw the error object with type AxiosError<IAuthException>.
      */
-    static logout(username: string, password: string, url = `${urls.DEFAULT_AUTH_URL}/signout`) {
-        const requestObject = { json: { username, password } }
-        return post(url, requestObject)
+    static logout(
+        username: string,
+        password: string,
+        url = `${urls.DEFAULT_AUTH_URL}/signout`
+    ): Promise<boolean> {
+        return Authenticator.query({ username, password }, url)
     }
 
     /**
@@ -118,15 +163,18 @@ export class Authenticator {
      * This should always be done before launching.
      * The client token should match the one used to create the access token.
      *
-     * @param accessToken The access token.
-     * @param clientToken The launcher's client token.
+     * @param accessToken a access token from auth response.
+     * @param clientToken a launcher's client token.
      * @param url of auth API (default: authserver.mojang.com/validate).
      *
      * @see http://wiki.vg/Authentication#Validate
      */
-    static validate(accessToken: string, clientToken: string, url = `${urls.DEFAULT_AUTH_URL}/validate`) {
-        const requestObject = { json: { accessToken, clientToken } }
-        return post(url, requestObject)
+    static validate(
+        accessToken: string,
+        clientToken: string,
+        url = `${urls.DEFAULT_AUTH_URL}/validate`
+    ): Promise<boolean> {
+        return Authenticator.query({ accessToken, clientToken }, url)
     }
 
     /**
@@ -139,26 +187,28 @@ export class Authenticator {
      *
      * @see http://wiki.vg/Authentication#Invalidate
      */
-    static invalidate(accessToken: string, clientToken: string, url = `${urls.DEFAULT_AUTH_URL}/invalidate`) {
-        const requestObject = { json: { accessToken, clientToken } }
-        return post(url, requestObject)
+    static invalidate(
+        accessToken: string,
+        clientToken: string,
+        url = `${urls.DEFAULT_AUTH_URL}/invalidate`
+    ): Promise<boolean> {
+        return Authenticator.query({ accessToken, clientToken }, url)
     }
 
-    /**
-     * Refresh a user's authentication.
-     * This should be used to keep a user logged in without asking them for their credentials again.
-     * A new access token will be generated using a recent invalid access token.
-     *
-     * @param accessToken The old access token.
-     * @param clientToken The launcher's client token.
-     * @param requestUser Adds user object to reponse (optional).
-     * @param url of auth API (default: authserver.mojang.com/refresh).
-     *
-     * @see http://wiki.vg/Authentication#Refresh
-     */
-    static refresh(accessToken: string, clientToken: string, requestUser = true, url = `${urls.DEFAULT_AUTH_URL}/refresh`) {
-        const requestObject = { json: { accessToken, clientToken, requestUser } }
-        return post(url, requestObject) as RequestPromise<IAuthResponse>
+    private static async query(payload: {
+        [prop: string]: string
+    }, url: string) {
+        try {
+            const { status } = await axios({
+                method: 'POST',
+                url,
+                data: { ...payload }
+            })
+
+            return (status === 204)
+        } catch {
+            return false
+        }
     }
 
 }
