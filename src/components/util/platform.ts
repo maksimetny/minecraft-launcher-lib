@@ -7,13 +7,11 @@ export interface IPlatform {
     version: string
 }
 
-// export type Platform = Partial<IPlatform>
+import * as _os from 'os'
 
-import { arch, release } from 'os'
+export class Platform implements IPlatform {
 
-export class CurrentPlatform implements IPlatform {
-
-    static getPlatformName(): OS {
+    static getCurrentPlatformName(): OS {
         switch (process.platform) {
             case 'win32': {
                 return OS.WINDOWS
@@ -27,21 +25,23 @@ export class CurrentPlatform implements IPlatform {
         }
     }
 
-    static getPlatformArch() { return arch() }
+    static getCurrentPlatformArch(): string { return _os.arch() }
 
-    static getPlatformVersion() { return release() }
+    static getCurrentPlatformVersion(): string { return _os.release() }
 
-    static getPlatformSeparator(os = currentPlatform.name) {
+    static getCurrentPlatformSeparator(os = currentPlatform.name): string {
         switch (os) {
             case OS.WINDOWS: return ';'
             default: return ':'
         }
     }
 
-    readonly arch = CurrentPlatform.getPlatformArch()
-    readonly version = CurrentPlatform.getPlatformVersion()
-    readonly name = CurrentPlatform.getPlatformName()
+    constructor(
+        readonly name = Platform.getCurrentPlatformName(),
+        readonly arch = Platform.getCurrentPlatformArch(),
+        readonly version = Platform.getCurrentPlatformVersion()
+    ) { }
 
 }
 
-export const currentPlatform = new CurrentPlatform()
+export const currentPlatform = new Platform()
