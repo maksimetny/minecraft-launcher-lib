@@ -11,7 +11,7 @@ import * as _os from 'os'
 
 export class Platform implements IPlatform {
 
-    static getCurrentPlatformName(): OS {
+    static getName(): OS {
         switch (process.platform) {
             case 'win32': {
                 return OS.WINDOWS
@@ -25,11 +25,11 @@ export class Platform implements IPlatform {
         }
     }
 
-    static getCurrentPlatformArch(): string { return _os.arch() }
+    static getArch(): string { return _os.arch() }
 
-    static getCurrentPlatformVersion(): string { return _os.release() }
+    static getVersion(): string { return _os.release() }
 
-    static getCurrentPlatformSeparator(os = currentPlatform.name): string {
+    static getSeparator(os = currentPlatform.name): string {
         switch (os) {
             case OS.WINDOWS: return ';'
             default: return ':'
@@ -37,9 +37,9 @@ export class Platform implements IPlatform {
     }
 
     constructor(
-        readonly name = Platform.getCurrentPlatformName(),
-        readonly arch = Platform.getCurrentPlatformArch(),
-        readonly version = Platform.getCurrentPlatformVersion()
+        readonly name = Platform.getName(),
+        readonly arch = Platform.getArch(),
+        readonly version = Platform.getVersion()
     ) { }
 
 }
