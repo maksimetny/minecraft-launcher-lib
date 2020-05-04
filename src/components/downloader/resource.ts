@@ -30,9 +30,9 @@ export interface IResourceDownloadingProgress {
 }
 
 export interface IResource {
-    path: string
-    url: string
-    sha1: string
+    readonly path: string
+    readonly url: string
+    readonly sha1: string
 }
 
 const handleError = (err: Partial<Error>) => {
