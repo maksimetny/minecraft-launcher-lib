@@ -5,9 +5,9 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "start": "tsc",
-        "test": "npm run build && npm run jest",
-        "jest": "jest ./dist --env=node"
+        "start": "npm run build && echo Launching.. && node ./dist/examples/launcher",
+        "jest": "jest ./dist --env=node",
+        "test": "npm run build && npm run jest"
     },
     "repository": {
         "type": "git",
