@@ -7,17 +7,21 @@ export interface IVersionDownloads {
     server: IArtifact
 }
 
-// export class VersionDownloads implements IVersionDownloads {
-//     constructor(readonly client: Artifact, readonly server: Artifact) { }
-// }
+export class VersionDownloads implements IVersionDownloads {
 
-type VersionArg = string | /* or */ Required<IArgument>
+    constructor(readonly client: Artifact, readonly server: Artifact) { }
 
-export interface IVersionArguments { game: VersionArg[], jvm: VersionArg[] }
+}
 
-// export class VersionArguments implements IVersionArguments {
-//     constructor(readonly game: Argument[] = [], readonly jvm: Argument[] = []) { }
-// }
+type VersionArgument = string | /* or */ Required<IArgument>
+
+export interface IVersionArguments { game: VersionArgument[], jvm: VersionArgument[] }
+
+export class VersionArguments implements IVersionArguments {
+
+    constructor(readonly game: Argument[] = [], readonly jvm: Argument[] = []) { }
+
+}
 
 import { Library, ILibrary } from './lib'
 
@@ -27,3 +31,5 @@ export interface IVersion {
     arguments: IVersionArguments
     libraries: ILibrary[]
 }
+
+export class Version { }
