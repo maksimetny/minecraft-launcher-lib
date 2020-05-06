@@ -3,29 +3,36 @@ export type Features = { [feature: string]: boolean }
 
 export enum Action { ALLOW = 'allow', DISALLOW = 'disallow' }
 
-import { currentPlatform, Platform, IPlatform } from '../util'
+import {
+    currentPlatform,
+    Platform,
+    IPlatform
+} from '../util'
 
 export interface IRule {
     action: Action
-    os: Partial<IPlatform>
-    features: Features
+    os?: Partial<IPlatform>
+    features?: Features
 }
 
 export class Rule implements IRule {
 
-    static resolve(_rules: Partial<IRule>[], _default: IRule = {
-        os: {},
-        action: Action.ALLOW,
-        features: {}
-    }) {
+    static resolve(_rules: Partial<IRule>[], _default: Partial<IRule> = { /* default */ }) {
         return _rules.map(_rule => {
             if (_rule instanceof Rule) {
                 return _rule
             } else {
                 const {
-                    action = _default.action,
-                    os = _default.os,
-                    features = _default.features } = _rule
+                    action: defaultAction = Action.ALLOW,
+                    os: defaultOS = { /* platform */ },
+                    features: defaultFeatures = { /* features */ }
+                } = _default
+
+                const {
+                    action = defaultAction,
+                    os = defaultOS,
+                    features = defaultFeatures
+                } = _rule
 
                 return new Rule(action, features, os)
             }

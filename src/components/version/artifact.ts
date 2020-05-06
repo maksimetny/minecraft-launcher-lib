@@ -18,17 +18,14 @@ export class Artifact implements IArtifact {
     //     }
     // }
 
-    static resolve(_artifact: Partial<IArtifact>, _default: IArtifact = {
-        path: String(),
-        sha1: String(),
-        url: String()
-    }) {
+    static resolve(_artifact: Partial<IArtifact>, _default: Partial<IArtifact> = { /* default */ }) {
         if (_artifact instanceof Artifact) {
             return _artifact
         } else {
+            const { path: defaultPath = '/', sha1: defaultSHA1 = String(), url: defaultURL = '/' } = _default
             const {
-                path: _path = _default.path,
-                sha1: _sha1 = _default.sha1, url: _url = _default.url } = _artifact
+                path: _path = defaultPath,
+                sha1: _sha1 = defaultSHA1, url: _url = defaultURL } = _artifact
 
             return new Artifact(_url, _path, _sha1)
         }

@@ -1,6 +1,5 @@
 
 import { Artifact, IArtifact } from './artifact'
-import { Rule, IRule } from './rule'
 
 export interface ILibraryDownloads {
 
@@ -9,7 +8,7 @@ export interface ILibraryDownloads {
     /**
      * `natives-${os}`, `javadoc`, `sources`
      */
-    classifiers: { [name: string]: IArtifact }
+    classifiers?: { [name: string]: IArtifact }
 
 }
 
@@ -81,6 +80,8 @@ export class LibraryDownloads implements ILibraryDownloads {
 
 }
 
+import { Rule, IRule, Features } from './rule'
+import { IPlatform } from '../util'
 import { urls } from '../../constants'
 
 type LibraryExtract = { exclude: string[] }
@@ -142,5 +143,9 @@ export class Library implements ILibrary {
         readonly extract: LibraryExtract,
         readonly rules: Rule[]
     ) { }
+
+    isApplicable(platform: Partial<IPlatform>, features: Features) {
+        return Rule.isAllowable(this.rules, platform, features)
+    }
 
 }
