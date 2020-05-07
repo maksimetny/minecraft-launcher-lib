@@ -79,7 +79,7 @@ export class Rule implements IRule {
         } // compare platform
 
         Object.entries(this.features).forEach(([feature, value]) => {
-            if (feature in features) allowable = Rule.comparator(features[feature] === value, features[feature] !== value, this.action)
+            allowable = Rule.comparator(features[feature] === value, features[feature] !== value, this.action)
         }) // compare features
 
         return (allowable)
