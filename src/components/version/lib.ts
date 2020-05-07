@@ -81,7 +81,7 @@ export class LibraryDownloads implements ILibraryDownloads {
 }
 
 import { Rule, IRule, Features } from './rule'
-import { IPlatform } from '../util'
+import { currentPlatform, Platform, IPlatform, OS } from '../util'
 import { urls } from '../../constants'
 
 type LibraryExtract = { exclude: string[] }
@@ -144,8 +144,12 @@ export class Library implements ILibrary {
         readonly rules: Rule[]
     ) { }
 
-    isApplicable(platform: Partial<IPlatform>, features: Features) {
+    isApplicable(platform: Partial<IPlatform>, features: Features = { /* features */ }): boolean {
         return Rule.isAllowable(this.rules, platform, features)
+    }
+
+    hasNatives(os: OS = currentPlatform.name): boolean {
+        return this.natives[os] ? true : false
     }
 
 }

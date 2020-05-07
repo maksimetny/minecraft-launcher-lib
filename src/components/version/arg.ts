@@ -57,7 +57,7 @@ export class Argument {
 
     constructor(readonly value: string[], readonly rules: Rule[] = []) { }
 
-    isApplicable(platform: Partial<IPlatform>, features: Features) {
+    isApplicable(platform: Partial<IPlatform>, features: Features = { /* features */ }) {
         return Rule.isAllowable(this.rules, platform, features)
     }
 
