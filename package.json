@@ -29,11 +29,13 @@
     },
     "homepage": "https://github.com/maksimetny/minecraft-launcher-lib#readme",
     "dependencies": {
+        "adm-zip": "^0.4.14",
         "axios": "^0.19.2",
         "shelljs": "^0.8.3",
         "uuid": "^7.0.2"
     },
     "devDependencies": {
+        "@types/adm-zip": "^0.4.33",
         "@types/axios": "^0.14.0",
         "@types/jest": "^25.2.1",
         "@types/node": "^13.9.3",
