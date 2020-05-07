@@ -56,6 +56,21 @@ export class Artifact implements IArtifact {
 
     constructor(readonly url: string, readonly path: string, readonly sha1: string) { }
 
+    setSHA1(sha1: string) {
+        Artifact.setSHA1(this, sha1)
+        return this
+    }
+
+    setURL(url: string) {
+        Artifact.setURL(this, url)
+        return this
+    }
+
+    setPath(path: string) {
+        Artifact.setPath(this, path)
+        return this
+    }
+
     toResource(directory: string) {
         // return new Resource(this.url, join(directory, this.path), this.sha1)
         return Artifact.toResource({ ...this }, directory)
