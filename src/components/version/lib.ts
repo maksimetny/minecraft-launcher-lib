@@ -104,6 +104,9 @@ export interface ILibrary {
 
 }
 
+import { unpack } from '../util'
+import { join } from 'path'
+
 export class Library implements ILibrary {
 
     static resolve(_libs: Partial<ILibrary>[]) {
@@ -134,6 +137,12 @@ export class Library implements ILibrary {
                 )
             }
         })
+    }
+
+    static extractNatives(library: ILibrary, platform: IPlatform, libsDirectory: string, nativesDirectory: string) {
+        const [lib] = Library.resolve([library])
+        const classifier = lib.natives[platform.name], { [classifier]: artifact } = lib.downloads.classifiers
+        unpack(join(libsDirectory, artifact.path), nativesDirectory, lib.extract.exclude)
     }
 
     constructor(
