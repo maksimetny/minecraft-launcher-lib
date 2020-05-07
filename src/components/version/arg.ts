@@ -24,20 +24,25 @@ export class Argument {
             if (arg instanceof Argument) {
                 return arg
             } else {
+                const { rules: _rules = [] } = arg, value: string[] = []
+
                 switch (typeof arg.value) {
                     case 'string': {
-                        return Argument.fromString(arg.value)
+                        value.push(arg.value)
+                        break
                     }
                     case 'object': {
                         if (arg.value instanceof Array) {
-                            const { rules: _rules = [] } = arg
-                            return new Argument(arg.value, Rule.resolve(_rules))
+                            value.push(...arg.value)
+                            break
                         }
                     }
                     default: {
                         throw new Error('argument value not string or string array')
                     }
                 }
+
+                return new Argument(value, Rule.resolve(_rules))
             }
         })
     }
