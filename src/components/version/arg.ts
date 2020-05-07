@@ -43,9 +43,8 @@ export class Argument {
     }
 
     static fromString(value: string) {
-        return new Argument([
-            value
-        ])
+        const s = value.split(/\s/g)
+        return new Argument(s)
     }
 
     static format(template: string, fields: Fields) {

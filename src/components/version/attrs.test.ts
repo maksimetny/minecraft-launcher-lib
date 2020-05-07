@@ -29,11 +29,11 @@ describe('Version', () => {
 
             const args = new VersionArguments(
                 [
-                    // Argument.fromString('--username ${auth_player_name}'),
-                    new Argument([
-                        '--username',
-                        '${auth_player_name}'
-                    ]),
+                    Argument.fromString('--username ${auth_player_name}'),
+                    // new Argument([
+                    //     '--username',
+                    //     '${auth_player_name}'
+                    // ]),
                     // Argument.fromString('--version ${version_name}'),
                     new Argument([
                         '--version',
