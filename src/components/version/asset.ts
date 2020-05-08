@@ -5,6 +5,13 @@ import { urls } from '../../constants'
 
 export class Asset {
 
+    static resolve = (objects: {
+        [path: string]: {
+            hash: string
+            size: number
+        }
+    }) => Object.entries(objects).map(([path, { hash }]) => new Asset(path, hash))
+
     constructor(readonly path: string, readonly hash: string) { }
 
     get subhash() {

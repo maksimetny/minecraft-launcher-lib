@@ -76,6 +76,14 @@ export interface IVersion {
     arguments: IVersionArguments
     mainClass: string
     libraries: ILibrary[]
+    assetIndex: IAssetIndexFile
+}
+
+interface IAssetIndexFile {
+    id: string // like assets prop in version attrs
+    url: string
+    sha1: string
+    totalSize: number
 }
 
 export class Version {
@@ -84,6 +92,7 @@ export class Version {
         if (_attrs instanceof Version) {
             return _attrs
         } else {
+            if (!_attrs.assetIndex) throw new Error('missing version assetIndex!')
             if (!_attrs.id) throw new Error('missing version id!')
             if (!_attrs.type) throw new Error('missing version type!')
             if (!_attrs.assets) throw new Error('missing version assets!')
@@ -97,7 +106,8 @@ export class Version {
                 downloads,
                 arguments: args = { game: [], jvm: [] },
                 libraries: libs = [],
-                mainClass
+                mainClass,
+                assetIndex
             } = _attrs
 
             return new Version(
@@ -107,6 +117,7 @@ export class Version {
                 VersionDownloads.resolve(downloads),
                 VersionArguments.resolve(args),
                 Library.resolve(libs),
+                assetIndex,
                 mainClass
             )
         }
@@ -119,6 +130,7 @@ export class Version {
         readonly downloads: VersionDownloads,
         readonly args: VersionArguments,
         readonly libs: Library[],
+        readonly assetIndex: IAssetIndexFile,
         readonly mainClass: string
     ) { }
 
