@@ -106,6 +106,7 @@ export interface ILibrary {
 
 import { unpack } from '../util'
 import { join } from 'path'
+import { Argument } from './arg'
 
 export class Library implements ILibrary {
 
@@ -125,8 +126,12 @@ export class Library implements ILibrary {
                         ]
                     },
                     rules = [],
-                    natives = { /* `${os}`: `natives-${os}` */ }
+                    natives = { /* `${os}`: `natives-${os}` or `natives-${os}-${arch}` */ }
                 } = _lib
+
+                Object.keys(natives).forEach(os => {
+                    natives[os] = Argument.format(natives[os], { arch: '64' })
+                })
 
                 return new Library(
                     name,
