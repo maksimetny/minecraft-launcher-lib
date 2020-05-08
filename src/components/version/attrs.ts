@@ -59,10 +59,25 @@ export class VersionArguments implements IVersionArguments {
             return Argument.fromString(value)
         })
 
-        return new VersionArguments(gameArgs /* defaultJvmArgs */)
+        return new VersionArguments(gameArgs)
     }
 
-    constructor(readonly game: Argument[] = [], readonly jvm: Argument[] = []) { }
+    constructor(readonly game: Argument[], readonly jvm: Argument[] = [
+        new Argument([
+            '-Dminecraft.launcher.brand=${launcher_name}'
+        ]),
+        new Argument([
+            '-Dminecraft.launcher.version=${launcher_version}'
+        ]),
+        new Argument([
+            '-Djava.library.path=${natives_directory}'
+        ]),
+        new Argument([
+            '-cp',
+            '${classpath}'
+        ])
+        // default jvm args
+    ]) { }
 
 }
 
@@ -77,6 +92,7 @@ export interface IVersion {
     mainClass: string
     libraries: ILibrary[]
     assetIndex: IAssetIndexFile
+    minecraftArguments?: string
 }
 
 interface IAssetIndexFile {
@@ -110,11 +126,17 @@ export class Version {
                 assetIndex
             } = _attrs
 
+            if (_attrs.minecraftArguments) {
+                const { game, jvm } = VersionArguments.fromLegacyStringArguments(_attrs.minecraftArguments)
+                args.game.push(...game), args.jvm.push(...jvm)
+            }
+
             return new Version(
                 id,
                 type,
                 assets,
                 VersionDownloads.resolve(downloads),
+                // _attrs.minecraftArguments ? VersionArguments.fromLegacyStringArguments(_attrs.minecraftArguments) : VersionArguments.resolve(args),
                 VersionArguments.resolve(args),
                 Library.resolve(libs),
                 assetIndex,
