@@ -129,10 +129,6 @@ export class Library implements ILibrary {
                     natives = { /* `${os}`: `natives-${os}` or `natives-${os}-${arch}` */ }
                 } = _lib
 
-                Object.keys(natives).forEach(os => {
-                    natives[os] = Argument.format(natives[os], { arch: '64' })
-                })
-
                 return new Library(
                     name,
                     LibraryDownloads.resolve(downloads, name, natives),
@@ -146,7 +142,7 @@ export class Library implements ILibrary {
 
     static extractNatives(library: ILibrary, platform: IPlatform, libsDirectory: string, nativesDirectory: string) {
         const [lib] = Library.resolve([library])
-        const classifier = lib.natives[platform.name], { [classifier]: artifact } = lib.downloads.classifiers
+        const classifier = lib.getNativeClassifier(platform), { [classifier]: artifact } = lib.downloads.classifiers
         unpack(join(libsDirectory, artifact.path), nativesDirectory, lib.extract.exclude)
     }
 
@@ -164,6 +160,17 @@ export class Library implements ILibrary {
 
     hasNatives(os: OS = currentPlatform.name): boolean {
         return this.natives[os] ? true : false
+    }
+
+    getNativeClassifier(platform: Platform = currentPlatform) {
+        switch (platform.arch) {
+            case 'x64': {
+                return Argument.format(this.natives[platform.name], { arch: '64' })
+            }
+            default: {
+                return Argument.format(this.natives[platform.name], { arch: '32' })
+            } // x32 or other
+        }
     }
 
 }

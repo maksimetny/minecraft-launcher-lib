@@ -12,7 +12,8 @@ import * as _os from 'os'
 export class Platform implements IPlatform {
 
     static getName(): OS {
-        switch (process.platform) {
+        const _platform = _os.platform()
+        switch ((_platform)) {
             case 'win32': {
                 return OS.WINDOWS
             }
