@@ -5,12 +5,15 @@ import { urls } from '../../constants'
 
 export class Asset {
 
-    static resolve = (objects: {
-        [path: string]: {
-            hash: string
-            size: number
-        }
-    }) => Object.entries(objects).map(([path, { hash }]) => new Asset(path, hash))
+    static fromObjects(objects: {
+        [path: string]: { hash: string }
+    }) {
+        return Object.entries(objects).map(([
+            path, { hash }
+        ]) => {
+            return new Asset(path, hash)
+        })
+    }
 
     constructor(readonly path: string, readonly hash: string) { }
 
@@ -19,7 +22,7 @@ export class Asset {
     }
 
     getPath(legacy = false) {
-        return legacy ? join('legacy', this.path) : join('objects', this.subhash, this.hash)
+        return legacy ? join('virtual', 'legacy', this.path) : join('objects', this.subhash, this.hash)
     }
 
     toArtifact() {
