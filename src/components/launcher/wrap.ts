@@ -1,5 +1,6 @@
 
 import { spawn, ChildProcess } from 'child_process'
+import { join } from 'path'
 import { LauncherOptions, ILauncherOptions } from './opts'
 import { Platform } from '../util'
 import { Argument, Fields } from '../version'
@@ -33,8 +34,17 @@ export class Launcher {
             'auth_uuid': user.profile.id,
             'user_type': user.type,
             'user_properties': JSON.stringify({ /* default user prop */ }),
-            'assets_root': overrides.assetsDirectory,
-            'game_assets': overrides.assetsDirectory,
+            'assets_root': directory.getPathTo('assets'),
+            'game_assets': (() => {
+                switch (version.assets) {
+                    case 'legacy': {
+                        return directory.getPathTo('assets', 'virtual', 'legacy')
+                    }
+                    default: {
+                        return join(overrides.gameDirectory, 'resources')
+                    } // pre-1.6
+                }
+            })(),
             'assets_index_name': version.assets,
             'version_name': overrides.versionName,
             'version_type': overrides.versionType,

@@ -36,8 +36,8 @@ type Memory = {
 type Overrides = {
 
     /**
-     * Launcher brand. Is used for
-     * `-Dminecraft.launcher.brand` argument.
+     * Launcher brand.
+     * Is used for `-Dminecraft.launcher.brand` argument.
      */
     launcherName: string
 
@@ -60,11 +60,6 @@ type Overrides = {
      * version type from resolved version.
      */
     versionType: string
-
-    /**
-     * Path to directory of assets.
-     */
-    assetsDirectory: string
 
     /**
      * Path to game directory for `saves`,
@@ -123,6 +118,8 @@ export interface ILauncherOptions {
 
 }
 
+import { join } from 'path'
+
 export class LauncherOptions implements ILauncherOptions {
 
     static resolve(opts: ILauncherOptions) {
@@ -172,9 +169,8 @@ export class LauncherOptions implements ILauncherOptions {
             launcherType = 'release',
             versionName = version.id,
             versionType = version.type,
-            assetsDirectory = directory.getPathTo('assets'),
             gameDirectory = directory.path,
-            nativesDirectory = directory.getPathTo('natives', version.id),
+            nativesDirectory = join(directory.natives, version.id),
             cwd = directory.path,
             minecraftJarPath = directory.getPathTo('versions', version.id, `${version.id}.jar`),
             javaPath = 'java'
@@ -185,7 +181,6 @@ export class LauncherOptions implements ILauncherOptions {
             launcherType,
             versionName,
             versionType,
-            assetsDirectory,
             gameDirectory,
             nativesDirectory,
             cwd,
