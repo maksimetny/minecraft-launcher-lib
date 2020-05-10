@@ -23,8 +23,10 @@ export class LibraryDownloads implements ILibraryDownloads {
             let downloads: LibraryDownloads
 
             {
-                const { artifact: _artifact = LibraryDownloads.artifactFromLibraryName(_name) } = _downloads, artifact = Artifact.resolve(_artifact)
-                downloads = new LibraryDownloads(artifact, { /* classifiers */ })
+                const _default = LibraryDownloads.artifactFromLibraryName(_name) // default artifact
+                const { artifact: _artifact = _default } = _downloads
+                // ! default url !
+                downloads = new LibraryDownloads(Artifact.resolve(_artifact, { path: _default.path }), { /* classifiers */ })
             } // library artifact
 
             {
@@ -36,8 +38,9 @@ export class LibraryDownloads implements ILibraryDownloads {
                         os,
                         include: classifier in classifiers
                     }
-                }).filter(({ include }) => !include).forEach(({ classifier, os }) => {
-                    classifiers[classifier] = LibraryDownloads.artifactFromLibraryName(`${_name}:natives-${os}`)
+                }).filter(({ include }) => !include).forEach(({ classifier }) => {
+                    // ! format classifier !
+                    classifiers[classifier] = LibraryDownloads.artifactFromLibraryName(`${_name}:${classifier}`)
                 })
 
                 Object.entries(classifiers).forEach(([classifier, artifact]) => {
