@@ -19,7 +19,13 @@ export class LauncherFolder extends Folder {
 
     constructor(directory: string) { super(directory) }
 
-    get libraries() { return this.getPathTo('libraries') }
+    get natives() {
+        return this.getPathTo('natives')
+    }
+
+    get libraries() {
+        return this.getPathTo('libraries')
+    }
 
     getLibraryPath(libraryPath: string) {
         return join(this.libraries, libraryPath)
