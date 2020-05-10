@@ -55,7 +55,7 @@ export class VersionArguments implements IVersionArguments {
     }
 
     static fromLegacyArguments(minecraftArguments: string) {
-        const gameArgs = minecraftArguments.split(/\s/g).map(value => {
+        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => {
             return Argument.fromString(value)
         })
 
@@ -72,11 +72,7 @@ export class VersionArguments implements IVersionArguments {
         new Argument([
             '-Djava.library.path=${natives_directory}'
         ]),
-        new Argument([
-            '-cp',
-            '${classpath}'
-        ])
-        // default jvm args
+        new Argument(['-cp', '${classpath}'])
     ]) { }
 
 }
@@ -136,7 +132,6 @@ export class Version {
                 type,
                 assets,
                 VersionDownloads.resolve(downloads),
-                // _attrs.minecraftArguments ? VersionArguments.fromLegacyStringArguments(_attrs.minecraftArguments) : VersionArguments.resolve(args),
                 VersionArguments.resolve(args),
                 Library.resolve(libs),
                 assetIndex,
