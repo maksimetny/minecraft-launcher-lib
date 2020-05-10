@@ -54,7 +54,7 @@ export class VersionArguments implements IVersionArguments {
         }
     }
 
-    static fromLegacyStringArguments(minecraftArguments: string) {
+    static fromLegacyArguments(minecraftArguments: string) {
         const gameArgs = minecraftArguments.split(/\s/g).map(value => {
             return Argument.fromString(value)
         })
@@ -127,7 +127,7 @@ export class Version {
             } = _attrs
 
             if (_attrs.minecraftArguments) {
-                const { game, jvm } = VersionArguments.fromLegacyStringArguments(_attrs.minecraftArguments)
+                const { game, jvm } = VersionArguments.fromLegacyArguments(_attrs.minecraftArguments)
                 args.game.push(...game), args.jvm.push(...jvm)
             }
 
