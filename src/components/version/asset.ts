@@ -21,6 +21,10 @@ export class Asset {
         return this.hash.substring(0, 2)
     }
 
+    /**
+     * For example, `launcher/assets/objects/00/00..b8f` or
+     * `launcher/assets/virtual/legacy/lang/ru_RU.lang`.
+     */
     getPath(legacy = false) {
         return legacy ? join('virtual', 'legacy', this.path) : join('objects', this.subhash, this.hash)
     }

@@ -13,16 +13,18 @@ export class Platform implements IPlatform {
 
     static getName(): OS {
         const _platform = _os.platform()
-        switch ((_platform)) {
-            case 'win32': {
-                return OS.WINDOWS
+        {
+            switch (_platform) {
+                case 'win32': {
+                    return OS.WINDOWS
+                }
+                case 'darwin': {
+                    return OS.OSX
+                }
+                default: {
+                    return OS.LINUX
+                } // linux and other (unknown)..
             }
-            case 'darwin': {
-                return OS.OSX
-            }
-            default: {
-                return OS.LINUX
-            } // linux and other (unknown)..
         }
     }
 

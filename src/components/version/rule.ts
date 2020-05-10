@@ -47,11 +47,10 @@ export class Rule implements IRule {
     }
 
     static isAllowable(rules: Partial<IRule>[], platform: Partial<IPlatform>, features: Features) {
-        // return !props.rules.map(rule => {
-        //     return Rule.resolve(rule).isAllowable(platform, features)
-        // }).includes(false)
-        return !this.resolve(rules).map(rule => rule.isAllowable(platform, features)).includes(false)
-    } // is applicable // props: { rules: Partial<IRule>[] }
+        return !this.resolve(rules).map(rule => {
+            return rule.isAllowable(platform, features)
+        }).includes(false)
+    }
 
     constructor(readonly action: Action, readonly features: Features, readonly os: Partial<IPlatform>) { }
 
@@ -87,7 +86,7 @@ export class Rule implements IRule {
 
     setFeature(name: string, value: boolean) {
         this.features[name] = value
-        // return this
+        return this
     }
 
     toJSON(space = 4): string {

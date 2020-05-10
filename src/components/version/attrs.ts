@@ -9,22 +9,22 @@ export interface IVersionDownloads {
 
 export class VersionDownloads implements IVersionDownloads {
 
-    static resolve(downloads: Partial<IVersionDownloads>) {
-        if (downloads instanceof VersionDownloads) {
-            return downloads
+    static resolve(_downloads: Partial<IVersionDownloads>) {
+        if (_downloads instanceof VersionDownloads) {
+            return _downloads
         } else {
-            if (!downloads.client) { throw new Error('missing client artifact in version downloads!') }
+            if (!_downloads.client) { throw new Error('missing client artifact in version downloads!') }
             // if (!downloads.server) { throw new Error('missing server artifact in version downloads!') }
 
-            const { client, /* server */ } = downloads
-            // const _server = Artifact.resolve(server, { path: 'server.jar' })
-            const _client = Artifact.resolve(client, { path: 'client.jar' })
+            const { client: _client, /* server: _server */ } = _downloads
+            // const server = Artifact.resolve(server, { path: 'server.jar' })
+            const client = Artifact.resolve(_client, { path: 'client.jar' })
 
-            return new VersionDownloads(_client /* _server */)
+            return new VersionDownloads(client)
         }
     }
 
-    constructor(readonly client: Artifact /* readonly server: Artifact */) { }
+    constructor(readonly client: Artifact) { }
 
 }
 

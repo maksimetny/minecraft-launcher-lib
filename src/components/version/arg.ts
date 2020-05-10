@@ -8,32 +8,27 @@ export interface IArgument {
      * An argument or a list of args that is
      * added when condition is matched.
      */
-    value: string[] | string
-
-    /**
-     * Rules of applicable.
-     */
-    rules: IRule[]
+    value: string[] | string, rules: IRule[]
 
 }
 
 export class Argument {
 
-    static resolve(args: Partial<IArgument>[]) {
-        return args.map(arg => {
-            if (arg instanceof Argument) {
-                return arg
+    static resolve(_args: Partial<IArgument>[]) {
+        return _args.map(_arg => {
+            if (_arg instanceof Argument) {
+                return _arg
             } else {
-                const { rules: _rules = [] } = arg, value: string[] = []
+                const { rules: _rules = [] } = _arg, value: string[] = []
 
-                switch (typeof arg.value) {
+                switch (typeof _arg.value) {
                     case 'string': {
-                        value.push(arg.value)
+                        value.push(_arg.value)
                         break
                     }
                     case 'object': {
-                        if (arg.value instanceof Array) {
-                            value.push(...arg.value)
+                        if (_arg.value instanceof Array) {
+                            value.push(..._arg.value)
                             break
                         }
                     }
@@ -48,8 +43,7 @@ export class Argument {
     }
 
     static fromString(value: string) {
-        const s = value.split(/\s/g)
-        return new Argument(s)
+        return new Argument(value.split(/\s/g))
     }
 
     static format(template: string, fields: Fields) {
@@ -70,12 +64,6 @@ export class Argument {
             return Argument.format(value, fields)
         })
     }
-
-    // addRule(rule: Partial<IRule>) {
-    //     const _rule = Rule.resolve(rule)
-    //     this.rules.push(_rule)
-    //     // return this
-    // }
 
 }
 

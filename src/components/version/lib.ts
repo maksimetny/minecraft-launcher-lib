@@ -6,7 +6,7 @@ export interface ILibraryDownloads {
     artifact: IArtifact
 
     /**
-     * `natives-${os}`, `javadoc`, `sources`
+     * Like `javadoc`, `sources`, `natives-${os}` or `natives-${os}-${arch}`
      */
     classifiers?: { [name: string]: IArtifact }
 
@@ -23,8 +23,8 @@ export class LibraryDownloads implements ILibraryDownloads {
             let downloads: LibraryDownloads
 
             {
-                const { artifact = LibraryDownloads.artifactFromLibraryName(_name) } = _downloads, _artifact = Artifact.resolve(artifact)
-                downloads = new LibraryDownloads(_artifact, { /* classifiers */ })
+                const { artifact: _artifact = LibraryDownloads.artifactFromLibraryName(_name) } = _downloads, artifact = Artifact.resolve(_artifact)
+                downloads = new LibraryDownloads(artifact, { /* classifiers */ })
             } // library artifact
 
             {
@@ -52,25 +52,18 @@ export class LibraryDownloads implements ILibraryDownloads {
     /**
      * @param path It should look like `com.mojang:patchy:1.1`
      */
-    static artifactFromLibraryName(name: string) {
+    static artifactFromLibraryName(name: string): Artifact {
         const splitted = name.split(':')
-
         {
             if (splitted.length >= 3) {
-                const [_group, _artifact, _version, ..._extra] = splitted
-                const path = `${_group.replace(/\./g, '/')}/${_artifact}/${_version}/${_artifact}-${_version.concat(..._extra.map(_e => `-${_e}`))}.jar`
-                return new Artifact(`${urls.DEFAULT_REPO_URL}/${path}`, path, String() /* 0 */)
+                const [group, artifact, version, ...extra] = splitted
+                const path = `${group.replace(/\./g, '/')}/${artifact}/${version}/${artifact}-${version.concat(...extra.map(e => `-${e}`))}.jar`
+                return Artifact.resolve({ path, url: `${urls.DEFAULT_REPO_URL}/${path}` })
             } else {
-                const path = `${splitted.join('-')}.jar`
-                return new Artifact(String(), path, String() /* 0 */)
+                return Artifact.resolve({ path: `${splitted.join('-')}.jar` })
             }
         }
     }
-
-    // /**
-    //  * @param path It should look like `com/mojang/patchy/1.1/patchy-1.1.jar`
-    //  */
-    // static artifactFromLibraryPath(path: string) { }
 
     constructor(readonly artifact: Artifact, readonly classifiers: { [name: string]: Artifact }) { }
 
@@ -162,7 +155,7 @@ export class Library implements ILibrary {
         return this.natives[os] ? true : false
     }
 
-    getNativeClassifier(platform: Platform = currentPlatform) {
+    getNativeClassifier(platform: Platform = currentPlatform): string {
         switch (platform.arch) {
             case 'x64': {
                 return Argument.format(this.natives[platform.name], { arch: '64' })

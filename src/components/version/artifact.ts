@@ -10,14 +10,6 @@ import { join } from 'path'
 
 export class Artifact implements IArtifact {
 
-    // static resolve(_artifact: IArtifact) {
-    //     if (_artifact instanceof Artifact) {
-    //         return _artifact
-    //     } else {
-    //         return new Artifact(_artifact.url, _artifact.path, _artifact.sha1)
-    //     }
-    // }
-
     static resolve(_artifact: Partial<IArtifact>, _default: Partial<IArtifact> = { /* default */ }) {
         if (_artifact instanceof Artifact) {
             return _artifact
@@ -36,22 +28,19 @@ export class Artifact implements IArtifact {
     }
 
     static isDownloadable(artifact: Partial<IArtifact>) {
-        return !['path', 'url', 'sha1'].map(prop => prop in artifact).includes(false)
+        return !['url'].map(prop => prop in artifact).includes(false)
     } // checking required props
 
     static setSHA1(artifact: Partial<IArtifact>, sha1: string) {
         artifact.sha1 = sha1
-        // return this
     }
 
     static setURL(artifact: Partial<IArtifact>, url: string) {
         artifact.url = url
-        // return this
     }
 
     static setPath(artifact: Partial<IArtifact>, path: string) {
         artifact.path = path
-        // return this
     }
 
     constructor(readonly url: string, readonly path: string, readonly sha1: string) { }
@@ -72,7 +61,6 @@ export class Artifact implements IArtifact {
     }
 
     toResource(directory: string) {
-        // return new Resource(this.url, join(directory, this.path), this.sha1)
         return Artifact.toResource({ ...this }, directory)
     }
 
