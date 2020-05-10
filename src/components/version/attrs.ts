@@ -34,11 +34,24 @@ export interface IVersionArguments { game: VersionArgument[], jvm: VersionArgume
 
 export class VersionArguments implements IVersionArguments {
 
+    static DEFAULT_JVM_ARGS: Argument[] = [
+        new Argument([
+            '-Dminecraft.launcher.brand=${launcher_name}'
+        ]),
+        new Argument([
+            '-Dminecraft.launcher.version=${launcher_version}'
+        ]),
+        new Argument([
+            '-Djava.library.path=${natives_directory}'
+        ]),
+        new Argument(['-cp', '${classpath}'])
+    ]
+
     static resolve(_args: Partial<IVersionArguments>) {
         if (_args instanceof VersionArguments) {
             return _args
         } else {
-            const { game = [], jvm = [] } = _args
+            const { game = [], jvm = VersionArguments.DEFAULT_JVM_ARGS } = _args
 
             const argResolver = (value: VersionArgument) => {
                 switch (typeof value) {
@@ -62,18 +75,7 @@ export class VersionArguments implements IVersionArguments {
         return new VersionArguments(gameArgs)
     }
 
-    constructor(readonly game: Argument[], readonly jvm: Argument[] = [
-        new Argument([
-            '-Dminecraft.launcher.brand=${launcher_name}'
-        ]),
-        new Argument([
-            '-Dminecraft.launcher.version=${launcher_version}'
-        ]),
-        new Argument([
-            '-Djava.library.path=${natives_directory}'
-        ]),
-        new Argument(['-cp', '${classpath}'])
-    ]) { }
+    constructor(readonly game: Argument[], readonly jvm: Argument[] = VersionArguments.DEFAULT_JVM_ARGS) { }
 
 }
 
@@ -116,7 +118,7 @@ export class Version {
                 type,
                 assets,
                 downloads,
-                arguments: args = { game: [], jvm: [] },
+                arguments: args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS },
                 libraries: libs = [],
                 mainClass,
                 assetIndex
