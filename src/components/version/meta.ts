@@ -3,22 +3,16 @@
  * List of available versions.
  * @see https://minecraft.gamepedia.com/version_manifest.json
  */
-export interface IManifest {
-
-    latest: {
-        snapshot: string
-        release: string
-    }
-
-    versions: IManifestItem[]
-
+export interface IMojangManifest {
+    latest: { snapshot: string, release: string }
+    versions: IMojangManifestItem[]
 }
 
 /**
  * Object of metadata containing version info,
  * like `version.json` URL.
  */
-export interface IManifestItem {
+export interface IMojangManifestItem {
 
     /**
      * URL to `<id>.json` for this version.
