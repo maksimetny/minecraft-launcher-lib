@@ -25,8 +25,8 @@ export class LibraryDownloads implements ILibraryDownloads {
             {
                 const _default = LibraryDownloads.artifactFromLibraryName(_name) // default artifact
                 const { artifact: _artifact = _default } = _downloads
-                // ! default url !
-                downloads = new LibraryDownloads(Artifact.resolve(_artifact, { path: _default.path }), { /* classifiers */ })
+                const _a = Artifact.resolve(_artifact, _default) // resolved artifact
+                downloads = new LibraryDownloads(_a, { /* classifiers */ })
             } // library artifact
 
             {
@@ -35,7 +35,7 @@ export class LibraryDownloads implements ILibraryDownloads {
                 Object.entries(_natives).map(([os, classifier]) => {
                     return {
                         classifier,
-                        os,
+                        // os,
                         include: classifier in classifiers
                     }
                 }).filter(({ include }) => !include).forEach(({ classifier }) => {
@@ -44,7 +44,9 @@ export class LibraryDownloads implements ILibraryDownloads {
                 })
 
                 Object.entries(classifiers).forEach(([classifier, artifact]) => {
-                    return downloads.setArtifactForClassifier(classifier, artifact)
+                    const _default = LibraryDownloads.artifactFromLibraryName(`${_name}:${classifier}`)
+                    const _a = Artifact.resolve(artifact, _default) // resolved artifact
+                    return downloads.setArtifactForClassifier(classifier, _a)
                 })
             } // classifiers
 
