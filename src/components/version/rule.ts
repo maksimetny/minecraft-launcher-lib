@@ -69,6 +69,16 @@ export class Rule implements IRule {
                 allowable = Rule.comparator(_name === name, _name !== name, this.action)
             }
 
+            if (this.os.version) {
+                const { version = currentPlatform.version } = platform
+                const { version: _version } = this.os
+
+                const a: boolean = Boolean(version.match(_version))
+                const b: boolean = !version.match(_version)
+
+                allowable = Rule.comparator(a, b, this.action)
+            }
+
             if (this.os.arch) {
                 const { arch = currentPlatform.arch } = platform
                 const { arch: _arch } = this.os
@@ -77,9 +87,11 @@ export class Rule implements IRule {
             }
         } // compare platform
 
-        Object.entries(this.features).forEach(([feature, value]) => {
-            allowable = Rule.comparator(features[feature] === value, features[feature] !== value, this.action)
-        }) // compare features
+        {
+            Object.entries(this.features).forEach(([feature, value]) => {
+                allowable = Rule.comparator(features[feature] === value, features[feature] !== value, this.action)
+            })
+        } // compare features
 
         return (allowable)
     }
