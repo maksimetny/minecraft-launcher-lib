@@ -66,7 +66,7 @@ export class Launcher {
             }).join(s)
         } // construct fields
 
-        const formatArgs = (_notFormatedArgs: Argument[], _extraArgs: Argument[] = []) => {
+        const formatArgs = (_args: Argument[], _extraArgs: Argument[] = []) => {
             const _formatedArgs: string[] = []
 
             const format = (_arg: Argument) => {
@@ -75,11 +75,13 @@ export class Launcher {
                 })
             }
 
-            _notFormatedArgs.filter(_arg => {
+            _args.filter(_arg => {
                 return _arg.isApplicable(platform, features)
             }).forEach(format)
 
-            _extraArgs.forEach(format)
+            _extraArgs.filter(_arg => {
+                return _arg.isApplicable(platform, features)
+            }).forEach(format)
 
             return _formatedArgs
         }
