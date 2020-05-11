@@ -19,6 +19,7 @@ export class Launcher {
             version,
             overrides,
             platform,
+            features,
             memory,
             ignoreInvalidMinecraftCertificates,
             ignorePatchDiscrepancies,
@@ -28,7 +29,7 @@ export class Launcher {
         const s: string = Platform.getSeparator(platform.name) // set separator of classpath
 
         const classpath: string[] = version.libs.filter(lib => {
-            return lib.isApplicable(platform)
+            return lib.isApplicable(platform, features)
         }).map(lib => {
             return directory.getLibraryPath(lib.downloads.artifact.path)
         }).concat(overrides.minecraftJarPath)
@@ -73,7 +74,7 @@ export class Launcher {
             }
 
             _notFormatedArgs.filter(_arg => {
-                return _arg.isApplicable(platform)
+                return _arg.isApplicable(platform, features)
             }).forEach(format)
 
             _extraArgs.forEach(format)

@@ -86,7 +86,7 @@ type Overrides = {
 }
 
 import { currentPlatform, Platform, IPlatform, LauncherFolder, LauncherLocation } from '../util'
-import { Version, IVersion, VersionArguments, IVersionArguments } from '../version'
+import { Version, IVersion, VersionArguments, IVersionArguments, Features } from '../version'
 
 export interface ILauncherOptions {
 
@@ -96,15 +96,17 @@ export interface ILauncherOptions {
 
     version: any
 
+    features?: Features
+
     memory?: Memory
+
+    extraArgs?: Partial<IVersionArguments>
 
     /**
      * The platform of this launch will run. By default,
      * it will fetch the current machine info if this is absent.
      */
     platform?: Partial<IPlatform>
-
-    extraArgs?: Partial<IVersionArguments>
 
     /**
      * Simplified overrides so launcher devs
@@ -138,6 +140,7 @@ export class LauncherOptions implements ILauncherOptions {
                 user,
                 version,
                 directory,
+                features = { /* enabled features */ },
                 memory = { max: 1024, min: 512 },
                 platform = currentPlatform,
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
@@ -150,6 +153,7 @@ export class LauncherOptions implements ILauncherOptions {
                 user,
                 LauncherFolder.from(directory),
                 Version.resolve(version),
+                features,
                 memory,
                 platform,
                 VersionArguments.resolve(extraArgs),
@@ -166,6 +170,7 @@ export class LauncherOptions implements ILauncherOptions {
         readonly user: User,
         readonly directory: LauncherFolder,
         readonly version: Version,
+        readonly features: Features,
         readonly memory: Memory,
         readonly platform: Partial<IPlatform>,
         readonly extraArgs: VersionArguments,
