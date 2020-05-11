@@ -15,8 +15,7 @@ export class Launcher {
             overrides,
             platform,
             memory,
-            extraArgs: extraGameArgs,
-            extraJvmArgs
+            extraArgs
         } = LauncherOptions.resolve(options)
 
         const s: string = Platform.getSeparator(platform.name) // set separator of classpath
@@ -57,18 +56,22 @@ export class Launcher {
             }).join(s)
         } // construct fields
 
-        const formatArgs = (notFormatedArgs: Argument[], extraArgs: string[] = []) => {
-            const formatedArgs: string[] = []
+        const formatArgs = (_notFormatedArgs: Argument[], _extraArgs: Argument[] = []) => {
+            const _formatedArgs: string[] = []
 
-            notFormatedArgs.filter(arg => {
-                return arg.isApplicable(platform)
-            }).forEach(arg => {
-                arg.format(fields).forEach(value => {
-                    formatedArgs.push(value)
+            const format = (_arg: Argument) => {
+                _arg.format(fields).forEach(_value => {
+                    _formatedArgs.push(_value)
                 })
-            })
+            }
 
-            return formatedArgs.concat(extraArgs)
+            _notFormatedArgs.filter(_arg => {
+                return _arg.isApplicable(platform)
+            }).forEach(format)
+
+            _extraArgs.forEach(format)
+
+            return _formatedArgs
         }
 
         const { game, jvm } = version.args
@@ -79,7 +82,7 @@ export class Launcher {
             `-Xms${memory.min}M`,
             // `-Dfml.ignorePatchDiscrepancies=${true}`,
             // `-Dfml.ignoreInvalidMinecraftCertificates=${true}`
-        ].concat(formatArgs(jvm, extraJvmArgs).concat(mainClass), formatArgs(game, extraGameArgs))
+        ].concat(formatArgs(jvm, extraArgs.jvm).concat(mainClass), formatArgs(game, extraArgs.game))
     }
 
     static launch(options: ILauncherOptions): ChildProcess {

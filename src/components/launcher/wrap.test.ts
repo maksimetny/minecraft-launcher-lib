@@ -61,9 +61,9 @@ describe('Launcher', () => {
                     },
                     'net.minecraft.client.main.Main'
                 ),
-                extraArgs: [
-                    '--demo'
-                ],
+                extraArgs: new VersionArguments([
+                    new Argument(['--demo'])
+                ]),
                 overrides: { versionType: 'modified' }
             })
             const s = Platform.getSeparator()

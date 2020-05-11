@@ -75,7 +75,7 @@ export class VersionArguments implements IVersionArguments {
         return new VersionArguments(gameArgs)
     }
 
-    constructor(readonly game: Argument[], readonly jvm: Argument[] = VersionArguments.DEFAULT_JVM_ARGS) { }
+    constructor(readonly game: Argument[] = [], readonly jvm: Argument[] = VersionArguments.DEFAULT_JVM_ARGS) { }
 
 }
 

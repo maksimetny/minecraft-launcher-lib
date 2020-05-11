@@ -84,8 +84,8 @@ type Overrides = {
 
 }
 
-import { currentPlatform, Platform, IPlatform, LauncherLocation, LauncherFolder } from '../util'
-import { Version, IVersion } from '../version'
+import { currentPlatform, Platform, IPlatform, LauncherFolder, LauncherLocation } from '../util'
+import { Version, IVersion, VersionArguments, IVersionArguments } from '../version'
 
 export interface ILauncherOptions {
 
@@ -99,16 +99,7 @@ export interface ILauncherOptions {
 
     platform?: Partial<IPlatform>
 
-    /**
-     * Extra JVM args. If this is empty,
-     * `DEFAULT_EXTRA_JVM_ARGS` will be used.
-     */
-    extraJvmArgs?: string[]
-
-    /**
-     * Extra game args.
-     */
-    extraArgs?: string[]
+    extraArgs?: Partial<IVersionArguments>
 
     /**
      * Simplified overrides so launcher devs
@@ -134,8 +125,7 @@ export class LauncherOptions implements ILauncherOptions {
                 directory,
                 memory = { max: 1024, min: 512 },
                 platform = currentPlatform,
-                extraArgs = [],
-                extraJvmArgs = [], // DEFAULT_EXTRA_JVM_ARGS
+                extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
                 overrides = { /* custom paths */ }
             } = opts
 
@@ -145,8 +135,7 @@ export class LauncherOptions implements ILauncherOptions {
                 Version.resolve(version),
                 memory,
                 platform,
-                extraArgs,
-                extraJvmArgs,
+                VersionArguments.resolve(extraArgs),
                 overrides
             )
         }
@@ -160,8 +149,7 @@ export class LauncherOptions implements ILauncherOptions {
         readonly version: Version,
         readonly memory: Memory,
         readonly platform: Partial<IPlatform>,
-        readonly extraArgs: string[],
-        readonly extraJvmArgs: string[],
+        readonly extraArgs: VersionArguments,
         overrides: Partial<Overrides>
     ) {
         const {
