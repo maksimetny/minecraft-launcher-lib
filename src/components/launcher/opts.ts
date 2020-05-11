@@ -85,6 +85,8 @@ type Overrides = {
 
 }
 
+type Resolution = { width?: number, height?: number, fullscreen?: boolean }
+
 import { currentPlatform, Platform, IPlatform, LauncherFolder, LauncherLocation } from '../util'
 import { Version, IVersion, VersionArguments, IVersionArguments, Features } from '../version'
 
@@ -124,6 +126,11 @@ export interface ILauncherOptions {
      */
     ignorePatchDiscrepancies?: boolean
 
+    /**
+     * Window resolution. This will add `--height` & `--width` or `--fullscreen` to arguments.
+     */
+    window?: Resolution
+
 }
 
 import { join } from 'path'
@@ -146,6 +153,7 @@ export class LauncherOptions implements ILauncherOptions {
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
                 ignoreInvalidMinecraftCertificates = true,
                 ignorePatchDiscrepancies = true,
+                window = { /* resolution */ },
                 overrides = { /* custom paths */ }
             } = opts
 
@@ -155,6 +163,7 @@ export class LauncherOptions implements ILauncherOptions {
                 Version.resolve(version),
                 features,
                 memory,
+                window,
                 platform,
                 VersionArguments.resolve(extraArgs),
                 overrides,
@@ -172,6 +181,7 @@ export class LauncherOptions implements ILauncherOptions {
         readonly version: Version,
         readonly features: Features,
         readonly memory: Memory,
+        readonly window: Resolution,
         readonly platform: Partial<IPlatform>,
         readonly extraArgs: VersionArguments,
         overrides: Partial<Overrides>,

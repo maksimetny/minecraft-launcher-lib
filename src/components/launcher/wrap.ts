@@ -23,6 +23,7 @@ export class Launcher {
             memory,
             ignoreInvalidMinecraftCertificates,
             ignorePatchDiscrepancies,
+            window,
             extraArgs
         } = LauncherOptions.resolve(options)
 
@@ -59,6 +60,7 @@ export class Launcher {
             'natives_directory': overrides.nativesDirectory,
             'launcher_name': overrides.launcherName,
             'launcher_version': overrides.launcherType,
+            'resolution_width': window.width ? `${window.width}` : '800', 'resolution_height': window.height ? `${window.height}` : '600',
             'classpath': classpath.filter((path, index, _classpath) => {
                 return !_classpath.includes(path, ++index)
             }).join(s)
@@ -80,6 +82,15 @@ export class Launcher {
             _extraArgs.forEach(format)
 
             return _formatedArgs
+        }
+
+        if (window.height && window.width) {
+            features.has_custom_resolution = true
+        } else {
+            if (window.fullscreen) {
+                const value = Argument.fromString('--fullscreen')
+                extraArgs.game.push(value)
+            }
         }
 
         const { game, jvm } = version.args
