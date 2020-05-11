@@ -36,9 +36,11 @@ interface IUser {
     emailVerified: boolean
     legacyUser: boolean
     verifiedByParent: boolean
-    properties: {
-        [index: number]: { name: string, value: string }
-    }
+    properties: UserProperties
+}
+
+export type UserProperties = {
+    [prop: number]: { name: string, value: string }
 }
 
 export interface IAuthException {

@@ -10,6 +10,8 @@ type User = {
      */
     type: string
 
+    // properties?: UserProperties
+
     profile: IProfile
 
 }
@@ -148,11 +150,11 @@ export class LauncherOptions implements ILauncherOptions {
                 version,
                 directory,
                 features = { /* enabled features */ },
-                memory = { max: 1024, min: 512 },
                 platform = currentPlatform,
+                memory = { max: 1024, min: 512 },
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
-                ignoreInvalidMinecraftCertificates = true,
                 ignorePatchDiscrepancies = true,
+                ignoreInvalidMinecraftCertificates = true,
                 window = { /* resolution */ },
                 overrides = { /* custom paths */ }
             } = opts
