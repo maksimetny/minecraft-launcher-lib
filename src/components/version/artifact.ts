@@ -31,32 +31,32 @@ export class Artifact implements IArtifact {
         return !['url'].map(prop => prop in artifact).includes(false)
     } // checking required props
 
-    static setSHA1(artifact: Partial<IArtifact>, sha1: string) {
+    static changeSHA1(artifact: Partial<IArtifact>, sha1: string) {
         artifact.sha1 = sha1
     }
 
-    static setURL(artifact: Partial<IArtifact>, url: string) {
+    static changeURL(artifact: Partial<IArtifact>, url: string) {
         artifact.url = url
     }
 
-    static setPath(artifact: Partial<IArtifact>, path: string) {
+    static changePath(artifact: Partial<IArtifact>, path: string) {
         artifact.path = path
     }
 
     constructor(readonly url: string, readonly path: string, readonly sha1: string) { }
 
-    setSHA1(sha1: string) {
-        Artifact.setSHA1(this, sha1)
+    changeSHA1(sha1: string) {
+        Artifact.changeSHA1(this, sha1)
         return this
     }
 
-    setURL(url: string) {
-        Artifact.setURL(this, url)
+    changeURL(url: string) {
+        Artifact.changeURL(this, url)
         return this
     }
 
-    setPath(path: string) {
-        Artifact.setPath(this, path)
+    changePath(path: string) {
+        Artifact.changePath(this, path)
         return this
     }
 
