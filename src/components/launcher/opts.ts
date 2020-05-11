@@ -69,6 +69,7 @@ type Overrides = {
 
     /**
      * Path to directory of natives.
+     * It's `launcher/natives/<version>` by default.
      */
     nativesDirectory: string
 
@@ -97,6 +98,10 @@ export interface ILauncherOptions {
 
     memory?: Memory
 
+    /**
+     * The platform of this launch will run. By default,
+     * it will fetch the current machine info if this is absent.
+     */
     platform?: Partial<IPlatform>
 
     extraArgs?: Partial<IVersionArguments>
@@ -106,6 +111,16 @@ export interface ILauncherOptions {
      * can set whatever they want.
      */
     overrides?: Partial<Overrides>
+
+    /**
+     * Add `-Dfml.ignoreInvalidMinecraftCertificates` to JVM argument.
+     */
+    ignoreInvalidMinecraftCertificates?: boolean
+
+    /**
+     * Add `-Dfml.ignorePatchDiscrepancies` to JVM argument.
+     */
+    ignorePatchDiscrepancies?: boolean
 
 }
 
@@ -126,6 +141,8 @@ export class LauncherOptions implements ILauncherOptions {
                 memory = { max: 1024, min: 512 },
                 platform = currentPlatform,
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
+                ignoreInvalidMinecraftCertificates = true,
+                ignorePatchDiscrepancies = true,
                 overrides = { /* custom paths */ }
             } = opts
 
@@ -136,7 +153,9 @@ export class LauncherOptions implements ILauncherOptions {
                 memory,
                 platform,
                 VersionArguments.resolve(extraArgs),
-                overrides
+                overrides,
+                ignoreInvalidMinecraftCertificates,
+                ignorePatchDiscrepancies
             )
         }
     }
@@ -150,7 +169,9 @@ export class LauncherOptions implements ILauncherOptions {
         readonly memory: Memory,
         readonly platform: Partial<IPlatform>,
         readonly extraArgs: VersionArguments,
-        overrides: Partial<Overrides>
+        overrides: Partial<Overrides>,
+        readonly ignoreInvalidMinecraftCertificates: boolean,
+        readonly ignorePatchDiscrepancies: boolean
     ) {
         const {
             launcherName = 'MCLL',

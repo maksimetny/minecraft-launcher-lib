@@ -7,6 +7,11 @@ import { Argument, Fields } from '../version'
 
 export class Launcher {
 
+    /**
+     * Generate launch arguments by launcher options.
+     * This function is useful if you want to launch the process by yourself.
+     * This function will NOT check if the runtime libs are completed, and WONT'T check or extract native libs.
+     */
     static generateArguments(options: ILauncherOptions): string[] {
         const {
             user,
@@ -15,6 +20,8 @@ export class Launcher {
             overrides,
             platform,
             memory,
+            ignoreInvalidMinecraftCertificates,
+            ignorePatchDiscrepancies,
             extraArgs
         } = LauncherOptions.resolve(options)
 
@@ -80,11 +87,16 @@ export class Launcher {
         return [
             `-Xmx${memory.max}M`,
             `-Xms${memory.min}M`,
-            // `-Dfml.ignorePatchDiscrepancies=${true}`,
-            // `-Dfml.ignoreInvalidMinecraftCertificates=${true}`
+            `-Dfml.ignorePatchDiscrepancies=${ignorePatchDiscrepancies}`,
+            `-Dfml.ignoreInvalidMinecraftCertificates=${ignoreInvalidMinecraftCertificates}`
         ].concat(formatArgs(jvm, extraArgs.jvm).concat(mainClass), formatArgs(game, extraArgs.game))
     }
 
+    /**
+     * Launch Minecraft as a child process. This function use spawn to create child process.
+     * To use an alternative way, see function generateArguments.
+     * @param options The detail options for this launching.
+     */
     static launch(options: ILauncherOptions): ChildProcess {
         const opts = LauncherOptions.resolve(options)
         const args = Launcher.generateArguments(opts)
