@@ -16,21 +16,25 @@ type LibraryNatives = { [os: string]: string }
 
 export class LibraryDownloads implements ILibraryDownloads {
 
-    static resolve(_downloads: Partial<ILibraryDownloads>, _name: string, _natives: LibraryNatives) {
+    static resolve(_downloads: Partial<ILibraryDownloads>, _name: string, _natives: LibraryNatives, _repo: string = urls.DEFAULT_REPO_URL) {
         if (_downloads instanceof LibraryDownloads) {
             return _downloads
         } else {
             let downloads: LibraryDownloads
 
             {
-                const _default = LibraryDownloads.artifactFromLibraryName(_name) // default artifact
+                const _default = LibraryDownloads.artifactFromLibraryName(_name, _repo)
                 const { artifact: _artifact = _default } = _downloads
-                const _a = Artifact.resolve(_artifact, _default) // resolved artifact
+                const _a = Artifact.resolve(_artifact, _default)
                 downloads = new LibraryDownloads(_a, { /* classifiers */ })
             } // library artifact
 
             {
                 const { classifiers = { /* classifier: artifact */ } } = _downloads
+
+                const artifactFromLibraryName = (classifier: string) => {
+                    return LibraryDownloads.artifactFromLibraryName(`${_name}:${classifier}`, _repo)
+                }
 
                 Object.entries(_natives).map(([os, classifier]) => {
                     return {
@@ -40,12 +44,12 @@ export class LibraryDownloads implements ILibraryDownloads {
                     }
                 }).filter(({ include }) => !include).forEach(({ classifier }) => {
                     // ! format classifier !
-                    classifiers[classifier] = LibraryDownloads.artifactFromLibraryName(`${_name}:${classifier}`)
+                    classifiers[classifier] = artifactFromLibraryName(classifier)
                 })
 
                 Object.entries(classifiers).forEach(([classifier, artifact]) => {
-                    const _default = LibraryDownloads.artifactFromLibraryName(`${_name}:${classifier}`)
-                    const _a = Artifact.resolve(artifact, _default) // resolved artifact
+                    const _default = artifactFromLibraryName(classifier)
+                    const _a = Artifact.resolve(artifact, _default)
                     return downloads.setArtifactForClassifier(classifier, _a)
                 })
             } // classifiers
@@ -57,13 +61,18 @@ export class LibraryDownloads implements ILibraryDownloads {
     /**
      * @param path It should look like `com.mojang:patchy:1.1`
      */
-    static artifactFromLibraryName(name: string): Artifact {
+    static artifactFromLibraryName(name: string, repo: string = urls.DEFAULT_REPO_URL): Artifact {
         const splitted = name.split(':')
         {
             if (splitted.length >= 3) {
                 const [group, artifact, version, ...extra] = splitted
-                const path = `${group.replace(/\./g, '/')}/${artifact}/${version}/${artifact}-${version.concat(...extra.map(e => `-${e}`))}.jar`
-                return Artifact.resolve({ path, url: `${urls.DEFAULT_REPO_URL}/${path}` })
+                const classifier = extra.map(e => `-${e}`)
+                const path = `${group.replace(/\./g, '/')}/${artifact}/${version}/${artifact}-${version.concat(...classifier)}.jar`
+
+                return Artifact.resolve({
+                    path,
+                    url: `${repo}/${path}`
+                })
             } else {
                 return Artifact.resolve({ path: `${splitted.join('-')}.jar` })
             }
@@ -108,7 +117,7 @@ import { Argument } from './arg'
 
 export class Library implements ILibrary {
 
-    static resolve(_libs: Partial<ILibrary>[]) {
+    static resolve(_libs: Partial<ILibrary>[], _repo: string = urls.DEFAULT_REPO_URL) {
         return _libs.map(_lib => {
             if (_lib instanceof Library) {
                 return _lib
@@ -129,7 +138,7 @@ export class Library implements ILibrary {
 
                 return new Library(
                     name,
-                    LibraryDownloads.resolve(downloads, name, natives),
+                    LibraryDownloads.resolve(downloads, name, natives, _repo),
                     natives,
                     extract,
                     Rule.resolve(rules)

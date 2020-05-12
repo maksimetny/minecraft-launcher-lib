@@ -80,6 +80,7 @@ export class VersionArguments implements IVersionArguments {
 }
 
 import { Library, ILibrary } from './lib'
+import { urls } from '../../constants'
 
 export interface IVersion {
     id: string
@@ -102,7 +103,7 @@ interface IAssetIndexFile {
 
 export class Version {
 
-    static resolve(_attrs: Partial<IVersion>) {
+    static resolve(_attrs: Partial<IVersion>, _repo: string = urls.DEFAULT_REPO_URL) {
         if (_attrs instanceof Version) {
             return _attrs
         } else {
@@ -135,7 +136,7 @@ export class Version {
                 assets,
                 VersionDownloads.resolve(downloads),
                 VersionArguments.resolve(args),
-                Library.resolve(libs),
+                Library.resolve(libs, _repo),
                 assetIndex,
                 mainClass
             )
