@@ -17,4 +17,4 @@ A detailed description of the use is in `usage.md`.
 
 ### License
 
-See `license.md`.
+See `LICENSE`.
