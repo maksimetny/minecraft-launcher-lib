@@ -169,13 +169,18 @@ export class Library implements ILibrary {
         return this.natives[os] ? true : false
     }
 
-    getNativeClassifier(platform: Platform = currentPlatform): string {
-        switch (platform.arch) {
+    getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
+        const { name = currentPlatform.name, arch = currentPlatform.arch } = platform
+        const format = (_arch: string) => {
+            return Argument.format(this.natives[name], { arch: _arch })
+        }
+
+        switch (arch) {
             case 'x64': {
-                return Argument.format(this.natives[platform.name], { arch: '64' })
+                return format('64')
             }
             default: {
-                return Argument.format(this.natives[platform.name], { arch: '32' })
+                return format('32')
             } // x32 or other
         }
     }

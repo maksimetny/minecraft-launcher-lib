@@ -24,6 +24,12 @@ export class Downloader {
             return iterator([
                 ...Library.resolve(libraries).filter(lib => lib.isApplicable(platform, features)).map(lib => {
                     return lib.downloads.artifact.toResource(directory)
+                }),
+                ...Library.resolve(libraries).filter(lib => lib.hasNatives(platform.name)).filter(lib => {
+                    return lib.isApplicable(platform, features)
+                }).map(lib => {
+                    const { [lib.getNativeClassifier(platform)]: artifact } = lib.downloads.classifiers
+                    return artifact.toResource(directory)
                 })
             ])
         }
