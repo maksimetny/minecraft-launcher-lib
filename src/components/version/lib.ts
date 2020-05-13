@@ -161,7 +161,7 @@ export class Library implements ILibrary {
         readonly rules: Rule[]
     ) { }
 
-    isApplicable(platform: Partial<IPlatform>, features: Features = { /* features */ }): boolean {
+    isApplicable(platform: Partial<IPlatform> = { /* platform */ }, features: Features = { /* features */ }): boolean {
         return Rule.isAllowable(this.rules, platform, features)
     }
 
