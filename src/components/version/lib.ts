@@ -147,10 +147,18 @@ export class Library implements ILibrary {
         })
     }
 
-    static extractNatives(library: ILibrary, platform: IPlatform, libsDirectory: string, nativesDirectory: string) {
-        const [lib] = Library.resolve([library])
-        const classifier = lib.getNativeClassifier(platform), { [classifier]: artifact } = lib.downloads.classifiers
-        unpack(join(libsDirectory, artifact.path), nativesDirectory, lib.extract.exclude)
+    static extractNatives(libraries: Partial<ILibrary>[], libsDirectory: string, nativesDirectory: string, platform: Partial<IPlatform> = { /* platform */ }) {
+        Library.resolve(libraries).filter(lib => {
+            return lib.hasNatives(platform.name)
+        }).map(lib => {
+            const artifact = lib.downloads.classifiers[lib.getNativeClassifier(platform)]
+            return {
+                exclude: lib.extract.exclude,
+                path: join(libsDirectory, artifact.path)
+            }
+        }).forEach(({ path, exclude }) => {
+            unpack(path, nativesDirectory, exclude)
+        })
     }
 
     constructor(
