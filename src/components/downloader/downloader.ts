@@ -21,12 +21,14 @@ export class Downloader {
 
     static downloadLibs(iterator = Downloader.iteratorFactory(/* iterator */)) {
         return (libraries: Partial<ILibrary>[], directory: string, platform: Partial<IPlatform> = { /* platform */ }, features: Features = { /* features */ }) => {
+            const libs: Library[] = Library.resolve(libraries).filter(lib => {
+                return lib.isApplicable(platform, features)
+            })
+
             return iterator([
-                ...Library.resolve(libraries).filter(lib => lib.isApplicable(platform, features)).map(lib => {
-                    return lib.downloads.artifact.toResource(directory)
-                }),
-                ...Library.resolve(libraries).filter(lib => lib.hasNatives(platform.name)).filter(lib => {
-                    return lib.isApplicable(platform, features)
+                ...libs.map(lib => lib.downloads.artifact.toResource(directory)),
+                ...libs.filter(lib => {
+                    return lib.hasNatives(platform.name)
                 }).map(lib => {
                     const { [lib.getNativeClassifier(platform)]: artifact } = lib.downloads.classifiers
                     return artifact.toResource(directory)
