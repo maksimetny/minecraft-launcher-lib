@@ -114,12 +114,12 @@ export class Launcher {
     static launch(options: ILauncherOptions): ChildProcess {
         const opts = LauncherOptions.resolve(options)
         const args = Launcher.generateArguments(opts)
-        const { javaPath, cwd } = opts.overrides
+        const {
+            javaPath,
+            cwd
+        } = opts.overrides
 
-        console.log(opts)
-        console.log(args)
-
-        return spawn(javaPath, args, { cwd }) as ChildProcess
+        return spawn(javaPath, args, { cwd, ...opts.extraSpawnOptions })
     }
 
 }

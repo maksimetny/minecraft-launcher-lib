@@ -90,6 +90,7 @@ type Overrides = {
 type Resolution = { width?: number, height?: number, fullscreen?: boolean }
 
 import { currentPlatform, Platform, IPlatform, LauncherFolder, LauncherLocation } from '../util'
+import * as child_process from 'child_process'
 import { Version, IVersion, VersionArguments, IVersionArguments, Features } from '../version'
 
 export interface ILauncherOptions {
@@ -105,6 +106,11 @@ export interface ILauncherOptions {
     memory?: Memory
 
     extraArgs?: Partial<IVersionArguments>
+
+    /**
+     * Assign spawn options to process.
+     */
+    extraSpawnOptions?: child_process.SpawnOptions
 
     /**
      * The platform of this launch will run. By default,
@@ -153,6 +159,7 @@ export class LauncherOptions implements ILauncherOptions {
                 platform = currentPlatform,
                 memory = { max: 1024, min: 512 },
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
+                extraSpawnOptions = { /* spawn options */ },
                 ignorePatchDiscrepancies = true,
                 ignoreInvalidMinecraftCertificates = true,
                 window = { /* resolution */ },
@@ -168,6 +175,7 @@ export class LauncherOptions implements ILauncherOptions {
                 window,
                 platform,
                 VersionArguments.resolve(extraArgs),
+                extraSpawnOptions,
                 overrides,
                 ignoreInvalidMinecraftCertificates,
                 ignorePatchDiscrepancies
@@ -186,6 +194,7 @@ export class LauncherOptions implements ILauncherOptions {
         readonly window: Resolution,
         readonly platform: Partial<IPlatform>,
         readonly extraArgs: VersionArguments,
+        readonly extraSpawnOptions: child_process.SpawnOptions,
         overrides: Partial<Overrides>,
         readonly ignoreInvalidMinecraftCertificates: boolean,
         readonly ignorePatchDiscrepancies: boolean
