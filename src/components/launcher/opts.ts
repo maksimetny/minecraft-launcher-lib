@@ -64,10 +64,9 @@ type Overrides = {
     versionType: string
 
     /**
-     * Path to game directory for `saves`,
-     * `logs`, `configs`, `mods` or other.
+     * Path to instance directory.
      */
-    gameDirectory: string
+    instanceDirectory: string
 
     /**
      * Path to directory of natives.
@@ -204,9 +203,9 @@ export class LauncherOptions implements ILauncherOptions {
             launcherType = 'release',
             versionName = version.id,
             versionType = version.type,
-            gameDirectory = directory.path,
+            instanceDirectory = directory.path,
             nativesDirectory = join(directory.natives, version.id),
-            cwd = directory.path,
+            cwd = instanceDirectory,
             minecraftJarPath = directory.getPathTo('versions', version.id, `${version.id}.jar`),
             javaPath = 'java'
         } = overrides
@@ -216,7 +215,7 @@ export class LauncherOptions implements ILauncherOptions {
             launcherType,
             versionName,
             versionType,
-            gameDirectory,
+            instanceDirectory,
             nativesDirectory,
             cwd,
             minecraftJarPath,

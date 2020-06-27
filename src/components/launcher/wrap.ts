@@ -49,14 +49,14 @@ export class Launcher {
                         return directory.getPathTo('assets', 'virtual', 'legacy')
                     }
                     default: {
-                        return join(overrides.gameDirectory, 'resources')
+                        return join(overrides.instanceDirectory, 'resources')
                     } // pre-1.6
                 }
             })(),
             'assets_index_name': version.assets,
             'version_name': overrides.versionName,
             'version_type': overrides.versionType,
-            'game_directory': overrides.gameDirectory,
+            'game_directory': overrides.instanceDirectory,
             'natives_directory': overrides.nativesDirectory,
             'launcher_name': overrides.launcherName,
             'launcher_version': overrides.launcherType,
