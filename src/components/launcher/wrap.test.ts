@@ -14,10 +14,10 @@ import { Platform } from '../util'
 
 describe('Launcher', () => {
 
-    describe('#generateArguments', () => {
+    describe('#constructArguments', () => {
 
         it('should returns valid launch args', () => {
-            const args = Launcher.generateArguments({
+            const args = Launcher.constructArguments({
                 user: {
                     accessToken: 'b0fe544269864624b9c4d42366462e74',
                     type: 'legacy',
