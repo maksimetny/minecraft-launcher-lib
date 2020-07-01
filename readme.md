@@ -7,6 +7,8 @@ Minecraft Launcher Lib (MCLL) is a NodeJS solution for launching modified and va
 
 `npm i minecraft-launcher-lib`
 
+Use only current version of [MCLL](https://www.npmjs.com/package/minecraft-launcher-lib) module.
+
 ### Usage
 
 This module contains several components that separate functionality of it.
