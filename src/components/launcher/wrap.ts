@@ -23,20 +23,21 @@ export class Launcher {
             overrides,
             platform,
             features,
-            memory,
-            ignoreInvalidMinecraftCertificates,
-            ignorePatchDiscrepancies,
             window,
-            extraArgs
+            extraArgs,
+            baseJVMArgs
         } = LauncherOptions.resolve(options)
 
         const s: string = Platform.getSeparator(platform.name) // set separator of classpath
 
-        const classpath: string[] = version.libs.filter(lib => {
-            return lib.isApplicable(platform, features)
-        }).map(lib => {
-            return directory.getLibraryPath(lib.downloads.artifact.path)
-        }).concat(overrides.minecraftJarPath)
+        const classpath: string[] = [
+            ...version.libs.filter(lib => {
+                return lib.isApplicable(platform, features)
+            }).map(lib => {
+                return directory.getLibraryPath(lib.downloads.artifact.path)
+            }),
+            overrides.minecraftJarPath
+        ]
 
         const fields: Fields = {
             'auth_access_token': user.accessToken,
@@ -93,20 +94,14 @@ export class Launcher {
             features.has_custom_resolution = true
         } else {
             if (window.fullscreen) {
-                const value = Argument.fromString('--fullscreen')
-                extraArgs.game.push(value)
+                extraArgs.game.push(Argument.fromString('--fullscreen'))
             }
         }
 
-        const { game, jvm } = version.args
-        const { mainClass } = version
-
         return [
-            `-Xmx${memory.max}M`,
-            `-Xms${memory.min}M`,
-            `-Dfml.ignorePatchDiscrepancies=${ignorePatchDiscrepancies}`,
-            `-Dfml.ignoreInvalidMinecraftCertificates=${ignoreInvalidMinecraftCertificates}`
-        ].concat(formatArgs(jvm, extraArgs.jvm).concat(mainClass), formatArgs(game, extraArgs.game))
+            ...formatArgs(baseJVMArgs),
+            ...formatArgs(version.args.jvm, extraArgs.jvm).concat(version.mainClass).concat(formatArgs(version.args.game, extraArgs.game))
+        ]
     }
 
     /**
@@ -124,7 +119,10 @@ export class Launcher {
             cwd
         } = opts.overrides
 
-        return spawn(javaPath, Launcher.constructArguments(opts), { cwd, ...opts.extraSpawnOptions })
+        return spawn(javaPath, Launcher.constructArguments(opts), {
+            cwd,
+            ...opts.extraSpawnOptions
+        })
     }
 
 }

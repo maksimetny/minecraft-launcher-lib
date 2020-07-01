@@ -88,9 +88,23 @@ type Overrides = {
 
 type Resolution = { width?: number, height?: number, fullscreen?: boolean }
 
-import { currentPlatform, Platform, IPlatform, LauncherFolder, LauncherLocation } from '../util'
 import * as child_process from 'child_process'
-import { Version, IVersion, VersionArguments, IVersionArguments, Features } from '../version'
+import {
+    currentPlatform,
+    Platform,
+    IPlatform,
+    LauncherFolder,
+    LauncherLocation
+} from '../util'
+import {
+    Version,
+    IVersion,
+    VersionArguments,
+    IVersionArguments,
+    Argument,
+    IArgument,
+    Features
+} from '../version'
 
 export interface ILauncherOptions {
 
@@ -105,6 +119,12 @@ export interface ILauncherOptions {
     memory?: Memory
 
     extraArgs?: Partial<IVersionArguments>
+
+    /**
+     * If you use this, `ignoreInvalidMinecraftCertificates`,
+     * `ignorePatchDiscrepancies` and `memory` props will not be used.
+     */
+    baseJVMArgs?: IArgument[]
 
     /**
      * Assign spawn options to process.
@@ -158,11 +178,24 @@ export class LauncherOptions implements ILauncherOptions {
                 platform = currentPlatform,
                 memory = { max: 1024, min: 512 },
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
+                // baseJVMArgs = [ /* default base jvm args */ ],
                 extraSpawnOptions = { /* spawn options */ },
                 ignorePatchDiscrepancies = true,
                 ignoreInvalidMinecraftCertificates = true,
                 window = { /* resolution */ },
-                overrides = { /* custom paths */ }
+                overrides = { /* custom paths */ },
+                baseJVMArgs = [
+                    new Argument([
+                        `-Xmx${memory.max}M`,
+                        `-Xms${memory.min}M`,
+                    ]),
+                    new Argument([
+                        `-Dfml.ignorePatchDiscrepancies=${ignorePatchDiscrepancies}`
+                    ]),
+                    new Argument([
+                        `-Dfml.ignoreInvalidMinecraftCertificates=${ignoreInvalidMinecraftCertificates}`
+                    ])
+                ]
             } = opts
 
             return new LauncherOptions(
@@ -174,6 +207,7 @@ export class LauncherOptions implements ILauncherOptions {
                 window,
                 platform,
                 VersionArguments.resolve(extraArgs),
+                Argument.resolve(baseJVMArgs),
                 extraSpawnOptions,
                 overrides,
                 ignoreInvalidMinecraftCertificates,
@@ -193,6 +227,7 @@ export class LauncherOptions implements ILauncherOptions {
         readonly window: Resolution,
         readonly platform: Partial<IPlatform>,
         readonly extraArgs: VersionArguments,
+        readonly baseJVMArgs: Argument[],
         readonly extraSpawnOptions: child_process.SpawnOptions,
         overrides: Partial<Overrides>,
         readonly ignoreInvalidMinecraftCertificates: boolean,

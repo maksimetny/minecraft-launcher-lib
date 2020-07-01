@@ -55,7 +55,9 @@ export class VersionArguments implements IVersionArguments {
 
             const argResolver = (value: VersionArgument) => {
                 switch (typeof value) {
-                    case 'string': return Argument.fromString(value)
+                    case 'string': {
+                        return Argument.fromString(value)
+                    }
                     default: {
                         const [arg] = Argument.resolve([value])
                         return arg
