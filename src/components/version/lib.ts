@@ -184,8 +184,7 @@ export class Library implements ILibrary {
 
         const format = (_arch: string) => {
             const fields = new Map([
-                // ??
-                [arch, _arch]
+                ['arch', _arch]
             ])
 
             return Argument.format(this.natives[name], fields)
