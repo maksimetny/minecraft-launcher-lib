@@ -174,7 +174,7 @@ export class Library implements ILibrary {
     }
 
     hasNatives(os: OS = currentPlatform.name): boolean {
-        return this.natives[os] ? true : false
+        return Object.keys(this.natives).includes(os)
     }
 
     getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
