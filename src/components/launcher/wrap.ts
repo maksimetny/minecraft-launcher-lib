@@ -28,16 +28,14 @@ export class Launcher {
             baseJVMArgs
         } = LauncherOptions.resolve(options)
 
-        const s: string = Platform.getSeparator(platform.name) // set separator of classpath
-
-        const classpath: string[] = [
+        const classpath = new Set([
             ...version.libs.filter(lib => {
                 return lib.isApplicable(platform, features)
             }).map(lib => {
                 return directory.getLibraryPath(lib.downloads.artifact.path)
             }),
             overrides.minecraftJarPath
-        ]
+        ]) // construct libs paths for `classpath` argument
 
         const fields = new Map([
             [
@@ -104,11 +102,11 @@ export class Launcher {
             ],
             [
                 'classpath',
-                classpath.filter((path, index, _classpath) => {
-                    return !_classpath.includes(path, ++index)
-                }).join(s)
+                (() => {
+                    return Array.from(classpath).join(Platform.getSeparator(platform.name))
+                })()
             ]
-        ])
+        ]) // construct values of fields in arguments
 
         const formatArgs = (_args: Argument[], _extraArgs: Argument[] = []) => {
             const _formatedArgs: string[] = []
