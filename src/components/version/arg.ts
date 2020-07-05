@@ -46,10 +46,11 @@ export class Argument {
         return new Argument(value.split(/\s/g))
     }
 
-    static format(template: string, fields: Fields) {
+    static format(template: string, fields: Map<string, string>) {
         return template.replace(/\$\{(.*?)}/g, key => {
-            const value = fields[key.substring(2).substring(0, key.length - 3)]
-            if (value) { return value } else { return key }
+            const _key = key.substring(2).substring(0, key.length - 3)
+            // console.log(_key, fields.has(_key))
+            return fields.has(_key) ? fields.get(_key) ?? key : key
         })
     } // https://github.com/voxelum/minecraft-launcher-core-node/blob/3d5aa7a38cbc66cdfc9b9d68a8bdf4988905cb72/packages/core/launch.ts
 
@@ -59,12 +60,8 @@ export class Argument {
         return Rule.isAllowable(this.rules, platform, features)
     }
 
-    format(fields: Fields) {
-        return this.value.map(value => {
-            return Argument.format(value, fields)
-        })
+    format(fields: Map<string, string>) {
+        return this.value.map(value => Argument.format(value, fields))
     }
 
 }
-
-export type Fields = { [index: string]: string }

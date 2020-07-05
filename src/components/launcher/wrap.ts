@@ -3,7 +3,7 @@ import { spawn, ChildProcess } from 'child_process'
 import { join } from 'path'
 import { LauncherOptions, ILauncherOptions } from './opts'
 import { Platform } from '../util'
-import { Argument, Fields } from '../version'
+import { Argument } from '../version'
 
 export class Launcher {
 
@@ -39,36 +39,76 @@ export class Launcher {
             overrides.minecraftJarPath
         ]
 
-        const fields: Fields = {
-            'auth_access_token': user.accessToken,
-            'auth_session': user.accessToken,
-            'auth_player_name': user.profile.name,
-            'auth_uuid': user.profile.id,
-            'user_type': user.type,
-            'user_properties': JSON.stringify({ /* default user prop */ }),
-            'assets_root': directory.getPathTo('assets'),
-            'game_assets': (() => {
-                switch (version.assets) {
-                    case 'legacy': {
-                        return directory.getPathTo('assets', 'virtual', 'legacy')
+        const fields = new Map([
+            [
+                'auth_access_token', user.accessToken
+            ],
+            [
+                'auth_session', user.accessToken
+            ],
+            [
+                'auth_player_name', user.profile.name
+            ],
+            [
+                'auth_uuid', user.profile.id
+            ],
+            [
+                'user_type', user.type
+            ],
+            [
+                'user_properties', JSON.stringify({ /* default user prop */ })
+            ],
+            [
+                'assets_root', directory.getPathTo('assets')
+            ],
+            [
+                'game_assets',
+                (() => {
+                    switch (version.assets) {
+                        case 'legacy': {
+                            return directory.getPathTo('assets', 'virtual', 'legacy')
+                        }
+                        default: {
+                            return join(overrides.instanceDirectory, 'resources')
+                        } // pre-1.6
                     }
-                    default: {
-                        return join(overrides.instanceDirectory, 'resources')
-                    } // pre-1.6
-                }
-            })(),
-            'assets_index_name': version.assets,
-            'version_name': overrides.versionName,
-            'version_type': overrides.versionType,
-            'game_directory': overrides.instanceDirectory,
-            'natives_directory': overrides.nativesDirectory,
-            'launcher_name': overrides.launcherName,
-            'launcher_version': overrides.launcherType,
-            'resolution_width': window.width ? `${window.width}` : '800', 'resolution_height': window.height ? `${window.height}` : '600',
-            'classpath': classpath.filter((path, index, _classpath) => {
-                return !_classpath.includes(path, ++index)
-            }).join(s)
-        } // construct fields
+                })()
+            ],
+            [
+                'assets_index_name', version.assets
+            ],
+            [
+                'version_name', overrides.versionName
+            ],
+            [
+                'version_type', overrides.versionType
+            ],
+            [
+                'game_directory', overrides.instanceDirectory
+            ],
+            [
+                'natives_directory', overrides.nativesDirectory
+            ],
+            [
+                'launcher_name', overrides.launcherName
+            ],
+            [
+                'launcher_version', overrides.launcherType
+            ],
+            [
+                'resolution_width',
+                window.width ? `${window.width}` : '800'
+            ],
+            [
+                'resolution_height', window.height ? `${window.height}` : '600'
+            ],
+            [
+                'classpath',
+                classpath.filter((path, index, _classpath) => {
+                    return !_classpath.includes(path, ++index)
+                }).join(s)
+            ]
+        ])
 
         const formatArgs = (_args: Argument[], _extraArgs: Argument[] = []) => {
             const _formatedArgs: string[] = []

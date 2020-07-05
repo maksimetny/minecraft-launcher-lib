@@ -178,9 +178,17 @@ export class Library implements ILibrary {
     }
 
     getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
-        const { name = currentPlatform.name, arch = currentPlatform.arch } = platform
+        const {
+            name = currentPlatform.name,
+            arch = currentPlatform.arch } = platform
+
         const format = (_arch: string) => {
-            return Argument.format(this.natives[name], { arch: _arch })
+            const fields = new Map([
+                // ??
+                [arch, _arch]
+            ])
+
+            return Argument.format(this.natives[name], fields)
         }
 
         switch (arch) {
