@@ -8,7 +8,9 @@ export interface IArgument {
      * An argument or a list of args that is
      * added when condition is matched.
      */
-    value: string[] | string, rules: IRule[]
+    value: string[] | /* or */ string
+
+    rules: IRule[]
 
 }
 

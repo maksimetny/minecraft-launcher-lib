@@ -6,6 +6,7 @@ import { createHash } from 'crypto'
 
 export const unpack = (path: string, unpackTo: string, exclude: string[] = []) => {
     const zip = new adm(path)
+
     const getHash = (data: Buffer) => createHash('sha1').update(data).digest('hex')
 
     zip.getEntries()

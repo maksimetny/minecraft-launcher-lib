@@ -67,15 +67,15 @@ describe('Rule', () => {
 
     })
 
-    describe('#toJSON', () => {
+    // describe('#toJSON', () => {
 
-        it('should move instance to json', () => {
-            const [rule] = Rule.resolve([{ action: Action.ALLOW }])
-            const s = rule.toJSON()
-            // expect(typeof s).toBe('string')
-            expect((JSON.parse(s) as IRule).action).toBe('allow')
-        })
+    //     it('should move instance to json', () => {
+    //         const [rule] = Rule.resolve([{ action: Action.ALLOW }])
+    //         const s = rule.toJSON()
+    //         // expect(typeof s).toBe('string')
+    //         expect((JSON.parse(s) as IRule).action).toBe('allow')
+    //     })
 
-    })
+    // })
 
 })

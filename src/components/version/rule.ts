@@ -101,8 +101,4 @@ export class Rule implements IRule {
         return this
     }
 
-    toJSON(space = 4): string {
-        return JSON.stringify({ ...this }, null, space)
-    }
-
 }

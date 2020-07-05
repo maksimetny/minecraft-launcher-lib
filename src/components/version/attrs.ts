@@ -70,10 +70,7 @@ export class VersionArguments implements IVersionArguments {
     }
 
     static fromLegacyArguments(minecraftArguments: string) {
-        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => {
-            return Argument.fromString(value)
-        })
-
+        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => Argument.fromString(value))
         return new VersionArguments(gameArgs)
     }
 

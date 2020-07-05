@@ -91,7 +91,6 @@ type Resolution = { width?: number, height?: number, fullscreen?: boolean }
 import * as child_process from 'child_process'
 import {
     currentPlatform,
-    Platform,
     IPlatform,
     LauncherFolder,
     LauncherLocation
@@ -178,7 +177,6 @@ export class LauncherOptions implements ILauncherOptions {
                 platform = currentPlatform,
                 memory = { max: 1024, min: 512 },
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
-                // baseJVMArgs = [ /* default base jvm args */ ],
                 extraSpawnOptions = { /* spawn options */ },
                 ignorePatchDiscrepancies = true,
                 ignoreInvalidMinecraftCertificates = true,
