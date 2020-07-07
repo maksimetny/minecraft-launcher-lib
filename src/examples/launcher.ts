@@ -45,6 +45,12 @@ async function launch(custom: string) {
         Library.extractNatives(libs, _path.resolve('launcher', 'libraries'), _path.resolve('launcher', 'natives', version.id), unpack, { /* platform */ })
     } // libs
 
+    {
+        await loader([
+            version.downloads.client.changePath(`${version.id}.jar`).toResource(_path.resolve('launcher', 'versions', version.id))
+        ])
+    } // version jar
+
     const instanceDirectory = _path.resolve('launcher', 'instances', custom)
 
     // if (!_fs.existsSync(instanceDirectory)) _mkdirp.sync(instanceDirectory)
