@@ -2,7 +2,7 @@
 import { dirname, basename } from 'path'
 import axios, { AxiosResponse, AxiosInstance } from 'axios'
 import { EventEmitter } from 'events'
-import { mkdir } from 'shelljs'
+import * as _mkmkdirp from 'mkdirp'
 import { createHash } from 'crypto'
 import { events } from '../../constants'
 import {
@@ -35,9 +35,7 @@ export interface IResource {
     readonly sha1: string
 }
 
-const handleError = (err: Partial<Error>) => {
-    return err.message ? err.message.toLocaleLowerCase() : 'unknown'
-}
+const handleError = (err: Partial<Error>) => err.message ? err.message.toLocaleLowerCase() : 'unknown'
 
 export class Resource extends EventEmitter implements IResource {
 
@@ -56,10 +54,9 @@ export class Resource extends EventEmitter implements IResource {
      */
     async downloadAsync(checkAfter = false): Promise<boolean> {
         try {
-            if (!existsSync(this.directory)) mkdir('-p', this.directory)
+            if (!existsSync(this.directory)) await _mkmkdirp(this.directory)
         } catch (err) {
-            const message = handleError(err)
-            this.emit(events.ERROR, `An error occurred while create directory for ${this.path} due to ${message}!`, err)
+            this.emit(events.ERROR, `An error occurred while create directory for ${this.path} due to ${handleError(err)}!`, err)
             return false
         }
 
@@ -99,15 +96,13 @@ export class Resource extends EventEmitter implements IResource {
                 })
 
                 stream.on('error', err => {
-                    const message = handleError(err)
-                    this.emit(events.ERROR, `An error occurred while write ${this.path} due to ${message}`, err)
+                    this.emit(events.ERROR, `An error occurred while write ${this.path} due to ${handleError(err)}`, err)
                     resolve(false)
                 })
             })
 
         } catch (err) {
-            const message = handleError(err)
-            this.emit(events.ERROR, `An error occurred while downloading ${this.url} due to ${message}`, err)
+            this.emit(events.ERROR, `An error occurred while downloading ${this.url} due to ${handleError(err)}`, err)
             return false
         }
     }
