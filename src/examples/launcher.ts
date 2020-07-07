@@ -24,7 +24,30 @@ import * as _path from 'path'
 async function launch(custom: string) {
     const version = Version.resolve(require(`../../launcher/versions/${custom}/${custom}.json`))
 
-    const instanceDirectory = _path.resolve(`launcher/instances/${custom}`)
+    const loader = Downloader.iteratorFactory(async (resource: Resource) => {
+        resource.on(events.DEBUG, e => console.log(e))
+        resource.on(events.ERROR, e => console.log(e))
+        return _fs.existsSync(resource.path) ? true : await resource.downloadAsync()
+        // return await resource.downloadAsync() // force download
+    })
+
+    {
+        const libs = version.libs.filter(lib => {
+            return lib.isApplicable()
+        })
+
+        await Downloader.downloadLibs(loader)(libs, _path.resolve('launcher', 'libraries'), { /* platform */ }, { download_only: true })
+
+        const unpack = (path: string, unpackTo: string, exclude: string[]) => {
+            // console.log(`unpacking ${path} to ${unpackTo}..`)
+        }
+
+        Library.extractNatives(libs, _path.resolve('launcher', 'libraries'), _path.resolve('launcher', 'natives', version.id), unpack, { /* platform */ })
+    } // libs
+
+    const instanceDirectory = _path.resolve('launcher', 'instances', custom)
+
+    // if (!_fs.existsSync(instanceDirectory)) _mkdirp.sync(instanceDirectory)
 
     const _process = Launcher.launch({
         user: {
@@ -71,5 +94,5 @@ async function launch(custom: string) {
 }
 
 launch('1.14.4').catch(err => {
-    console.error(`[FATAL]: ${err.message}`, err)
+    console.error('[FATAL]', err)
 })
