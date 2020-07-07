@@ -1,7 +1,7 @@
 
-![logo](https://user-images.githubusercontent.com/46288028/63431661-039f0580-c428-11e9-94a4-5ef45fce408b.jpg)
-
 Minecraft Launcher Lib (MCLL) is a NodeJS solution for launching modified and vanilla Minecraft without having to download and format everything yourself.
+
+![logo](https://user-images.githubusercontent.com/46288028/63431661-039f0580-c428-11e9-94a4-5ef45fce408b.jpg)
 
 ### Installing
 
