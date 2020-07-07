@@ -111,9 +111,8 @@ export interface ILibrary {
 
 }
 
-import { unpack } from '../util'
-import { join } from 'path'
 import { Argument } from './arg'
+import * as _path from 'path'
 
 export class Library implements ILibrary {
 
@@ -147,16 +146,22 @@ export class Library implements ILibrary {
         })
     }
 
-    static extractNatives(libraries: Partial<ILibrary>[], libsDirectory: string, nativesDirectory: string, platform: Partial<IPlatform> = { /* platform */ }) {
-        Library.resolve(libraries).filter(lib => {
+    static extractNatives(
+        libs: Partial<ILibrary>[],
+        libsDirectory: string,
+        nativesDirectory: string,
+        unpack: (path: string, unpackTo: string, exclude: string[]) => void,
+        platform: Partial<IPlatform> = { /* platform */ }
+    ) {
+        Library.resolve(libs).filter(lib => {
             return lib.hasNatives(platform.name)
         }).map(lib => {
             const artifact = lib.downloads.classifiers[lib.getNativeClassifier(platform)]
             return {
                 exclude: lib.extract.exclude,
-                path: join(libsDirectory, artifact.path)
+                path: _path.join(libsDirectory, artifact.path)
             }
-        }).forEach(({ path, exclude }) => {
+        }).map(({ path, exclude }) => {
             unpack(path, nativesDirectory, exclude)
         })
     }
