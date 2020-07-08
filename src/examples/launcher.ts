@@ -51,6 +51,57 @@ async function launch(custom: string) {
         ])
     } // version jar
 
+    {
+        const index = Artifact.resolve(version.assetIndex, { path: `${version.assets}.json` }).toResource(_path.resolve('launcher', 'assets', 'indexes'))
+        await loader([index])
+
+        const { objects, map_to_resources = false, virtual = false } = index.parseJSON() as {
+            virtual?: boolean,
+            map_to_resources?: boolean,
+            objects: Record<string, { hash: string }>
+        }
+
+        const assets = Asset.fromObjects(objects)
+
+        const promises = assets.map(async asset => {
+            await loader([asset.toArtifact().toResource(_path.resolve('launcher', 'assets'))])
+
+            {
+                if (map_to_resources) {
+                    const originPath = _path.resolve('launcher', 'assets', 'objects', asset.subhash, asset.hash)
+                    const legacyPath = _path.resolve('launcher', 'instances', custom, 'resources', asset.path)
+
+                    if (!_fs.existsSync(_path.dirname(legacyPath))) {
+                        _mkdirp.sync('-p', _path.dirname(legacyPath))
+                    }
+
+                    if (!_fs.existsSync(legacyPath)) {
+                        _fs.linkSync(originPath, legacyPath)
+                        // copyFileSync(path, legacyPath)
+                        console.log(`linked ${originPath} to ${legacyPath}`)
+                    }
+                } // pre-1.6
+
+                if (virtual) {
+                    const originPath = _path.resolve('launcher', 'assets', asset.getPath())
+                    const legacyPath = _path.resolve('launcher', 'assets', asset.getPath(true))
+
+                    if (!_fs.existsSync(_path.dirname(legacyPath))) {
+                        _mkdirp.sync('-p', _path.dirname(legacyPath))
+                    }
+
+                    if (!_fs.existsSync(legacyPath)) {
+                        _fs.linkSync(originPath, legacyPath)
+                        // copyFileSync(originPath, legacyPath)
+                        console.log(`linked ${originPath} to ${legacyPath}`)
+                    }
+                } // legacy
+            } // reconstruct
+        })
+
+        await Promise.all(promises)
+    } // assets
+
     const instanceDirectory = _path.resolve('launcher', 'instances', custom)
 
     // if (!_fs.existsSync(instanceDirectory)) _mkdirp.sync(instanceDirectory)
