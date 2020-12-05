@@ -25,7 +25,7 @@ export class Launcher {
             features,
             window,
             extraArgs,
-            baseJVMArgs
+            baseJVMArgs,
         } = LauncherOptions.resolve(options)
 
         const classpath = new Set([
@@ -34,31 +34,20 @@ export class Launcher {
             }).map(lib => {
                 return directory.getLibraryPath(lib.downloads.artifact.path)
             }),
-            overrides.minecraftJarPath
+            overrides.minecraftJarPath,
         ]) // construct libs paths for `classpath` argument
 
         const fields = new Map([
+            ['auth_access_token', user.accessToken],
+            ['auth_session', user.accessToken],
+            ['auth_player_name', user.profile.name],
+            ['auth_uuid', user.profile.id],
+            ['user_type', user.type],
             [
-                'auth_access_token', user.accessToken
+                'user_properties',
+                JSON.stringify({ /* default user prop */ })
             ],
-            [
-                'auth_session', user.accessToken
-            ],
-            [
-                'auth_player_name', user.profile.name
-            ],
-            [
-                'auth_uuid', user.profile.id
-            ],
-            [
-                'user_type', user.type
-            ],
-            [
-                'user_properties', JSON.stringify({ /* default user prop */ })
-            ],
-            [
-                'assets_root', directory.getPathTo('assets')
-            ],
+            ['assets_root', directory.getPathTo('assets')],
             [
                 'game_assets',
                 (() => {
@@ -72,73 +61,48 @@ export class Launcher {
                     }
                 })()
             ],
-            [
-                'assets_index_name', version.assets
-            ],
-            [
-                'version_name', overrides.versionName
-            ],
-            [
-                'version_type', overrides.versionType
-            ],
-            [
-                'game_directory', overrides.instanceDirectory
-            ],
-            [
-                'natives_directory', overrides.nativesDirectory
-            ],
-            [
-                'launcher_name', overrides.launcherName
-            ],
-            [
-                'launcher_version', overrides.launcherType
-            ],
-            [
-                'resolution_width',
-                window.width ? `${window.width}` : '800'
-            ],
-            [
-                'resolution_height', window.height ? `${window.height}` : '600'
-            ],
+            ['assets_index_name', version.assets],
+            ['version_name', overrides.versionName],
+            ['version_type', overrides.versionType],
+            ['game_directory', overrides.instanceDirectory],
+            ['natives_directory', overrides.nativesDirectory],
+            ['launcher_name', overrides.launcherName],
+            ['launcher_version', overrides.launcherType],
+            ['resolution_width', `${window.width ?? 800}`],
+            ['resolution_height', `${window.height ?? 600}`],
             [
                 'classpath',
                 (() => {
                     return Array.from(classpath).join(Platform.getSeparator(platform.name))
                 })()
-            ]
+            ],
         ]) // construct values of fields in arguments
 
         const formatArgs = (_args: Argument[], _extraArgs: Argument[] = []) => {
             const _formatedArgs: string[] = []
 
-            const format = (_arg: Argument) => {
+            _args.concat(_extraArgs).filter(_arg => {
+                return _arg.isApplicable(platform, features)
+            }).forEach(_arg => {
                 _arg.format(fields).forEach(_value => {
                     _formatedArgs.push(_value)
                 })
-            }
-
-            _args.filter(_arg => {
-                return _arg.isApplicable(platform, features)
-            }).forEach(format)
-
-            _extraArgs.filter(_arg => {
-                return _arg.isApplicable(platform, features)
-            }).forEach(format)
+            })
 
             return _formatedArgs
         }
 
         if (window.height && window.width) {
             features.has_custom_resolution = true
-        } else {
-            if (window.fullscreen) {
-                extraArgs.game.push(Argument.fromString('--fullscreen'))
-            }
+        } else if (window.fullscreen) {
+            extraArgs.game.push(Argument.fromString('--fullscreen'))
         }
 
         return [
             ...formatArgs(baseJVMArgs),
-            ...formatArgs(version.args.jvm, extraArgs.jvm).concat(version.mainClass).concat(formatArgs(version.args.game, extraArgs.game))
+            ...formatArgs(version.args.jvm, extraArgs.jvm),
+            version.mainClass,
+            ...formatArgs(version.args.game, extraArgs.game),
         ]
     }
 
@@ -154,12 +118,12 @@ export class Launcher {
         const opts = LauncherOptions.resolve(options)
         const {
             javaPath,
-            cwd
+            cwd,
         } = opts.overrides
 
         return spawn(javaPath, Launcher.constructArguments(opts), {
             cwd,
-            ...opts.extraSpawnOptions
+            ...opts.extraSpawnOptions,
         })
     }
 
