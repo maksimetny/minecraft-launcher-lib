@@ -25,13 +25,13 @@ export class Rule implements IRule {
                 const {
                     action: defaultAction = Action.ALLOW,
                     os: defaultOS = { /* platform */ },
-                    features: defaultFeatures = { /* features */ }
+                    features: defaultFeatures = { /* features */ },
                 } = _default
 
                 const {
                     action = defaultAction,
                     os = defaultOS,
-                    features = defaultFeatures
+                    features = defaultFeatures,
                 } = _rule
 
                 return new Rule(action, features, os)
@@ -39,7 +39,7 @@ export class Rule implements IRule {
         })
     }
 
-    static comparator(a: boolean, b: boolean, action: Action) {
+    static compare(a: boolean, b: boolean, action: Action) {
         switch (action) {
             case Action.ALLOW: return a
             default: return b
@@ -52,7 +52,11 @@ export class Rule implements IRule {
         }).includes(false)
     }
 
-    constructor(readonly action: Action, readonly features: Features, readonly os: Partial<IPlatform>) { }
+    constructor(
+        readonly action: Action,
+        readonly features: Features,
+        readonly os: Partial<IPlatform>,
+    ) { }
 
     /**
      * Check if rule are acceptable in certain
@@ -66,7 +70,7 @@ export class Rule implements IRule {
                 const { name = currentPlatform.name } = platform
                 const { name: _name } = this.os
 
-                allowable = Rule.comparator(_name === name, _name !== name, this.action)
+                allowable = Rule.compare(_name === name, _name !== name, this.action)
             }
 
             if (this.os.version) {
@@ -76,29 +80,32 @@ export class Rule implements IRule {
                 const a: boolean = Boolean(version.match(_version))
                 const b: boolean = !version.match(_version)
 
-                allowable = Rule.comparator(a, b, this.action)
+                allowable = Rule.compare(a, b, this.action)
             }
 
             if (this.os.arch) {
                 const { arch = currentPlatform.arch } = platform
                 const { arch: _arch } = this.os
 
-                allowable = Rule.comparator(_arch === arch, _arch !== arch, this.action)
+                allowable = Rule.compare(_arch === arch, _arch !== arch, this.action)
             }
         } // compare platform
 
         {
             Object.entries(this.features).forEach(([feature, value]) => {
-                allowable = Rule.comparator(features[feature] === value, features[feature] !== value, this.action)
+                allowable = Rule.compare(features[feature] === value, features[feature] !== value, this.action)
             })
         } // compare features
 
-        return (allowable)
+        return allowable
+    }
+    
+    getFeature(name: string) {
+        return this.features[name]
     }
 
     setFeature(name: string, value: boolean) {
-        this.features[name] = value
-        return this
+        return this.features[name] = value
     }
 
 }
