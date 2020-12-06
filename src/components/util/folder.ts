@@ -5,11 +5,17 @@ class Folder {
 
     constructor(private directory: string) { }
 
-    getPathTo(...path: string[]) { return join(this.path, ...path) }
+    getPathTo(...path: string[]) {
+        return join(this.path, ...path)
+    }
 
-    get path() { return this.directory }
+    get path() {
+        return this.directory
+    }
 
-    setDirectory(directory: string) { this.directory = directory }
+    set path(directory: string) {
+        this.directory = directory
+    }
 
 }
 
