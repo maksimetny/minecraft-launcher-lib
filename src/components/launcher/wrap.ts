@@ -73,7 +73,7 @@ export class Launcher {
             [
                 'classpath',
                 (() => {
-                    return Array.from(classpath).join(Platform.getSeparator(platform.name))
+                    return Array.from(classpath).join(Platform.getClasspathSeparator(platform.name))
                 })()
             ],
         ]) // construct values of fields in arguments

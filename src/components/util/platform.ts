@@ -1,5 +1,9 @@
 
-export enum OS { WINDOWS = 'windows', LINUX = 'linux', OSX = 'osx' } // mojang friendly OS
+export enum OS {
+    WINDOWS = 'windows',
+    LINUX = 'linux',
+    OSX = 'osx',
+} // mojang friendly OS
 
 export interface IPlatform {
     arch: string
@@ -11,28 +15,25 @@ import * as _os from 'os'
 
 export class Platform implements IPlatform {
 
-    static getName(): OS {
-        const _platform = _os.platform()
-        {
-            switch (_platform) {
-                case 'win32': {
-                    return OS.WINDOWS
-                }
-                case 'darwin': {
-                    return OS.OSX
-                }
-                default: {
-                    return OS.LINUX
-                } // linux and other (unknown)..
+    static get currentName(): OS {
+        switch (_os.platform()) {
+            case 'win32': {
+                return OS.WINDOWS
             }
+            case 'darwin': {
+                return OS.OSX
+            }
+            default: {
+                return OS.LINUX
+            } // linux and other (unknown)
         }
     }
 
-    static getArch(): string { return _os.arch() }
+    static get currentArch(): string { return _os.arch() }
 
-    static getVersion(): string { return _os.release() }
+    static get currentVersion(): string { return _os.release() }
 
-    static getSeparator(os = currentPlatform.name): string {
+    static getClasspathSeparator(os = Platform.currentName): string {
         switch (os) {
             case OS.WINDOWS: return ';'
             default: return ':'
@@ -40,9 +41,9 @@ export class Platform implements IPlatform {
     }
 
     constructor(
-        readonly name = Platform.getName(),
-        readonly arch = Platform.getArch(),
-        readonly version = Platform.getVersion()
+        readonly name = Platform.currentName,
+        readonly arch = Platform.currentArch,
+        readonly version = Platform.currentVersion,
     ) { }
 
 }
