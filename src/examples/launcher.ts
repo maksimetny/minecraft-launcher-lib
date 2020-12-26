@@ -15,14 +15,15 @@ import {
     Artifact,
     Resource,
     OS,
-    currentPlatform
+    Platform,
+    // currentPlatform
 } from '../index'
 import * as _mkdirp from 'mkdirp'
 import * as _fs from 'fs'
 import * as _path from 'path'
 
 async function launch(custom: string) {
-    
+
     const version = Version.resolve(require(`../../launcher/versions/${custom}/${custom}.json`))
     
     const instanceDirectory = _path.resolve('launcher', 'instances', custom)
@@ -63,7 +64,7 @@ async function launch(custom: string) {
     })
 
     console.log(args)
-    
+
 }
 
 launch('1.14.4').catch(err => {

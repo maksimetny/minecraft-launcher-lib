@@ -66,7 +66,9 @@ describe('Launcher', () => {
                 ]),
                 overrides: { versionType: 'modified' }
             })
-            const s = Platform.getClasspathSeparator()
+
+            const currentPlatform = Platform.currentPlatform
+            const s = currentPlatform.classpathSeparator
 
             expect((args)).toEqual([
                 '-Xmx1024M',

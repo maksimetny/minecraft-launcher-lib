@@ -90,7 +90,7 @@ type Resolution = { width?: number, height?: number, fullscreen?: boolean }
 
 import * as child_process from 'child_process'
 import {
-    currentPlatform,
+    Platform,
     IPlatform,
     LauncherFolder,
     LauncherLocation
@@ -174,7 +174,7 @@ export class LauncherOptions implements ILauncherOptions {
                 version,
                 directory,
                 features = { /* enabled features */ },
-                platform = currentPlatform,
+                platform = Platform.currentPlatform,
                 memory = { max: 1024, min: 512 },
                 extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
                 extraSpawnOptions = { /* spawn options */ },
@@ -203,7 +203,7 @@ export class LauncherOptions implements ILauncherOptions {
                 features,
                 memory,
                 window,
-                platform,
+                Platform.from(platform),
                 VersionArguments.resolve(extraArgs),
                 Argument.resolve(baseJVMArgs),
                 extraSpawnOptions,
@@ -223,7 +223,7 @@ export class LauncherOptions implements ILauncherOptions {
         readonly features: Features,
         readonly memory: Memory,
         readonly window: Resolution,
-        readonly platform: Partial<IPlatform>,
+        readonly platform: Platform,
         readonly extraArgs: VersionArguments,
         readonly baseJVMArgs: Argument[],
         readonly extraSpawnOptions: child_process.SpawnOptions,
