@@ -1,22 +1,30 @@
 
 import { Resource } from '../index'
-import * as _path from 'path'
+import { join } from 'path'
 
-const resource = new Resource('https://libraries.minecraft.net/com/mojang/patchy/1.1/patchy-1.1.jar', _path.resolve('launcher', 'patchy.jar'), 'aef610b34a1be37fa851825f12372b78424d8903')
+const path = join('launcher', 'patchy.jar')
+const url = 'https://libraries.minecraft.net/com/mojang/patchy/1.1/patchy-1.1.jar'
+const sha1 = 'aef610b34a1be37fa851825f12372b78424d8903'
+
+const resource = new Resource(path, url, sha1)
 
 resource.on('debug', (e) => console.log(e))
-resource.on('error', (e, err) => {
-    console.error(e, err)
+resource.on('error', (e, error) => {
+    console.error(e, error)
 })
 
-resource.on('download-status', status => {
-    console.log(status, Math.round(status.current / status.total.received * 100))
+resource.on('download-status', ({
+    currentBytes,
+    totalBytes,
+}) => {
+    const percent = Math.round(currentBytes / totalBytes * 100)
+    console.log(currentBytes, totalBytes, `${percent}%`)
 })
 
-if (resource.isSuccess) {
-    console.log(resource.path)
-} else {
-    resource.downloadAsync().then(success => {
-        console.log(success)
-    }, err => console.error(err))
-}
+resource.isSuccess().then(success => {
+    return success ? success : resource.downloadAsync()
+}).then(success => {
+    console.log(success)
+}).catch(error => {
+    console.error(error)
+})

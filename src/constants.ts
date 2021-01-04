@@ -2,14 +2,14 @@
 export const enum events {
     DEBUG = 'debug',
     ERROR = 'error',
-    DOWNLOAD_STATUS = 'download-status'
+    DOWNLOAD_STATUS = 'download-status',
 }
 
 export const enum urls {
-    DEFAULT_MANIFEST_URL = 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
-    DEFAULT_LAUNCHER_URL = 'https://launchermeta.mojang.com/mc/launcher.json',
-    DEFAULT_RESOURCE_URL = 'https://resources.download.minecraft.net',
-    DEFAULT_REPO_URL = 'https://libraries.minecraft.net',
-    DEFAULT_API_URL = 'https://api.mojang.com',
-    DEFAULT_AUTH_URL = 'https://authserver.mojang.com'
+    DEFAULT_MANIFEST = 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
+    DEFAULT_LAUNCHER = 'https://launchermeta.mojang.com/mc/launcher.json',
+    // DEFAULT_API = 'https://api.mojang.com',
+    DEFAULT_RESOURCE_REPO = 'https://resources.download.minecraft.net',
+    DEFAULT_LIBS_REPO = 'https://libraries.minecraft.net',
+    DEFAULT_AUTH = 'https://authserver.mojang.com',
 }

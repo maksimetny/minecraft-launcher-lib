@@ -1,0 +1,21 @@
+{
+    "_comment_": [
+        "no downloads lib"
+    ],
+    "name": "org.lwjgl:lwjgl-openal:3.2.2",
+    "natives": {
+        "linux": "natives-linux",
+        "windows": "natives-windows"
+    },
+    "rules": [
+        {
+            "action": "allow"
+        },
+        {
+            "action": "disallow",
+            "os": {
+                "name": "osx"
+            }
+        }
+    ]
+}

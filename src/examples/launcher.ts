@@ -1,8 +1,14 @@
 
-import { events, urls } from '../constants'
+import {
+    events,
+    urls,
+} from '../constants'
+
 import {
     Authenticator,
     Launcher,
+    LauncherOptions,
+    LauncherFolder,
     Downloader,
     Version,
     VersionDownloads,
@@ -10,25 +16,33 @@ import {
     Library,
     Rule,
     Asset,
-    Action,
     Argument,
     Artifact,
     Resource,
+    Action,
     OS,
     Platform,
-    // currentPlatform
+    currentPlatform,
 } from '../index'
-import * as _mkdirp from 'mkdirp'
-import * as _fs from 'fs'
-import * as _path from 'path'
+
+import {
+    readJson,
+    mkdirp,
+} from 'fs-extra'
+
+import {
+    resolve,
+    join,
+} from 'path'
 
 async function launch(custom: string) {
+    const versionJsonPath = join('mock', 'versions', custom, `${custom}.json`)
+    const version = Version.from(await readJson(versionJsonPath))
 
-    const version = Version.resolve(require(`../../launcher/versions/${custom}/${custom}.json`))
-    
-    const instanceDirectory = _path.resolve('launcher', 'instances', custom)
+    const launcherFolder = LauncherFolder.from(resolve('launcher'))
 
-    // if (!_fs.existsSync(instanceDirectory)) _mkdirp.sync(instanceDirectory)
+    const gameDirectory = launcherFolder.getPathTo('instances', custom)
+    await mkdirp(gameDirectory)
 
     const args = Launcher.constructArguments({
         user: {
@@ -36,19 +50,19 @@ async function launch(custom: string) {
             type: 'legacy',
             profile: {
                 name: 'steve',
-                id: Authenticator.newToken()
-            }
+                id: Authenticator.newToken(),
+            },
         },
         version,
-        directory: _path.resolve('launcher'),
+        launcherFolder,
         overrides: {
-            instanceDirectory
+            gameDirectory,
         },
         features: { is_demo_user: false, download_only: false },
-        // baseJVMArgs: [],
+        // baseJvmArgs: [],
         extraSpawnOptions: { detached: true },
         // platform: { name: OS.WINDOWS, version: '10.0' },
-        // window: { width: 800, height: 600, fullscreen: false },
+        // resolution: { width: 800, height: 600, fullscreen: false },
         // memory: { min: 1024, max: 1024 },
         // extraArgs: new VersionArguments([
         //     Argument.fromString('--server play.hypixel.net --port 25565')
@@ -59,14 +73,11 @@ async function launch(custom: string) {
         //     Argument.fromString('-XX:+UseConcMarkSweepGC'),
         //     Argument.fromString('-XX:+ParallelRefProcEnabled'),
         //     Argument.fromString('-XX:-UseAdaptiveSizePolicy'),
-        //     Argument.fromString('-Dfile.encoding=UTF-8')
-        // ])
+        //     Argument.fromString('-Dfile.encoding=UTF-8'),
+        // ]),
     })
 
     console.log(args)
-
 }
 
-launch('1.14.4').catch(err => {
-    console.error('[FATAL]', err)
-})
+launch('1.14.4').catch(error => console.error('[FATAL]', error))
