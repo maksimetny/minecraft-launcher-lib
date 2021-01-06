@@ -21,6 +21,10 @@ export class LauncherFolder extends Folder {
         return this.getPathTo('libraries')
     }
 
+    get libraries() {
+        return this.libs
+    }
+
     getLibraryPath(relativeLibraryPath: string) {
         return join(this.libs, relativeLibraryPath)
     }
