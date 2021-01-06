@@ -29,7 +29,7 @@
     },
     "homepage": "https://github.com/maksimetny/minecraft-launcher-lib#readme",
     "dependencies": {
-        "axios": "^0.19.2",
+        "axios": "^0.21.1",
         "mkdirp": "^1.0.4",
         "uuid": "^7.0.2"
     },
