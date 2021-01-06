@@ -1,5 +1,5 @@
 
-import { urls } from '../../constants'
+import urls from '../../constants/urls'
 
 import {
     Artifact,

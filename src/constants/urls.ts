@@ -1,10 +1,4 @@
 
-export const enum events {
-    DEBUG = 'debug',
-    ERROR = 'error',
-    DOWNLOAD_STATUS = 'download-status',
-}
-
 export const enum urls {
     DEFAULT_MANIFEST = 'https://launchermeta.mojang.com/mc/game/version_manifest.json',
     DEFAULT_LAUNCHER = 'https://launchermeta.mojang.com/mc/launcher.json',
@@ -13,3 +7,5 @@ export const enum urls {
     DEFAULT_LIBS_REPO = 'https://libraries.minecraft.net',
     DEFAULT_AUTH = 'https://authserver.mojang.com',
 }
+
+export default urls

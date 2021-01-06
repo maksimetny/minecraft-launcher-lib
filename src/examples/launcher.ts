@@ -9,7 +9,7 @@ import {
     Launcher,
     LauncherOptions,
     LauncherFolder,
-    Downloader,
+    // Downloader,
     Version,
     VersionDownloads,
     VersionArguments,
