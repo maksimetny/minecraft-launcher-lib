@@ -97,6 +97,21 @@ export class Artifact implements IArtifact {
 
     set sha1(_sha1) { this._sha1 = _sha1 }
 
+    changePath(path: string) {
+        this.path = path
+        return this
+    }
+
+    changeURL(url: string) {
+        this.url = url
+        return this
+    }
+
+    changeSHA1(sha1: string) {
+        this.sha1 = sha1
+        return this
+    }
+
     toResource(directory: string): Resource {
         return new Resource(join(directory, this.path), this.url, this.sha1)
     }
