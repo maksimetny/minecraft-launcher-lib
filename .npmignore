@@ -1,6 +1,7 @@
 *.test.*
 src/
 dist/examples/
+mock/
 launcher/
 tsconfig.json
 .backup/
