@@ -1,5 +1,5 @@
 
-import { urls } from '../../constants'
+import urls from '../../constants/urls'
 
 import { Artifact, IArtifact } from '../artifact'
 import { Argument, IArgument } from '../argument'
@@ -18,14 +18,14 @@ export interface IVersion {
     arguments: IVersionArguments
     mainClass: string
     libraries: ILibrary[]
-    assetIndex: IAssetIndexFile
+    assetIndex: IAssetIndexArtifact
     minecraftArguments?: string
 }
 
-interface IAssetIndexFile extends IArtifact {
+interface IAssetIndexArtifact extends IArtifact {
 
     /**
-     * This like assets prop in version attrs
+     * This like assets prop in version attrs.
      **/
     id: string
 
@@ -65,14 +65,17 @@ export class Version {
             _args.jvm.push(...jvm)
         }
 
+        const assetIndex: IAssetIndexArtifact = Artifact.changePath(_assets + '.json', _assetIndex) as IAssetIndexArtifact
+        const libs: Library[] = _libs.map(_lib => Library.from(_lib, _repoURL))
+
         return new Version(
             _id,
             _type,
             _assets,
             VersionDownloads.from(_downloads),
             VersionArguments.from(_args),
-            _libs.map(_lib => Library.from(_lib, _repoURL)),
-            _assetIndex,
+            libs,
+            assetIndex,
             _mainClass,
         )
     }
@@ -84,7 +87,7 @@ export class Version {
         private _downloads: VersionDownloads,
         private _args: VersionArguments,
         private _libs: Library[],
-        private _assetIndex: IAssetIndexFile,
+        private _assetIndex: IAssetIndexArtifact,
         private _mainClass: string
     ) { }
 
@@ -105,6 +108,8 @@ export class Version {
     get assetIndex() { return this._assetIndex }
 
     get mainClass() { return this._mainClass }
+
+    // TODO isLegacy() { }
 
     toString(): string {
         return `${this.type} ${this.id}`
