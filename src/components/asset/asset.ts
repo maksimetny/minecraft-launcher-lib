@@ -3,12 +3,6 @@ import { Artifact } from '../artifact'
 import { join } from 'path'
 import { urls } from '../../constants'
 
-export type AssetIndexObject = Omit<IAsset, 'path'>
-
-export interface IAssetIndex {
-    objects: Record<string, AssetIndexObject>
-}
-
 export interface IAsset {
     path: string
     hash: string
@@ -16,17 +10,6 @@ export interface IAsset {
 }
 
 export class Asset {
-
-    static parseAssets(index: IAssetIndex): Asset[] {
-        return Object.entries(index.objects).map(([
-            path, {
-                hash,
-                size,
-            },
-        ]) => {
-            return new Asset(path, hash, size)
-        })
-    }
 
     constructor(
         private _path: string,
