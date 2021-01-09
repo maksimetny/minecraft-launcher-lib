@@ -33,6 +33,21 @@ export class Artifact implements IArtifact {
         return new Artifact(_path, _url, _sha1)
     }
 
+    static changePath(path: string, artifact: Partial<IArtifact>) {
+        artifact.path = path
+        return artifact
+    }
+
+    static changeURL(url: string, artifact: Partial<IArtifact>) {
+        artifact.url = url
+        return artifact
+    }
+
+    static changeSHA1(sha1: string, artifact: Partial<IArtifact>) {
+        artifact.sha1 = sha1
+        return artifact
+    }
+
     static isDownloadable(artifact: Partial<IArtifact>) {
         return ![
             'path',
@@ -97,19 +112,16 @@ export class Artifact implements IArtifact {
 
     set sha1(_sha1) { this._sha1 = _sha1 }
 
-    changePath(path: string) {
-        this.path = path
-        return this
+    changePath(path: string): Artifact {
+        return Artifact.from(Artifact.changePath(path, this))
     }
 
-    changeURL(url: string) {
-        this.url = url
-        return this
+    changeURL(url: string): Artifact {
+        return Artifact.from(Artifact.changeURL(url, this))
     }
 
-    changeSHA1(sha1: string) {
-        this.sha1 = sha1
-        return this
+    changeSHA1(sha1: string): Artifact {
+        return Artifact.from(Artifact.changeSHA1(sha1, this))
     }
 
     toResource(directory: string): Resource {
