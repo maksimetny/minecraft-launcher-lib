@@ -29,12 +29,11 @@ import * as AdmZip from 'adm-zip'
 
 interface IAxiosResponseData {
     on(e: 'data', listener: (data: Buffer) => void): this
-    pipe < T > (destination: T): T
+    pipe<T>(destination: T): T
 }
 
 interface IAxiosResponse extends AxiosResponse {
-    headers: Record < string,
-    string >
+    headers: Record<string, string>
     data: IAxiosResponseData
 }
 
@@ -60,13 +59,13 @@ export class Resource extends EventEmitter implements IResource {
         return createHash(algorithm).update(buffer).digest('hex')
     }
 
-    static parseJSON < T > (path: string): Promise < T > {
+    static parseJSON<T>(path: string): Promise<T>{
         return readJson(path)
     }
 
     constructor(private _path: string, private _url: string, private _sha1: string) { super() }
 
-    download(checkAfter = false): Promise < boolean > {
+    download(checkAfter = false): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
             try {
                 const e = await pathExists(this.directory)
@@ -131,7 +130,7 @@ export class Resource extends EventEmitter implements IResource {
         })
     }
 
-    async calculateHash(algorithm: string = 'sha1'): Promise < string > {
+    async calculateHash(algorithm: string = 'sha1'): Promise<string> {
         return await Resource.calculateHash(this.path, algorithm)
     }
 
@@ -143,7 +142,7 @@ export class Resource extends EventEmitter implements IResource {
      * + If resource has a hash, check integrity a file.
      * + If not hash, check presence a file.
      */
-    async isSuccess(): Promise < boolean > {
+    async isSuccess(): Promise<boolean> {
         try {
             const e = await pathExists(this._path)
             if (!this._sha1 || !e) {
@@ -158,7 +157,7 @@ export class Resource extends EventEmitter implements IResource {
         }
     }
 
-    async extractTo(directory: string, exclude: string[] = ['META-INF/']) {
+    async extractTo(directory: string, exclude: string[] = ['META-INF/']): Promise<void> {
         const zip = new AdmZip(this._path)
         const entries = zip.getEntries()
             .filter(entry => !entry.isDirectory)
