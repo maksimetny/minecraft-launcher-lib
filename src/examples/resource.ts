@@ -22,7 +22,7 @@ resource.on('download-status', ({
 })
 
 resource.isSuccess().then(success => {
-    return success ? success : resource.downloadAsync()
+    return success ? success : resource.download()
 }).then(success => {
     console.log(success)
 }).catch(error => {

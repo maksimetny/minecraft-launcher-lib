@@ -66,7 +66,7 @@ export class Resource extends EventEmitter implements IResource {
 
     constructor(private _path: string, private _url: string, private _sha1: string) { super() }
 
-    downloadAsync(checkAfter = false): Promise < boolean > {
+    download(checkAfter = false): Promise < boolean > {
         return new Promise(async (resolve, reject) => {
             try {
                 const e = await pathExists(this.directory)

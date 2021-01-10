@@ -9,7 +9,7 @@ describe('Downloader', () => {
     const _url = new URL('http://localhost:25560/files/testing.json')
     const _path = path.join(__dirname, _url.pathname)
 
-    describe('#downloadAsync', () => {
+    describe('#download', () => {
 
         const _response = { property_string: 'string', property_number: 2 }
 
@@ -20,7 +20,7 @@ describe('Downloader', () => {
             resource.on('debug', e => { /* console.log(e) */ })
             resource.on('error', e => { /* console.log(e) */ })
 
-            expect(await resource.downloadAsync(false)).toBe(true)
+            expect(await resource.download(false)).toBe(true)
         })
 
         it('should return `false` when response code != 200', async () => {
@@ -30,7 +30,7 @@ describe('Downloader', () => {
             resource.on('debug', e => { /* console.log(e) */ })
             resource.on('error', e => { /* console.log(e) */ })
 
-            expect(await resource.downloadAsync(true)).toBe(false)
+            expect(await resource.download(true)).toBe(false)
         })
 
         it('should return `false` when checking an invalid hash, if `checkAfter` = `true`', async () => {
@@ -40,7 +40,7 @@ describe('Downloader', () => {
             resource.on('debug', e => { /* console.log(e) */ })
             resource.on('error', e => { /* console.log(e) */ })
 
-            expect(await resource.downloadAsync(true)).toBe(false)
+            expect(await resource.download(true)).toBe(false)
         })
 
         it('should return `true` when checking an invalid hash, if `checkAfter` = `false`', async () => {
@@ -50,7 +50,7 @@ describe('Downloader', () => {
             resource.on('debug', e => { /* console.log(e) */ })
             resource.on('error', e => { /* console.log(e) */ })
 
-            expect(await resource.downloadAsync(true)).toBe(false)
+            expect(await resource.download(true)).toBe(false)
         })
 
         it('should emitted resource downloading progress', async () => {
@@ -71,7 +71,7 @@ describe('Downloader', () => {
                 if (percent >= 100) expect(currentBytes).toBe(length)
             })
 
-            await resource.downloadAsync()
+            await resource.download()
         })
 
     })
