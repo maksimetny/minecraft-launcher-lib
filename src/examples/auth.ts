@@ -1,6 +1,5 @@
 
-import {
-    Authenticator } from '../index'
+import { Authenticator } from '../index'
 
 async function authenticate(username: string, password: string, clientToken: string) {
     try {
