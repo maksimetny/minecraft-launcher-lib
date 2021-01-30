@@ -1,7 +1,8 @@
+
 import {
     basename,
-    dirname,
     join,
+    dirname,
 } from 'path'
 
 import axios, {
@@ -20,16 +21,25 @@ import events from '../../constants/events'
 import {
     createWriteStream,
     pathExists,
-    mkdirp,
+    ensureDir,
     readFile,
     readJson,
 } from 'fs-extra'
 
-import * as AdmZip from 'adm-zip'
+import {
+    open,
+    Options as ZipOptions,
+    Entry as ZipEntry,
+    ZipFile,
+} from 'yauzl'
+
+import {
+    Readable,
+} from 'stream'
 
 interface IAxiosResponseData {
-    on(e: 'data', listener: (data: Buffer) => void): this
-    pipe<T>(destination: T): T
+    on(e: 'data', listener: (chunk: Buffer) => void): this
+    pipe<T>(dest: T): T
 }
 
 interface IAxiosResponse extends AxiosResponse {
@@ -54,42 +64,47 @@ export interface IResource {
 
 export class Resource extends EventEmitter implements IResource {
 
-    static async calculateHash(path: string, algorithm = 'sha1'): Promise < string > {
-        const buffer = await readFile(path)
-        return createHash(algorithm).update(buffer).digest('hex')
+    static async calculateHash(resource: Pick<IResource, 'path'>, algorithm = 'sha1'): Promise<string> {
+        return createHash(algorithm)
+            .update(await readFile(resource.path))
+            .digest('hex')
     }
 
-    static parseJSON<T>(path: string): Promise<T>{
-        return readJson(path)
+    static parseJSON<T>(resource: Pick<IResource, 'path'>): Promise<T> {
+        return readJson(resource.path)
     }
 
-    constructor(private _path: string, private _url: string, private _sha1: string) { super() }
+    constructor(
+        private _path: string,
+        private _url: string,
+        private _sha1: string,
+    ) { super() }
 
     download(checkAfter = false): Promise<boolean> {
         return new Promise(async (resolve, reject) => {
+            const sha1 = this.sha1
+            const url = this.url
+            const path = this.path
+
             try {
-                const e = await pathExists(this.directory)
-                if (!e) await mkdirp(this.directory)
+                await ensureDir(this.directory)
             } catch (err) {
-                this.emit(events.ERROR, `An error occurred while create directory for ${this.path}`, err)
-                return resolve(false)
+                this.emit(events.ERROR, 'an error occurred while create directory', err)
+                resolve(false)
+                return
             }
 
             try {
-                const sha1 = this.sha1
-                const url = this.url
-                const path = this.path
-
                 const {
                     headers,
-                    data,
+                    data: dataStream,
                 }: IAxiosResponse = await axios({
                     method: 'GET',
                     url,
                     responseType: 'stream',
                 })
 
-                this.emit(events.DEBUG, `Downloading ${url} as ${path}`.concat(sha1 ? `, with hash (SHA1) ${sha1}..` : '..'))
+                this.emit(events.DEBUG, `downloading from ${url}`.concat(sha1 ? ` with hash (SHA1) ${sha1}..` : '..'))
 
                 const {
                     ['content-length']: contentLength = '0',
@@ -102,117 +117,194 @@ export class Resource extends EventEmitter implements IResource {
                     },
                 }
 
-                data.on('data', chunk => {
+                dataStream.on('data', chunk => {
                     progress.bytes.current += chunk.length
                     this.emit(events.DOWNLOAD_STATUS, progress)
                 })
 
-                const stream = createWriteStream(path)
-                data.pipe(stream)
+                const writeStream = createWriteStream(path)
+                dataStream.pipe(writeStream)
 
-                stream.on('finish', async () => {
+                writeStream.on('finish', async () => {
+                    let success = true
                     if (checkAfter) {
-                        const success = await this.isSuccess()
-                        return resolve(success)
+                        success = await this.isSuccess()
                     }
 
-                    resolve(true)
+                    this.emit(events.DEBUG, success ? `download successful` : `download not successful`)
+                    resolve(success)
                 })
-
-                stream.on('error', err => {
-                    this.emit(events.ERROR, `An error occurred while write ${path}`, err)
+                writeStream.on('error', err => {
+                    this.emit(events.ERROR, 'an error occurred while write', err)
                     resolve(false)
                 })
             } catch (err) {
-                this.emit(events.ERROR, `An error occurred while download ${this.url} as ${this.path}`, err)
+                this.emit(events.ERROR, `an error occurred while download`, err)
                 resolve(false)
             }
         })
     }
 
-    async calculateHash(algorithm: string = 'sha1'): Promise<string> {
-        return await Resource.calculateHash(this.path, algorithm)
+    calculateHash(algorithm: string = 'sha1'): Promise<string> {
+        return Resource.calculateHash(this, algorithm)
     }
 
-    async parseJSON < T > (): Promise < T > {
-        return await Resource.parseJSON(this.path)
+    parseJSON<T>(): Promise<T> {
+        return Resource.parseJSON(this)
     }
 
-    /**
-     * + If resource has a hash, check integrity a file.
-     * + If not hash, check presence a file.
-     */
     async isSuccess(): Promise<boolean> {
         try {
             const e = await pathExists(this._path)
-            if (!this._sha1 || !e) {
-                return e
+            if (e) {
+                if (this._sha1) {
+                    const currentSHA1 = await this.calculateHash('sha1')
+                    return this._sha1 === currentSHA1
+                }
+                // if md5 or other
             }
 
-            const currentSHA1 = await this.calculateHash('sha1')
-            return this._sha1 === currentSHA1
+            return e
         } catch (err) {
-            this.emit(events.ERROR, `An error occurred while check hash of ${this.path}`, err)
+            this.emit(events.ERROR, 'an error occurred while check hash', err)
             return false
         }
     }
 
-    async extractTo(directory: string, exclude: string[] = ['META-INF/']): Promise<void> {
-        const zip = new AdmZip(this._path)
-        const entries = zip.getEntries()
-            .filter(entry => !entry.isDirectory)
-            .filter(({ entryName }) => {
-                return exclude
-                    .map(excludeName => {
-                        return !entryName.startsWith(excludeName)
-                    })
-                    .includes(true)
-            })
-
-        const hashes: Record<string, string> = { /* [name]: hash */ }
-        const hashName = /.(sha1$)/
-
-        entries
-            .filter(({ name }) => hashName.test(name))
-            .forEach(entry => {
-                const nameSep = '.'
-                const nameParts = entry.name.split(nameSep)
-                nameParts.pop()
-                const name = nameParts.join(nameSep)
-
-                const targetSHA1 = entry.getData().toString().trim()
-                const targetNameSep = '/'
-                const targetName = entry.entryName.split(targetNameSep).slice(0, -1).concat(name).join(targetNameSep)
-                hashes[targetName] = targetSHA1
-            })
-
-        for await (const entry of entries) {
-            const {
-                entryName: name,
-            } = entry
-            const path = join(directory, name)
-            const sha1 = hashes[name]
-
-            try {
-                const e = await pathExists(path)
-
-                if (e) {
-                    if (sha1) {
-                        const currentSHA1 = await Resource.calculateHash(path)
-                        switch (sha1) { case currentSHA1: continue }
-                    } else {
-                        continue
-                    }
+    async extractTo(directory: string, checkHash = true, exclude: string[] = ['META-INF/']): Promise<void> {
+        const options: ZipOptions = { autoClose: false, lazyEntries: true }
+        const file = await new Promise<ZipFile>((resolve, reject) => {
+            open(this.path, options, (err, file) => {
+                if (err) {
+                    return reject(err)
                 }
+                if (!file) {
+                    return reject()
+                } // cannot open zip
 
-                const targetDirectory: string = dirname(path)
+                resolve(file)
+            })
+        })
+        const entries: ZipEntry[] = []
 
-                this.emit(events.DEBUG, `Extracting ${name} as ${path} from ${this._path}`.concat(sha1 ? `, with hash (SHA1) ${sha1}..` : '..'))
-                zip.extractEntryTo(entry, targetDirectory)
-            } catch (err) {
-                this.emit(events.ERROR, `An error occurred while extract ${name} from ${this.path}`, err)
-            }
+        await new Promise<void>((resolve, reject) => {
+            file.on('entry', entry => {
+                const e = exclude
+                    .map(excludeName => entry.fileName.startsWith(excludeName))
+                    .includes(true)
+                if (!e) entries.push(entry)
+
+                file.readEntry() // next entry
+            })
+            file.on('end', () => { resolve() })
+
+            file.readEntry() // start read entries
+        })
+
+        function openReadStream(entry: ZipEntry): Promise<Readable> {
+            return new Promise((resolve, reject) => {
+                file.openReadStream(entry, (err, readStream) => {
+                    if (err) {
+                        return reject(err)
+                    }
+                    if (!readStream) {
+                        return reject()
+                    }
+
+                    resolve(readStream)
+                })
+            })
         }
+
+        const hashName = /.(sha1$)/
+        const hashesPromises = entries
+            .filter(({ fileName }) => {
+                return hashName.test(fileName)
+            })
+            .map(async entry => {
+                try {
+                    const readStream = await openReadStream(entry)
+                    const chunks: Buffer[] = []
+
+                    await new Promise<void>((resolve, reject) => {
+                        readStream.on('data', chunk => {
+                            chunks.push(chunk)
+                        })
+                        readStream.on('end', () => { resolve() })
+                        readStream.on('error', err => {
+                            reject(err)
+                        })
+                    })
+                    
+                    const nameSep = '.'
+                    const nameParts = entry.fileName.split(nameSep)
+                    nameParts.pop()
+                    const name = nameParts.join(nameSep)
+
+                    const targetNameSep = '/'
+                    const targetName = entry.fileName.split(targetNameSep).slice(0, -1).concat(name).join(targetNameSep)
+                    const targetHash = Buffer.concat(chunks).toString().trim()
+
+                    return [targetName, targetHash]
+                } catch (err) {
+                    // TODO emit message
+                    return []
+                }
+            })
+
+        const hashes: Record<string, string> = Object.fromEntries(await Promise.all(hashesPromises))
+
+        await ensureDir(directory)
+
+        const extractPromises = entries
+            .map(entry => {
+                return new Promise<void>(async (resolve, reject) => {
+                    const { fileName: name } = entry
+                    try {
+                        const path = join(directory, name)
+                        const sha1 = hashes[name]
+                        if (name.endsWith('/')) {
+                            await ensureDir(path)
+                            resolve()
+                            return
+                        }
+
+                        const e = await pathExists(path)
+                        if (e) {
+                            if (sha1) {
+                                const currentSHA1 = await Resource.calculateHash({ path })
+                                if (sha1 === currentSHA1) {
+                                    resolve()
+                                    return
+                                }
+                            } else {
+                                resolve()
+                                return
+                            }
+                        }
+
+                        this.emit(events.DEBUG, `extracting ${path}`.concat(sha1 ? `, with hash (SHA1) ${sha1}..` : '..'))
+
+                        const readStream = await openReadStream(entry), writeStream = createWriteStream(path)
+
+                        writeStream.on('finish', () => {
+                            this.emit(events.DEBUG, `${name} extracted`)
+                            resolve()
+                        })
+                        writeStream.on('error', err => {
+                            reject(err)
+                        })
+
+                        readStream.pipe(writeStream)
+                    } catch (err) {
+                        this.emit(events.ERROR, `an error occurred while extract ${name}`, err)
+                        resolve()
+                    }
+                })
+            })
+
+        await Promise.all(extractPromises)
+        file.close()
     }
 
     get path() { return this._path }

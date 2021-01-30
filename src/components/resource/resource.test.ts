@@ -79,7 +79,7 @@ describe('Downloader', () => {
     describe('#calculateHash', () => {
 
         it('should calculate hash of resource', async () => {
-            const sha1 = await Resource.calculateHash(_path, 'sha1')
+            const sha1 = await Resource.calculateHash({ path: _path }, 'sha1')
             expect((sha1)).toBe(_sha1)
         })
 
