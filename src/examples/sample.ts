@@ -30,6 +30,7 @@ import {
     readJson,
     mkdirp,
     copy,
+    ensureDir,
 } from 'fs-extra'
 
 import {
@@ -56,9 +57,9 @@ async function download(resources: Resource[], partLength = 4) {
     })
 
     const downloadResource = async (resource: Resource, force = false) => {
-        resource.on(events.DEBUG, (e) => console.log(e))
+        resource.on(events.DEBUG, (e) => console.log(`${resource.name} => ${e}`))
         resource.on(events.ERROR, (e, err) => {
-            console.error(e, err)
+            console.error(`${resource.name} => ${e}`, err)
         })
 
         if (!force) {
@@ -92,7 +93,7 @@ async function launch(custom: string) {
     const launcherFolder = LauncherFolder.from(resolve('launcher'))
 
     const gameDirectory = launcherFolder.getPathTo('instances', custom)
-    await mkdirp(gameDirectory)
+    await ensureDir(gameDirectory)
 
     const resources_1: Resource[] = []
     const resources_2: Resource[] = []
