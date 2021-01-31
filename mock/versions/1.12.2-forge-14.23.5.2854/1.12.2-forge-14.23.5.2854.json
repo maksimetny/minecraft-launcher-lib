@@ -1,12 +1,12 @@
 {
-  "id": "forge-14.23.5.2854",
+  "id": "1.12.2-forge-14.23.5.2854",
   "time": "2020-04-12T17:57:42Z",
   "releaseTime": "2020-04-12T17:57:42Z",
   "type": "release",
   "minecraftArguments": "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --versionType Forge",
   "minimumLauncherVersion": 0,
   "inheritsFrom": "1.12.2",
-  "jar": "forge-14.23.5.2854",
+  "jar": "1.12.2-forge-14.23.5.2854",
   "libraries": [
     {
       "name": "net.minecraftforge:forge:1.12.2-14.23.5.2854",
