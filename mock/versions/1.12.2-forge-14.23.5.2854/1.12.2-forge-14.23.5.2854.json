@@ -1,29 +1,233 @@
 {
-  "id": 4448,
-  "gameVersionId": 7806,
-  "minecraftGameVersionId": 52,
-  "forgeVersion": "14.23.5.2854",
-  "name": "forge-14.23.5.2854",
-  "type": 1,
-  "downloadUrl": "https://modloaders.forgecdn.net/647622546/maven/net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854.jar",
-  "filename": "forge-1.12.2-14.23.5.2854.jar",
-  "installMethod": 3,
-  "latest": true,
-  "recommended": true,
-  "approved": false,
-  "dateModified": "2020-04-12T17:57:42Z",
-  "mavenVersionString": "net.minecraftforge:forge:1.12.2-14.23.5.2854",
-  "versionJson": "{\r\n  \"id\": \"forge-14.23.5.2854\",\r\n  \"time\": \"2020-04-12T17:57:42Z\",\r\n  \"releaseTime\": \"2020-04-12T17:57:42Z\",\r\n  \"type\": \"release\",\r\n  \"minecraftArguments\": \"--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --versionType Forge\",\r\n  \"minimumLauncherVersion\": 0,\r\n  \"inheritsFrom\": \"1.12.2\",\r\n  \"jar\": \"forge-14.23.5.2854\",\r\n  \"libraries\": [\r\n    {\r\n      \"name\": \"net.minecraftforge:forge:1.12.2-14.23.5.2854\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854.jar\",\r\n          \"sha1\": \"762f5cb227a8dd88cfd3949033c78f24030b36aa\",\r\n          \"size\": 4464068\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.ow2.asm:asm-debug-all:5.2\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar\",\r\n          \"sha1\": \"3354e11e2b34215f06dab629ab88e06aca477c19\",\r\n          \"size\": 387903\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"net.minecraft:launchwrapper:1.12\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar\",\r\n          \"sha1\": \"111e7bea9c968cdb3d06ef4632bf7ff0824d0f36\",\r\n          \"size\": 32999\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.jline:jline:3.5.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/jline/jline/3.5.1/jline-3.5.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/jline/jline/3.5.1/jline-3.5.1.jar\",\r\n          \"sha1\": \"51800e9d7a13608894a5a28eed0f5c7fa2f300fb\",\r\n          \"size\": 614590\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"com.typesafe.akka:akka-actor_2.11:2.3.3\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"com/typesafe/akka/akka-actor_2.11/2.3.3/akka-actor_2.11-2.3.3.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/com/typesafe/akka/akka-actor_2.11/2.3.3/akka-actor_2.11-2.3.3.jar\",\r\n          \"sha1\": \"ed62e9fc709ca0f2ff1a3220daa8b70a2870078e\",\r\n          \"size\": 2514991\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"com.typesafe:config:1.2.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"com/typesafe/config/1.2.1/config-1.2.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/com/typesafe/config/1.2.1/config-1.2.1.jar\",\r\n          \"sha1\": \"f771f71fdae3df231bcd54d5ca2d57f0bf93f467\",\r\n          \"size\": 219554\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-actors-migration_2.11:1.1.0\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-actors-migration_2.11/1.1.0/scala-actors-migration_2.11-1.1.0.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-actors-migration_2.11/1.1.0/scala-actors-migration_2.11-1.1.0.jar\",\r\n          \"sha1\": \"dfa8bc42b181d5b9f1a5dd147f8ae308b893eb6f\",\r\n          \"size\": 58018\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-compiler:2.11.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-compiler/2.11.1/scala-compiler-2.11.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-compiler/2.11.1/scala-compiler-2.11.1.jar\",\r\n          \"sha1\": \"56ea2e6c025e0821f28d73ca271218b8dd04926a\",\r\n          \"size\": 13449765\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2_mc\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/plugins/scala-continuations-library_2.11/1.0.2_mc/scala-continuations-library_2.11-1.0.2_mc.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/plugins/scala-continuations-library_2.11/1.0.2_mc/scala-continuations-library_2.11-1.0.2_mc.jar\",\r\n          \"sha1\": \"0e517c53a7e9acd6b1668c5a35eccbaa3bab9aac\",\r\n          \"size\": 25365\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2_mc\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/plugins/scala-continuations-plugin_2.11.1/1.0.2_mc/scala-continuations-plugin_2.11.1-1.0.2_mc.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/plugins/scala-continuations-plugin_2.11.1/1.0.2_mc/scala-continuations-plugin_2.11.1-1.0.2_mc.jar\",\r\n          \"sha1\": \"f361a3283452c57fa30c1ee69448995de23c60f7\",\r\n          \"size\": 206575\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-library:2.11.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-library/2.11.1/scala-library-2.11.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-library/2.11.1/scala-library-2.11.1.jar\",\r\n          \"sha1\": \"0e11da23da3eabab9f4777b9220e60d44c1aab6a\",\r\n          \"size\": 5538130\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-parser-combinators_2.11:1.0.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-parser-combinators_2.11/1.0.1/scala-parser-combinators_2.11-1.0.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-parser-combinators_2.11/1.0.1/scala-parser-combinators_2.11-1.0.1.jar\",\r\n          \"sha1\": \"f05d7345bf5a58924f2837c6c1f4d73a938e1ff0\",\r\n          \"size\": 419701\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-reflect:2.11.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-reflect/2.11.1/scala-reflect-2.11.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-reflect/2.11.1/scala-reflect-2.11.1.jar\",\r\n          \"sha1\": \"6580347e61cc7f8e802941e7fde40fa83b8badeb\",\r\n          \"size\": 4372892\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-swing_2.11:1.0.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-swing_2.11/1.0.1/scala-swing_2.11-1.0.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-swing_2.11/1.0.1/scala-swing_2.11-1.0.1.jar\",\r\n          \"sha1\": \"b1cdd92bd47b1e1837139c1c53020e86bb9112ae\",\r\n          \"size\": 726500\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.scala-lang:scala-xml_2.11:1.0.2\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/scala-lang/scala-xml_2.11/1.0.2/scala-xml_2.11-1.0.2.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-xml_2.11/1.0.2/scala-xml_2.11-1.0.2.jar\",\r\n          \"sha1\": \"7a80ec00aec122fba7cd4e0d4cdd87ff7e4cb6d0\",\r\n          \"size\": 648679\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"lzma:lzma:0.0.1\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"lzma/lzma/0.0.1/lzma-0.0.1.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/lzma/lzma/0.0.1/lzma-0.0.1.jar\",\r\n          \"sha1\": \"521616dc7487b42bef0e803bd2fa3faf668101d7\",\r\n          \"size\": 5762\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"java3d:vecmath:1.5.2\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"java3d/vecmath/1.5.2/vecmath-1.5.2.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/java3d/vecmath/1.5.2/vecmath-1.5.2.jar\",\r\n          \"sha1\": \"79846ba34cbd89e2422d74d53752f993dcc2ccaf\",\r\n          \"size\": 318956\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"net.sf.trove4j:trove4j:3.0.3\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar\",\r\n          \"sha1\": \"42ccaf4761f0dfdfa805c9e340d99a755907e2dd\",\r\n          \"size\": 2523218\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"org.apache.maven:maven-artifact:3.5.3\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"org/apache/maven/maven-artifact/3.5.3/maven-artifact-3.5.3.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/org/apache/maven/maven-artifact/3.5.3/maven-artifact-3.5.3.jar\",\r\n          \"sha1\": \"7dc72b6d6d8a6dced3d294ed54c2cc3515ade9f4\",\r\n          \"size\": 54961\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"net.sf.jopt-simple:jopt-simple:5.0.3\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"net/sf/jopt-simple/jopt-simple/5.0.3/jopt-simple-5.0.3.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/net/sf/jopt-simple/jopt-simple/5.0.3/jopt-simple-5.0.3.jar\",\r\n          \"sha1\": \"cdd846cfc4e0f7eefafc02c0f5dce32b9303aa2a\",\r\n          \"size\": 78175\r\n        }\r\n      }\r\n    }\r\n  ],\r\n  \"mainClass\": \"net.minecraft.launchwrapper.Launch\"\r\n}",
-  "librariesInstallLocation": "{0}\\libraries\\net\\minecraftforge\\forge\\1.12.2-14.23.5.2854",
-  "minecraftVersion": "1.12.2",
-  "additionalFilesJson": null,
-  "modLoaderGameVersionId": 7806,
-  "modLoaderGameVersionTypeId": 3,
-  "modLoaderGameVersionStatus": 1,
-  "modLoaderGameVersionTypeStatus": 1,
-  "mcGameVersionId": 6756,
-  "mcGameVersionTypeId": 628,
-  "mcGameVersionStatus": 1,
-  "mcGameVersionTypeStatus": 1,
-  "installProfileJson": "{\r\n  \"_comment_\": [\r\n    \"Please do not automate the download and installation of Forge.\",\r\n    \"Our efforts are supported by ads from the download page.\",\r\n    \"If you MUST automate this, please consider supporting the project through https://www.patreon.com/LexManos/\"\r\n  ],\r\n  \"profile\": \"forge\",\r\n  \"version\": \"1.12.2-forge-14.23.5.2854\",\r\n  \"json\": \"/version.json\",\r\n  \"path\": \"net.minecraftforge:forge:1.12.2-14.23.5.2854\",\r\n  \"logo\": \"/big_logo.png\",\r\n  \"minecraft\": \"1.12.2\",\r\n  \"welcome\": \"Welcome to the simple Forge installer.\",\r\n  \"data\": {},\r\n  \"processors\": [],\r\n  \"libraries\": [\r\n    {\r\n      \"name\": \"de.oceanlabs.mcp:mcp_config:1.12.2-20200226.224830@zip\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"de/oceanlabs/mcp/mcp_config/1.12.2-20200226.224830/mcp_config-1.12.2-20200226.224830.zip\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/de/oceanlabs/mcp/mcp_config/1.12.2-20200226.224830/mcp_config-1.12.2-20200226.224830.zip\",\r\n          \"sha1\": \"72e1b936f56e0dd394c64caf9c86af01f64dc979\",\r\n          \"size\": 421086\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"net.minecraftforge:forge:1.12.2-14.23.5.2854\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854.jar\",\r\n          \"url\": \"\",\r\n          \"sha1\": \"762f5cb227a8dd88cfd3949033c78f24030b36aa\",\r\n          \"size\": 4464068\r\n        }\r\n      }\r\n    },\r\n    {\r\n      \"name\": \"net.minecraftforge:forge:1.12.2-14.23.5.2854:universal\",\r\n      \"downloads\": {\r\n        \"artifact\": {\r\n          \"path\": \"net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854-universal.jar\",\r\n          \"url\": \"https://modloaders.forgecdn.net/647622546/maven/net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854-universal.jar\",\r\n          \"size\": 0\r\n        }\r\n      }\r\n    }\r\n  ]\r\n}"
+  "id": "forge-14.23.5.2854",
+  "time": "2020-04-12T17:57:42Z",
+  "releaseTime": "2020-04-12T17:57:42Z",
+  "type": "release",
+  "minecraftArguments": "--username ${auth_player_name} --version ${version_name} --gameDir ${game_directory} --assetsDir ${assets_root} --assetIndex ${assets_index_name} --uuid ${auth_uuid} --accessToken ${auth_access_token} --userType ${user_type} --tweakClass net.minecraftforge.fml.common.launcher.FMLTweaker --versionType Forge",
+  "minimumLauncherVersion": 0,
+  "inheritsFrom": "1.12.2",
+  "jar": "forge-14.23.5.2854",
+  "libraries": [
+    {
+      "name": "net.minecraftforge:forge:1.12.2-14.23.5.2854",
+      "downloads": {
+        "artifact": {
+          "path": "net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/net/minecraftforge/forge/1.12.2-14.23.5.2854/forge-1.12.2-14.23.5.2854.jar",
+          "sha1": "762f5cb227a8dd88cfd3949033c78f24030b36aa",
+          "size": 4464068
+        }
+      }
+    },
+    {
+      "name": "org.ow2.asm:asm-debug-all:5.2",
+      "downloads": {
+        "artifact": {
+          "path": "org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/ow2/asm/asm-debug-all/5.2/asm-debug-all-5.2.jar",
+          "sha1": "3354e11e2b34215f06dab629ab88e06aca477c19",
+          "size": 387903
+        }
+      }
+    },
+    {
+      "name": "net.minecraft:launchwrapper:1.12",
+      "downloads": {
+        "artifact": {
+          "path": "net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/net/minecraft/launchwrapper/1.12/launchwrapper-1.12.jar",
+          "sha1": "111e7bea9c968cdb3d06ef4632bf7ff0824d0f36",
+          "size": 32999
+        }
+      }
+    },
+    {
+      "name": "org.jline:jline:3.5.1",
+      "downloads": {
+        "artifact": {
+          "path": "org/jline/jline/3.5.1/jline-3.5.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/jline/jline/3.5.1/jline-3.5.1.jar",
+          "sha1": "51800e9d7a13608894a5a28eed0f5c7fa2f300fb",
+          "size": 614590
+        }
+      }
+    },
+    {
+      "name": "com.typesafe.akka:akka-actor_2.11:2.3.3",
+      "downloads": {
+        "artifact": {
+          "path": "com/typesafe/akka/akka-actor_2.11/2.3.3/akka-actor_2.11-2.3.3.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/com/typesafe/akka/akka-actor_2.11/2.3.3/akka-actor_2.11-2.3.3.jar",
+          "sha1": "ed62e9fc709ca0f2ff1a3220daa8b70a2870078e",
+          "size": 2514991
+        }
+      }
+    },
+    {
+      "name": "com.typesafe:config:1.2.1",
+      "downloads": {
+        "artifact": {
+          "path": "com/typesafe/config/1.2.1/config-1.2.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/com/typesafe/config/1.2.1/config-1.2.1.jar",
+          "sha1": "f771f71fdae3df231bcd54d5ca2d57f0bf93f467",
+          "size": 219554
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-actors-migration_2.11:1.1.0",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-actors-migration_2.11/1.1.0/scala-actors-migration_2.11-1.1.0.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-actors-migration_2.11/1.1.0/scala-actors-migration_2.11-1.1.0.jar",
+          "sha1": "dfa8bc42b181d5b9f1a5dd147f8ae308b893eb6f",
+          "size": 58018
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-compiler:2.11.1",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-compiler/2.11.1/scala-compiler-2.11.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-compiler/2.11.1/scala-compiler-2.11.1.jar",
+          "sha1": "56ea2e6c025e0821f28d73ca271218b8dd04926a",
+          "size": 13449765
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang.plugins:scala-continuations-library_2.11:1.0.2_mc",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/plugins/scala-continuations-library_2.11/1.0.2_mc/scala-continuations-library_2.11-1.0.2_mc.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/plugins/scala-continuations-library_2.11/1.0.2_mc/scala-continuations-library_2.11-1.0.2_mc.jar",
+          "sha1": "0e517c53a7e9acd6b1668c5a35eccbaa3bab9aac",
+          "size": 25365
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang.plugins:scala-continuations-plugin_2.11.1:1.0.2_mc",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/plugins/scala-continuations-plugin_2.11.1/1.0.2_mc/scala-continuations-plugin_2.11.1-1.0.2_mc.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/plugins/scala-continuations-plugin_2.11.1/1.0.2_mc/scala-continuations-plugin_2.11.1-1.0.2_mc.jar",
+          "sha1": "f361a3283452c57fa30c1ee69448995de23c60f7",
+          "size": 206575
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-library:2.11.1",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-library/2.11.1/scala-library-2.11.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-library/2.11.1/scala-library-2.11.1.jar",
+          "sha1": "0e11da23da3eabab9f4777b9220e60d44c1aab6a",
+          "size": 5538130
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-parser-combinators_2.11:1.0.1",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-parser-combinators_2.11/1.0.1/scala-parser-combinators_2.11-1.0.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-parser-combinators_2.11/1.0.1/scala-parser-combinators_2.11-1.0.1.jar",
+          "sha1": "f05d7345bf5a58924f2837c6c1f4d73a938e1ff0",
+          "size": 419701
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-reflect:2.11.1",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-reflect/2.11.1/scala-reflect-2.11.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-reflect/2.11.1/scala-reflect-2.11.1.jar",
+          "sha1": "6580347e61cc7f8e802941e7fde40fa83b8badeb",
+          "size": 4372892
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-swing_2.11:1.0.1",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-swing_2.11/1.0.1/scala-swing_2.11-1.0.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-swing_2.11/1.0.1/scala-swing_2.11-1.0.1.jar",
+          "sha1": "b1cdd92bd47b1e1837139c1c53020e86bb9112ae",
+          "size": 726500
+        }
+      }
+    },
+    {
+      "name": "org.scala-lang:scala-xml_2.11:1.0.2",
+      "downloads": {
+        "artifact": {
+          "path": "org/scala-lang/scala-xml_2.11/1.0.2/scala-xml_2.11-1.0.2.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/scala-lang/scala-xml_2.11/1.0.2/scala-xml_2.11-1.0.2.jar",
+          "sha1": "7a80ec00aec122fba7cd4e0d4cdd87ff7e4cb6d0",
+          "size": 648679
+        }
+      }
+    },
+    {
+      "name": "lzma:lzma:0.0.1",
+      "downloads": {
+        "artifact": {
+          "path": "lzma/lzma/0.0.1/lzma-0.0.1.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/lzma/lzma/0.0.1/lzma-0.0.1.jar",
+          "sha1": "521616dc7487b42bef0e803bd2fa3faf668101d7",
+          "size": 5762
+        }
+      }
+    },
+    {
+      "name": "java3d:vecmath:1.5.2",
+      "downloads": {
+        "artifact": {
+          "path": "java3d/vecmath/1.5.2/vecmath-1.5.2.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/java3d/vecmath/1.5.2/vecmath-1.5.2.jar",
+          "sha1": "79846ba34cbd89e2422d74d53752f993dcc2ccaf",
+          "size": 318956
+        }
+      }
+    },
+    {
+      "name": "net.sf.trove4j:trove4j:3.0.3",
+      "downloads": {
+        "artifact": {
+          "path": "net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3.jar",
+          "sha1": "42ccaf4761f0dfdfa805c9e340d99a755907e2dd",
+          "size": 2523218
+        }
+      }
+    },
+    {
+      "name": "org.apache.maven:maven-artifact:3.5.3",
+      "downloads": {
+        "artifact": {
+          "path": "org/apache/maven/maven-artifact/3.5.3/maven-artifact-3.5.3.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/org/apache/maven/maven-artifact/3.5.3/maven-artifact-3.5.3.jar",
+          "sha1": "7dc72b6d6d8a6dced3d294ed54c2cc3515ade9f4",
+          "size": 54961
+        }
+      }
+    },
+    {
+      "name": "net.sf.jopt-simple:jopt-simple:5.0.3",
+      "downloads": {
+        "artifact": {
+          "path": "net/sf/jopt-simple/jopt-simple/5.0.3/jopt-simple-5.0.3.jar",
+          "url": "https://modloaders.forgecdn.net/647622546/maven/net/sf/jopt-simple/jopt-simple/5.0.3/jopt-simple-5.0.3.jar",
+          "sha1": "cdd846cfc4e0f7eefafc02c0f5dce32b9303aa2a",
+          "size": 78175
+        }
+      }
+    }
+  ],
+  "mainClass": "net.minecraft.launchwrapper.Launch"
 }
