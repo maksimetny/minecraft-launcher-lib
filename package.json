@@ -5,7 +5,7 @@
     "types": "dist/index.d.ts",
     "scripts": {
         "build": "tsc",
-        "start": "npm run build && node ./dist/examples/launcher",
+        "start": "npm run build && node ./dist/examples/sample",
         "jest": "jest ./dist --env=node",
         "test": "npm run build && npm run jest"
     },
