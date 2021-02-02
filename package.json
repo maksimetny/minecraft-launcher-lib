@@ -32,6 +32,7 @@
     "dependencies": {
         "axios": "^0.21.1",
         "fs-extra": "^9.0.1",
+        "gulp-sourcemaps": "^3.0.0",
         "uuid": "^7.0.2",
         "yauzl": "^2.10.0"
     },

@@ -1,12 +1,17 @@
 
 const gulp = require('gulp')
 const ts = require('gulp-typescript')
-const tsProject = ts.createProject('tsconfig.json')
+const sm = require('gulp-sourcemaps')
+const project = ts.createProject('tsconfig.json')
 
 gulp.task('default', () => {
-    return tsProject
+    return project
         .src()
-        .pipe(tsProject())
-        .js
-        .pipe(gulp.dest('dist'))
+        .pipe(sm.init())
+        .pipe(project())
+        .pipe(sm.write('.', {
+            sourceRoot: './',
+            includeContent: false,
+        }))
+        .pipe(gulp.dest("dist"))
 })

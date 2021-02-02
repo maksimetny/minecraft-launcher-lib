@@ -3,10 +3,9 @@
         "module": "commonjs",
         "target": "esnext",
         "moduleResolution": "node",
-        "allowJs": true,
-        "declaration": true,
-        "strict": true,
         "sourceMap": true,
+        "strict": true,
+        "declaration": true,
         "outDir": "dist"
     },
     "include": [
