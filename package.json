@@ -14,8 +14,10 @@
     },
     "keywords": [
         "minecraft",
-        "minecraft-launcher-lib",
-        "launcher"
+        "lib",
+        "launcher",
+        "node",
+        "minecraft-launcher-lib"
     ],
     "author": {
         "email": "maksimetny@gmail.com",
