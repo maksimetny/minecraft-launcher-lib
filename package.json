@@ -4,10 +4,9 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsc",
-        "start": "npm run build && node ./dist/examples/sample",
-        "jest": "jest ./dist --env=node",
-        "test": "npm run build && npm run jest"
+        "build": "gulp",
+        "start": "gulp && node ./dist/examples/sample",
+        "test": "jest ./dist --env=node"
     },
     "repository": {
         "type": "git",
@@ -42,6 +41,8 @@
         "@types/uuid": "^7.0.2",
         "@types/yauzl": "^2.9.1",
         "dotenv": "^8.2.0",
+        "gulp": "^4.0.2",
+        "gulp-typescript": "^6.0.0-alpha.1",
         "jest": "^25.3.0",
         "nock": "^12.0.3",
         "tslint": "^6.1.0",
