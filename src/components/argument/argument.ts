@@ -1,9 +1,5 @@
 
-import {
-    Rule,
-    IRule,
-} from '../rule'
-
+import { Rule, IRule } from '../rule'
 import {
     IPlatform,
 } from '../platform'
@@ -24,25 +20,35 @@ export class Argument {
 
     static STRING_ARG_SEP = String.fromCharCode(160)
 
-    static from(_arg: Partial<IArgument>) {
-        if (_arg instanceof Argument) {
-            return _arg
+    static from(_arg: Partial<IArgument> | ArgumentValue) {
+        if (_arg instanceof Argument) return _arg
+        switch (typeof _arg) {
+            case 'string': {
+                return Argument.fromString(_arg)
+            }
+            case 'object': {
+                if (Array.isArray(_arg)) return new Argument([..._arg])
+                break
+            }
+            default: {
+                throw new Error('argument not object or string, string array')
+            }
         }
 
-        const value: string[] = []
         const {
             rules: _rules = [],
             value: _value,
         } = _arg
+        let value: string[]
 
         switch (typeof _value) {
             case 'string': {
-                value.push(_value)
+                value = [_value]
                 break
             }
             case 'object': {
-                if (_arg.value instanceof Array) {
-                    value.push(..._value)
+                if (Array.isArray(_value)) {
+                    value = [..._value]
                     break
                 }
             }
@@ -51,7 +57,7 @@ export class Argument {
             }
         }
 
-        const rules: Rule[] = _rules.map(_rule => Rule.from(_rule))
+        const rules = _rules.map(_rule => Rule.from(_rule))
         return new Argument(value, rules)
     }
 
@@ -97,7 +103,6 @@ export class Argument {
             value,
             rules,
         } = this
-
         return {
             value,
             rules,
