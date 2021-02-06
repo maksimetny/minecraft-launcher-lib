@@ -44,14 +44,6 @@ export class Version {
             minecraftArguments: _minecraftArguments,
             assetIndex: _assetIndex,
         } = _default
-
-        if (!_assetIndex) throw new Error('missing asset index')
-        if (!_id) throw new Error('missing id')
-        if (!_type) throw new Error('missing type')
-        if (!_assets) throw new Error('missing assets')
-        if (!_downloads) throw new Error('missing downloads')
-        if (!_mainClass) throw new Error('missing main class')
-
         const {
             id = _id,
             type = _type,
@@ -63,6 +55,13 @@ export class Version {
             minecraftArguments = _minecraftArguments,
             assetIndex = _assetIndex,
         } = _version
+
+        if (!assetIndex) throw new Error('missing asset index')
+        if (!id) throw new Error('missing id')
+        if (!type) throw new Error('missing type')
+        if (!assets) throw new Error('missing assets')
+        if (!downloads) throw new Error('missing downloads')
+        if (!mainClass) throw new Error('missing main class')
 
         const flatLibs = libs.map(({ name }) => name)
         _libs.forEach(_lib => {
