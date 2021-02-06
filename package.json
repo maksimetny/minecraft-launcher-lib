@@ -7,9 +7,10 @@
         "node": ">=6.0"
     },
     "scripts": {
-        "build": "gulp",
+        "build": "gulp build",
         "start": "gulp && node ./dist/examples/sample",
-        "test": "jest ./dist --env=node"
+        "test": "jest ./dist --env=node",
+        "dist": "gulp"
     },
     "repository": {
         "type": "git",
