@@ -1,14 +1,10 @@
 
-import urls from '../../constants/urls'
-
 import { Artifact, IArtifact } from '../artifact'
 import { Argument, IArgument } from '../argument'
-
 import { VersionDownloads, IVersionDownloads } from './downloads'
-
 import { VersionArguments, IVersionArguments } from './arguments'
-
 import { Library, ILibrary } from '../library'
+import urls from '../../constants/urls'
 
 export interface IVersion {
     id: string
@@ -18,8 +14,8 @@ export interface IVersion {
     arguments: IVersionArguments
     mainClass: string
     libraries: ILibrary[]
-    assetIndex: IAssetIndexArtifact
     minecraftArguments?: string
+    assetIndex: IAssetIndexArtifact
 }
 
 interface IAssetIndexArtifact extends IArtifact {
@@ -35,22 +31,19 @@ interface IAssetIndexArtifact extends IArtifact {
 
 export class Version {
 
-    static from(_version: Partial<IVersion>, _repoURL: string = urls.DEFAULT_LIBS_REPO) {
-        if (_version instanceof Version) {
-            return _version
-        }
-
+    static from(_version: Partial<IVersion>, _default: Partial<IVersion> = { /* parent */ }, _repoURL: string = urls.DEFAULT_LIBS_REPO) {
+        if (_version instanceof Version) return _version
         const {
             id: _id,
             type: _type,
             assets: _assets,
             downloads: _downloads,
-            arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS },
-            libraries: _libs = [],
-            assetIndex: _assetIndex,
             mainClass: _mainClass,
+            libraries: _libs = [],
+            arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS },
             minecraftArguments: _minecraftArguments,
-        } = _version
+            assetIndex: _assetIndex,
+        } = _default
 
         if (!_assetIndex) throw new Error('missing asset index')
         if (!_id) throw new Error('missing id')
@@ -59,24 +52,64 @@ export class Version {
         if (!_downloads) throw new Error('missing downloads')
         if (!_mainClass) throw new Error('missing main class')
 
-        if (_minecraftArguments) {
-            const { game, jvm } = VersionArguments.fromLegacyArguments(_minecraftArguments)
-            _args.game.push(...game)
-            _args.jvm.push(...jvm)
+        const {
+            id = _id,
+            type = _type,
+            assets = _assets,
+            downloads = _downloads,
+            mainClass = _mainClass,
+            libraries: libs = _libs,
+            arguments: args = _args,
+            minecraftArguments = _minecraftArguments,
+            assetIndex = _assetIndex,
+        } = _version
+
+        const flatLibs = libs.map(({ name }) => name)
+        _libs.forEach(_lib => {
+            const contains = flatLibs.includes(_lib.name)
+            if (!contains) libs.push(_lib)
+        })
+
+        const _versionArgs = VersionArguments.from(_args)
+        const versionArgs = VersionArguments.from(args)
+
+        const _gameArgs = _versionArgs.game.map(_arg => Argument.from(_arg))
+        const gameArgs = versionArgs.game.map(arg => Argument.from(arg))
+        const flatArgsSep = ' '
+        const flatGameArgs = gameArgs.map(({ value }) => value.join(flatArgsSep))
+        _gameArgs.forEach(_arg => {
+            const contains = flatGameArgs.includes(_arg.value.join(flatArgsSep))
+            if (!contains) versionArgs.game.push(_arg)
+        })
+
+        const _jvmArgs = _versionArgs.jvm.map(_arg => Argument.from(_arg))
+        const jvmArgs = versionArgs.jvm.map(arg => Argument.from(arg))
+        const flatJvmArgs = jvmArgs.map(({ value }) => value.join(flatArgsSep))
+        _jvmArgs.forEach(_arg => {
+            const contains = flatJvmArgs.includes(_arg.value.join(flatArgsSep))
+            if (!contains) versionArgs.jvm.push(_arg)
+        })
+
+        if (minecraftArguments) {
+            const {
+                game,
+                jvm,
+            } = VersionArguments.fromLegacyArguments(minecraftArguments)
+            versionArgs.game = game.concat(versionArgs.game)
+            versionArgs.jvm = jvm.concat(versionArgs.jvm)
         }
 
-        const assetIndex: IAssetIndexArtifact = Artifact.changePath(_assets + '.json', _assetIndex) as IAssetIndexArtifact
-        const libs: Library[] = _libs.map(_lib => Library.from(_lib, _repoURL))
+        const assetIndex_: IAssetIndexArtifact = Artifact.changePath(assets + '.json', assetIndex) as IAssetIndexArtifact
 
         return new Version(
-            _id,
-            _type,
-            _assets,
-            VersionDownloads.from(_downloads),
-            VersionArguments.from(_args),
-            libs,
-            assetIndex,
-            _mainClass,
+            id,
+            type,
+            assets,
+            VersionDownloads.from(downloads),
+            VersionArguments.from(versionArgs),
+            libs.map(lib => Library.from(lib, _repoURL)),
+            assetIndex_,
+            mainClass,
         )
     }
 
@@ -88,7 +121,7 @@ export class Version {
         private _args: VersionArguments,
         private _libs: Library[],
         private _assetIndex: IAssetIndexArtifact,
-        private _mainClass: string
+        private _mainClass: string,
     ) { }
 
     get id() { return this._id }
@@ -123,10 +156,9 @@ export class Version {
             downloads,
             args,
             libs,
-            assetIndex,
             mainClass,
+            assetIndex,
         } = this
-
         return {
             id,
             type,
@@ -134,8 +166,8 @@ export class Version {
             downloads,
             'arguments': args,
             'libraries': libs,
-            assetIndex,
             mainClass,
+            assetIndex,
         }
     }
 
