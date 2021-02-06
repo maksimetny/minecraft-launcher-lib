@@ -1,8 +1,5 @@
 
-import {
-    Argument,
-    IArgument,
-} from '../../argument'
+import { Argument, IArgument } from '../../argument'
 
 export type VersionArgument = string | Partial<IArgument>
 
@@ -24,12 +21,9 @@ export class VersionArguments implements IVersionArguments {
     ]
 
     static from(_versionArgs: Partial<IVersionArguments>) {
-        if (_versionArgs instanceof VersionArguments) {
-            return _versionArgs
-        }
-
+        if (_versionArgs instanceof VersionArguments) return _versionArgs
         const { game: _game = [], jvm: _jvm = [] } = _versionArgs
-        const versionArgResolver = (value: VersionArgument) => {
+        const resolveArg = (value: VersionArgument) => {
             switch (typeof value) {
                 case 'string': {
                     return Argument.fromString(value)
@@ -40,7 +34,7 @@ export class VersionArguments implements IVersionArguments {
             }
         }
 
-        return new VersionArguments(_game.map(versionArgResolver), _jvm.map(versionArgResolver))
+        return new VersionArguments(_game.map(resolveArg), _jvm.map(resolveArg))
     }
 
     static fromLegacyArguments(minecraftArguments: string) {
@@ -52,6 +46,10 @@ export class VersionArguments implements IVersionArguments {
 
     get game() { return this._game }
 
+    set game(_game) { this._game = _game }
+
     get jvm() { return this._jvm }
+
+    set jvm(_jvm) { this._jvm = _jvm }
 
 }
