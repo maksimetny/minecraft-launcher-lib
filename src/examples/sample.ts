@@ -1,4 +1,7 @@
 
+import { config } from 'dotenv'
+config()
+
 import {
     events,
     urls,
@@ -37,6 +40,11 @@ import {
     resolve,
     join,
 } from 'path'
+
+const {
+    PARENT_VERSION_ID: versionId = '1.14.4',
+    LAUNCHER_DIR = 'launcher',
+} = process.env
 
 async function download(resources: Resource[], partLength = 4) {
     const parts: Resource[][] = []
@@ -85,11 +93,10 @@ async function download(resources: Resource[], partLength = 4) {
 }
 
 (async () => {
-    const versionId = '1.14.4'
     const versionJsonPath = join('mock', 'versions', versionId, `${versionId}.json`)
     const version = Version.from(await readJson(versionJsonPath))
     
-    const launcherFolder = LauncherFolder.from(resolve('launcher'))
+    const launcherFolder = LauncherFolder.from(resolve(LAUNCHER_DIR))
 
     const gameDirectory = launcherFolder.getPathTo('instances', versionId)
     await ensureDir(gameDirectory)

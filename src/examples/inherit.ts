@@ -1,5 +1,16 @@
 
-import { readJson } from 'fs-extra'
+import { config } from 'dotenv'
+// require('dotenv').config()
+config()
+
+const {
+    PARENT_VERSION_ID: parentId,
+    MODDED_VERSION_ID: moddedId,
+} = process.env
+
+import {
+    readJson,
+} from 'fs-extra'
 
 import {
     resolve,
@@ -13,11 +24,12 @@ import {
 (async () => {
     const directory = resolve('mock', 'versions')
 
-    const parentId = '1.14.4'
+    if (!parentId) throw new Error('parent id is undefined')
+    if (!moddedId) throw new Error('modded id is undefined')
+
     const parent = await readJson(join(directory, parentId, parentId + '.json'))
     console.log(parent)
 
-    const moddedId = '1.14.4-forge-28.0.47'
     const modded = await readJson(join(directory, moddedId, moddedId + '.json'))
     console.log(modded)
 
