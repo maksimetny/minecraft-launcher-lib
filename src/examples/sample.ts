@@ -43,10 +43,8 @@ async function download(resources: Resource[], partLength = 4) {
 
     resources.forEach(resource => {
         const part = [resource] // new part
-
         if (parts.length) {
             const last = parts[parts.length - 1]
-
             if (last.length < partLength) {
                 last.push(resource)
                 return
@@ -86,13 +84,14 @@ async function download(resources: Resource[], partLength = 4) {
     }
 }
 
-async function launch(custom: string) {
-    const versionJsonPath = join('mock', 'versions', custom, `${custom}.json`)
+(async () => {
+    const versionId = '1.14.4'
+    const versionJsonPath = join('mock', 'versions', versionId, `${versionId}.json`)
     const version = Version.from(await readJson(versionJsonPath))
-
+    
     const launcherFolder = LauncherFolder.from(resolve('launcher'))
 
-    const gameDirectory = launcherFolder.getPathTo('instances', custom)
+    const gameDirectory = launcherFolder.getPathTo('instances', versionId)
     await ensureDir(gameDirectory)
 
     const resources_1: Resource[] = []
@@ -142,7 +141,7 @@ async function launch(custom: string) {
     await download(resources_1)
 
     for await (const native of natives) {
-        await native.extractTo(launcherFolder.getPathTo('natives', custom))
+        await native.extractTo(launcherFolder.getPathTo('natives', versionId))
     }
 
     const assetIndex = AssetIndex.from(await assetIndexJson.parseJSON<any>())
@@ -153,8 +152,6 @@ async function launch(custom: string) {
     })
 
     await download(resources_2)
-
-    // for await (const asset of assets) { }
 
     const _process = Launcher.launch({
         user: {
@@ -189,8 +186,6 @@ async function launch(custom: string) {
         // ]),
     })
 
-    // console.log(_process)
-
     if (_process.stdout) _process.stdout.setEncoding('utf-8')
     if (_process.stderr) _process.stderr.setEncoding('utf-8')
 
@@ -198,6 +193,4 @@ async function launch(custom: string) {
     if (_process.stderr) _process.stderr.on('data', e => console.log(`[${_process.pid}] ${e}`))
 
     _process.on('close', code => console.log(code))
-}
-
-launch('1.14.4').catch(error => console.error('[FATAL]', error))
+})().catch(err => console.error('[FATAL]', err))
