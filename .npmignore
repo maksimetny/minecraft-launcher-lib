@@ -1,13 +1,18 @@
 *.test.*
 src/
 dist/examples/
+mock/
 launcher/
 tsconfig.json
+.babelrc.json
 .backup/
 .*.swp
 ._*
 .DS_Store
+.hidden
+.nomedia
 .git
+.github
 .gitattributes
 .hg
 .npmrc
@@ -19,3 +24,8 @@ CVS
 npm-debug.log
 tslint.json
 .env
+.editorconfig
+example.env
+gulpfile.js
+.hidden
+.nomedia

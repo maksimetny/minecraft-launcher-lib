@@ -19,8 +19,16 @@ async function authenticate(username: string, password: string, clientToken: str
 
 require('dotenv').config()
 
-const { AUTH_USERNAME = 'steve', AUTH_PASSWORD = '123', AUTH_TOKEN = 'abc' } = process.env
+const {
+    AUTH_USERNAME = 'steve',
+    AUTH_PASSWORD = '123',
+    AUTH_CLIENT_TOKEN = 'abc',
+} = process.env
 
-authenticate(AUTH_USERNAME, AUTH_PASSWORD, AUTH_TOKEN).catch(err => {
-    console.error(err)
+authenticate(
+    AUTH_USERNAME,
+    AUTH_PASSWORD,
+    AUTH_CLIENT_TOKEN,
+).catch(error => {
+    console.error(error)
 })

@@ -1,5 +1,5 @@
 
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# see http://help.github.com/ignore-files/ for more about ignoring files
 
 ## Minecraft folder's
 /launcher
@@ -43,5 +43,9 @@ testem.log
 .env
 
 ## system
+.hidden
+.nomedia
+.desktop
+desktop.ini
 .DS_Store
 Thumbs.db
