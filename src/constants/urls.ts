@@ -6,6 +6,6 @@ export const enum urls {
     DEFAULT_RESOURCE_REPO = 'https://resources.download.minecraft.net',
     DEFAULT_LIBS_REPO = 'https://libraries.minecraft.net',
     DEFAULT_AUTH = 'https://authserver.mojang.com',
-}
+};
 
-export default urls
+export default urls;

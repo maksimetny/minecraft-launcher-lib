@@ -1,2 +1,2 @@
 
-export * from './argument'
+export { Argument, IArgument, ArgumentValue } from './argument'

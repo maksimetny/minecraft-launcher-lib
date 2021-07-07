@@ -1,3 +1,3 @@
 
-export * from './events'
-export * from './urls'
+export { events } from './events';
+export { urls } from './urls';
