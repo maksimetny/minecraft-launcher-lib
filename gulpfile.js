@@ -3,9 +3,10 @@ const gulp = require('gulp')
 const ts = require('gulp-typescript')
 const sm = require('gulp-sourcemaps')
 const fs = require('fs-extra')
-const project = ts.createProject('tsconfig.json')
 const babel = require('gulp-babel')
 const merge = require('merge2')
+
+const project = ts.createProject('tsconfig.json')
 
 gulp.task('build', () => {
     const result = project

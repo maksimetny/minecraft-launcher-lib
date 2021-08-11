@@ -1,0 +1,185 @@
+import { spawn, ChildProcess } from 'child_process'
+import { join } from 'path'
+import { LauncherOptions, ILauncherOptions } from './options'
+import { Platform } from '../platform'
+import { Argument } from '../argument'
+
+export class Launcher {
+
+    /**
+     * Construct arguments array for child process by launcher options.
+     *
+     * This function is useful if you want to launch the process by yourself.
+     * This function will NOT check if the runtime libs are completed, and WONT'T check or extract native libs.
+     *
+     * @param options
+     */
+    static constructArguments(options: ILauncherOptions): string[] {
+        const {
+            user,
+            launcherFolder,
+            version,
+            overrides,
+            platform,
+            features,
+            resolution,
+            extraArgs,
+            baseJvmArgs,
+        } = LauncherOptions.from(options)
+
+        const fields = Launcher.constructFields(options)
+
+        // const fields: Map<string, string> = 
+
+        const formatArgs = (_args: Argument[], _extraArgs: Argument[] = []) => {
+            const _formatedArgs: string[] = []
+
+            _args.concat(_extraArgs).filter(_arg => {
+                return _arg.isApplicable(platform, features)
+            }).forEach(_arg => {
+                _arg.format(fields).forEach(_value => {
+                    _formatedArgs.push(_value)
+                })
+            })
+
+            return _formatedArgs
+        }
+
+        if (resolution.height && resolution.width) {
+            features.has_custom_resolution = true
+        } else if (resolution.fullscreen) {
+            extraArgs.game.push(Argument.fromString('--fullscreen'))
+        }
+
+        return [
+            ...formatArgs(baseJvmArgs),
+            ...formatArgs(version.args.jvm, extraArgs.jvm),
+            version.mainClass,
+            ...formatArgs(version.args.game, extraArgs.game),
+        ]
+    }
+
+    /**
+     * Construct libs paths for `classpath` argument.
+     */
+    static constructClasspath(options: ILauncherOptions): string[] {
+        const {
+            overrides,
+            version,
+        } = LauncherOptions.from(options)
+        const paths: Set < string > = new Set()
+
+        version.libs
+            .filter(lib => lib.isApplicable(platform, features))
+            .map(lib => launcherFolder.getLibraryPath(lib.downloads.artifact.path))
+            .concat(overrides.minecraftJarPath)
+            .forEach(path => paths.add(path))
+
+        return Array.from(paths)
+    }
+
+    /**
+     * Construct values map of fields in arguments.
+     */
+    static constructFields(options: ILauncherOptions): Map < string, string > {
+        const opts = LauncherOptions.from(options)
+        const flds = new Map < string,
+            string > ()
+
+        {
+            const {
+                accessToken,
+                type,
+            } = opts.user
+
+            ['auth_access_token', 'auth_session'].forEach(fld => flds.set(fld, accessToken))
+
+            const {
+                name,
+                id,
+            } = opts.user.profile
+
+            flds.set('auth_player_name', name)
+            flds.set('auth_uuid', id)
+            flds.set('user_type', type)
+            flds.set('user_properties', JSON.stringify({ /* default user prop */ }))
+        }
+
+        {
+            const {
+                launcherFolder,
+                version,
+                overrides,
+            } = opts
+
+            flds.set('assets_root', launcherFolder.getPathTo('assets'))
+            flds.set('game_assets', (() => {
+                switch (version.assets) {
+                    case 'legacy': {
+                        return launcherFolder.getPathTo('assets', 'virtual', 'legacy')
+                    }
+                    default: {
+                        return join(overrides.gameDirectory, 'resources')
+                    } // pre-1.6
+                }
+            })())
+            flds.set('assets_index_name', version.assets)
+        }
+
+        return new Map([
+            ['auth_access_token', token],
+            ['auth_session', token],
+            ['auth_player_name', name],
+            ['auth_uuid', id],
+            ['user_type', type],
+            [
+                'user_properties',
+                JSON.stringify({ /* default user prop */ }),
+            ],
+            ['assets_root',
+            [
+                'game_assets',
+                
+            ],
+            ['assets_index_name', version.assets],
+            ['version_name', overrides.versionName],
+            ['version_type', overrides.versionType],
+            ['game_directory', overrides.gameDirectory],
+            ['natives_directory', overrides.nativesDirectory],
+            ['launcher_name', overrides.launcherName],
+            ['launcher_version', overrides.launcherType],
+            ['resolution_width', `${resolution.width ?? 800}`],
+            ['resolution_height', `${resolution.height ?? 600}`],
+            [
+                'classpath',
+                (() => {
+                            return Launcher
+                                .constructClasspath(opts)
+                                .join(platform.classpathSeparator)
+                        })(),
+            ],
+        ])
+        }
+
+        /**
+         * Launch a child process.
+         * This function use spawn to create child process.
+         *
+         * To use an alternative way, see function constructArguments.
+         *
+         * @param options
+         */
+        static launch(options: ILauncherOptions): ChildProcess {
+            const opts = LauncherOptions.from(options)
+            const {
+                javaPath,
+                cwd,
+            } = opts.overrides
+
+            return spawn(javaPath, Launcher.constructArguments(opts), {
+                cwd,
+                ...opts.extraSpawnOptions,
+            })
+        }
+
+    }
