@@ -1,50 +1,13 @@
-# see http://help.github.com/ignore-files/ for more about ignoring files
+# see https://help.github.com/ignore-files/ for more about ignoring files
 
-## Minecraft folder's
-/launcher
-/crash-reports
-/logs
+## game launcher folder
+launcher/
 
 ## compiled output
-/dist
-/tmp
-/out-tsc
-/bazel-out
+dist/
 
 ## dependencies
-/node_modules
+node_modules/
 
-## IDEs and editors
-/.idea
-.project
-.backup
-.classpath
-.c9/
-*.launch
-.settings/
-*.sublime-workspace
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-.history/*
-
-## misc
-/.sass-cache
-/connect.lock
-/coverage
-/libpeerconnection.log
-npm-debug.log
-yarn-error.log
-testem.log
-/typings
+## environment variables
 .env
-
-## system
-.hidden
-.nomedia
-.desktop
-desktop.ini
-.DS_Store
-Thumbs.db
