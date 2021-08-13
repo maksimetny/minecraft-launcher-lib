@@ -3,7 +3,7 @@ const gulp = require('gulp');
 const ts = require('gulp-typescript');
 const sm = require('gulp-sourcemaps');
 const es = require('gulp-eslint');
-const fs = require('fs-extra');
+const clean = require('gulp-clean');
 const babel = require('gulp-babel');
 const merge = require('merge2');
 
@@ -33,9 +33,10 @@ gulp.task('build', () => {
         .pipe(gulp.dest('dist'));
 });
 
-gulp.task('clean', async done => {
-    await fs.emptyDir('dist');
-    done();
+gulp.task('clean', () => {
+    return gulp
+        .src('dist/*')
+        .pipe(clean());
 });
 
 gulp.task('default', gulp.series('clean', 'build'));
