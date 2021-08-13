@@ -10,7 +10,10 @@
     "dist/**/*"
   ],
   "extends": [
-    "eslint:recommended"
+    "standard",
+    "eslint:recommended",
+    "plugin:import/recommended",
+    "plugin:promise/recommended"
   ],
   "rules": {
     "no-console": [
@@ -24,7 +27,23 @@
       }
     ],
     "semi": [
-      "error"
+      "error",
+      "always"
+    ],
+    "indent": [
+      "error",
+      4
+    ],
+    "comma-dangle": [
+      "error",
+      "always-multiline"
+    ],
+    "space-before-function-paren": [
+      "error",
+      {
+        "named": "never",
+        "asyncArrow": "always"
+      }
     ]
   },
   "overrides": [
@@ -33,8 +52,8 @@
         "*.ts"
       ],
       "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended"
+        "plugin:@typescript-eslint/recommended",
+        "plugin:import/typescript"
       ],
       "plugins": [
         "@typescript-eslint"
