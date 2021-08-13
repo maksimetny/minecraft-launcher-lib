@@ -8,8 +8,9 @@
   },
   "scripts": {
     "build": "gulp build",
-    "start": "node ./dist/examples/sample",
-    "test": "jest ./dist --env=node",
+    "start": "gulp && node dist/examples/launcher",
+    "clean": "gulp clean",
+    "test": "gulp && jest dist --env=node",
     "dist": "gulp"
   },
   "repository": {
