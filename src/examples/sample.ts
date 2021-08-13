@@ -1,164 +1,157 @@
 
-import { config } from 'dotenv'
-config()
+import { config } from 'dotenv';
+config();
 
 import {
     events,
-    urls,
-} from '../constants'
+} from '../constants';
 
 import {
     Authenticator,
     Launcher,
-    LauncherOptions,
+    // LauncherOptions,
     LauncherFolder,
     // Downloader,
     Version,
-    VersionDownloads,
-    VersionArguments,
-    Library,
-    Rule,
-    Asset,
+    // VersionDownloads,
+    // VersionArguments,
+    // Library,
+    // Rule,
+    // Asset,
     AssetIndex,
-    Argument,
+    // Argument,
     Artifact,
     Resource,
-    Action,
-    OS,
-    Platform,
-    currentPlatform,
-} from '../index'
+    // Action,
+    // OS,
+    // Platform,
+    // currentPlatform,
+} from '../index';
 
-import {
-    readJson,
-    mkdirp,
-    copy,
-    ensureDir,
-} from 'fs-extra'
+import { readJson, ensureDir } from 'fs-extra';
 
 import {
     resolve,
     join,
-} from 'path'
+} from 'path';
 
 const {
     PARENT_VERSION_ID: versionId = '1.14.4',
     LAUNCHER_DIR = 'launcher',
-} = process.env
+} = process.env;
 
 async function download(resources: Resource[], partLength = 4) {
-    const parts: Resource[][] = []
+    const parts: Resource[][] = [];
 
     resources.forEach(resource => {
-        const part = [resource] // new part
+        const part = [resource]; // new part
         if (parts.length) {
-            const last = parts[parts.length - 1]
+            const last = parts[parts.length - 1];
             if (last.length < partLength) {
-                last.push(resource)
-                return
+                last.push(resource);
+                return;
             }
         }
-
-        parts.push(part)
-    })
+        parts.push(part);
+    });
 
     const downloadResource = async (resource: Resource, force = false) => {
-        resource.on(events.DEBUG, (e) => console.log(`${resource.name} => ${e}`))
+        resource.on(events.DEBUG, (e) => console.log(`${resource.name} => ${e}`));
         resource.on(events.ERROR, (e, err) => {
-            console.error(`${resource.name} => ${e}`, err)
-        })
+            console.error(`${resource.name} => ${e}`, err);
+        });
 
         if (!force) {
-            const success = await resource.isSuccess()
-            if (success) return success
+            const success = await resource.isSuccess();
+            if (success) return success;
         }
 
-        return await resource.download()
-    }
+        return await resource.download();
+    };
 
     for await (const part of parts) {
         const downloadPromises = part.map(async resource => {
-            const success = await downloadResource(resource)
+            const success = await downloadResource(resource);
             return {
                 resource,
                 success,
-            }
-        })
+            };
+        });
 
-        const results = await Promise.all(downloadPromises)
+        const results = await Promise.all(downloadPromises);
         results.forEach(({ resource, success }) => {
-            console.log(resource.path + ' =>', success)
-        })
+            console.log(resource.path + ' =>', success);
+        });
     }
 }
 
 (async () => {
-    const versionJsonPath = join('mock', 'versions', versionId, `${versionId}.json`)
-    const version = Version.from(await readJson(versionJsonPath))
-    
-    const launcherFolder = LauncherFolder.from(resolve(LAUNCHER_DIR))
+    const versionJsonPath = join('mock', 'versions', versionId, `${versionId}.json`);
+    const version = Version.from(await readJson(versionJsonPath));
 
-    const gameDirectory = launcherFolder.getPathTo('instances', versionId)
-    await ensureDir(gameDirectory)
+    const launcherFolder = LauncherFolder.from(resolve(LAUNCHER_DIR));
 
-    const resources_1: Resource[] = []
-    const resources_2: Resource[] = []
+    const gameDirectory = launcherFolder.getPathTo('instances', versionId);
+    await ensureDir(gameDirectory);
+
+    const resources_1: Resource[] = [];
+    const resources_2: Resource[] = [];
 
     const pushToResources = (resource: Resource, resources: Resource[]) => {
         const include = resources
             .map(({ path }) => path)
-            .includes(resource.path)
+            .includes(resource.path);
 
-        if (!include) resources.push(resource)
-        return resource
-    }
+        if (!include) resources.push(resource);
+        return resource;
+    };
 
-    const libs = version.libs
+    version.libs
         .filter(lib => {
-            return lib.isApplicable()
+            return lib.isApplicable();
         }).map(lib => {
-            return lib.downloads.artifact.toResource(launcherFolder.libs)
+            return lib.downloads.artifact.toResource(launcherFolder.libs);
         }).map(resource => {
-            return pushToResources(resource, resources_1)
-        })
+            return pushToResources(resource, resources_1);
+        });
 
     const natives = version.libs
         .filter(lib => {
-            return lib.isApplicable()
+            return lib.isApplicable();
         })
         .filter(lib => {
-            return lib.hasNative()
+            return lib.hasNative();
         })
         .map(lib => {
-            const classifier = lib.getNativeClassifier()
-            const native = lib.downloads.getArtifactByClassifier(classifier)
+            const classifier = lib.getNativeClassifier();
+            const native = lib.downloads.getArtifactByClassifier(classifier);
 
-            return native.toResource(launcherFolder.libs)
+            return native.toResource(launcherFolder.libs);
         })
         .map(resource => {
-            return pushToResources(resource, resources_1)
-        })
+            return pushToResources(resource, resources_1);
+        });
 
-    const versionJar = version.downloads.client.changePath(version.id + '.jar').toResource(launcherFolder.getPathTo('versions', version.id))
-    pushToResources(versionJar, resources_1)
+    const versionJar = version.downloads.client.changePath(version.id + '.jar').toResource(launcherFolder.getPathTo('versions', version.id));
+    pushToResources(versionJar, resources_1);
 
-    const assetIndexJson = Artifact.from(version.assetIndex).toResource(launcherFolder.getPathTo('assets', 'indexes'))
-    pushToResources(assetIndexJson, resources_1)
+    const assetIndexJson = Artifact.from(version.assetIndex).toResource(launcherFolder.getPathTo('assets', 'indexes'));
+    pushToResources(assetIndexJson, resources_1);
 
-    await download(resources_1)
+    await download(resources_1);
 
     for await (const native of natives) {
-        await native.extractTo(launcherFolder.getPathTo('natives', versionId))
+        await native.extractTo(launcherFolder.getPathTo('natives', versionId));
     }
 
-    const assetIndex = AssetIndex.from(await assetIndexJson.parseJSON<any>())
+    const assetIndex = AssetIndex.from(await assetIndexJson.parseJSON());
 
-    const assets = assetIndex.objectsToAssets().map(asset => {
-        const resource = asset.toArtifact().toResource(launcherFolder.getPathTo('assets'))
-        return pushToResources(resource, resources_2)
-    })
+    assetIndex.objectsToAssets().map(asset => {
+        const resource = asset.toArtifact().toResource(launcherFolder.getPathTo('assets'));
+        return pushToResources(resource, resources_2);
+    });
 
-    await download(resources_2)
+    await download(resources_2);
 
     const _process = Launcher.launch({
         user: {
@@ -191,13 +184,13 @@ async function download(resources: Resource[], partLength = 4) {
         //     Argument.fromString('-XX:-UseAdaptiveSizePolicy'),
         //     Argument.fromString('-Dfile.encoding=UTF-8'),
         // ]),
-    })
+    });
 
-    if (_process.stdout) _process.stdout.setEncoding('utf-8')
-    if (_process.stderr) _process.stderr.setEncoding('utf-8')
+    if (_process.stdout) _process.stdout.setEncoding('utf-8');
+    if (_process.stderr) _process.stderr.setEncoding('utf-8');
 
-    if (_process.stdout) _process.stdout.on('data', e => console.log(`[${_process.pid}] ${e}`))
-    if (_process.stderr) _process.stderr.on('data', e => console.log(`[${_process.pid}] ${e}`))
+    if (_process.stdout) _process.stdout.on('data', e => console.log(`[${_process.pid}] ${e}`));
+    if (_process.stderr) _process.stderr.on('data', e => console.log(`[${_process.pid}] ${e}`));
 
-    _process.on('close', code => console.log(code))
-})().catch(err => console.error('[FATAL]', err))
+    _process.on('close', code => console.log(code));
+})().catch(err => console.error('[FATAL]', err));
