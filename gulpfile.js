@@ -1,18 +1,18 @@
 
-const gulp = require('gulp')
-const ts = require('gulp-typescript')
-const sm = require('gulp-sourcemaps')
-const fs = require('fs-extra')
-const babel = require('gulp-babel')
-const merge = require('merge2')
+const gulp = require('gulp');
+const ts = require('gulp-typescript');
+const sm = require('gulp-sourcemaps');
+const fs = require('fs-extra');
+const babel = require('gulp-babel');
+const merge = require('merge2');
 
-const project = ts.createProject('tsconfig.json')
+const project = ts.createProject('tsconfig.json');
 
 gulp.task('build', () => {
     const result = project
         .src()
         .pipe(sm.init())
-        .pipe(project())
+        .pipe(project());
     return merge([
         result
             .js
@@ -21,12 +21,12 @@ gulp.task('build', () => {
             .dts,
     ])
         .pipe(sm.write('.', { sourceRoot: './', includeContent: false }))
-        .pipe(gulp.dest('dist'))
-})
+        .pipe(gulp.dest('dist'));
+});
 
 gulp.task('clean', async done => {
-    await fs.emptyDir('dist')
-    done()
-})
+    await fs.emptyDir('dist');
+    done();
+});
 
-gulp.task('default', gulp.series('clean', 'build'))
+gulp.task('default', gulp.series('clean', 'build'));
