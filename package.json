@@ -7,11 +7,11 @@
     "node": ">=6.0"
   },
   "scripts": {
-    "build": "gulp build",
     "start": "gulp && node dist/examples/launcher",
+    "build": "gulp build",
     "clean": "gulp clean",
-    "test": "gulp && jest dist --env=node",
-    "dist": "gulp"
+    "lint": "gulp lint",
+    "test": "gulp && jest dist --env=node"
   },
   "repository": {
     "type": "git",
@@ -41,12 +41,13 @@
     "yauzl": "^2.10.0"
   },
   "devDependencies": {
+    "@babel/cli": "^7.14.8",
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",
     "@babel/preset-typescript": "^7.12.13",
     "@types/axios": "^0.14.0",
     "@types/fs-extra": "^9.0.6",
-    "@types/jest": "^25.2.1",
+    "@types/jest": "^25.2.3",
     "@types/node": "^13.9.3",
     "@types/uuid": "^7.0.2",
     "@types/yauzl": "^2.9.1",
@@ -54,7 +55,6 @@
     "@typescript-eslint/parser": "^4.29.1",
     "dotenv": "^8.2.0",
     "eslint": "^7.32.0",
-    "eslint-config-standard": "^16.0.3",
     "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-promise": "^5.1.0",
     "gulp": "^4.0.2",
