@@ -1,12 +1,15 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "target": "esnext",
+    "target": "es5",
     "moduleResolution": "node",
     "sourceMap": true,
     "strict": true,
     "declaration": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "lib": [
+      "esnext"
+    ]
   },
   "include": [
     "src/**/*"
