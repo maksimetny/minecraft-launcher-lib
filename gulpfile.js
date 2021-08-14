@@ -1,5 +1,6 @@
 
 const gulp = require('gulp');
+const path = require('path');
 const ts = require('gulp-typescript');
 const sm = require('gulp-sourcemaps');
 const es = require('gulp-eslint');
@@ -29,13 +30,13 @@ gulp.task('build', () => {
         result
             .dts,
     ])
-        .pipe(sm.write('.', { sourceRoot: './', includeContent: false }))
-        .pipe(gulp.dest('dist'));
+        .pipe(sm.write('.'))
+        .pipe(gulp.dest(path.join(project.options.outDir = 'dist')));
 });
 
 gulp.task('clean', () => {
     return gulp
-        .src('dist/*')
+        .src(path.join(project.options.outDir = 'dist', '*'))
         .pipe(clean());
 });
 
