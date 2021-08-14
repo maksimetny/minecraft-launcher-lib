@@ -1,22 +1,17 @@
 
 import {
     IProfile,
-} from '../../authenticator'
+} from '../../authenticator';
 
 type User = {
-
-    accessToken: string
-
+    accessToken: string;
     /**
      * User type for launch args.
      */
-    type: string
-
+    type: string;
     // properties?: UserProperties
-
-    profile: IProfile
-
-}
+    profile: IProfile;
+};
 
 type Memory = {
 
@@ -25,7 +20,7 @@ type Memory = {
      * a jvm flag `-Xmx` to the command result.
      * Определяет максимальный размер памяти.
      */
-    max: number
+    max: number;
 
     /**
      * Min memory, this will add
@@ -33,147 +28,127 @@ type Memory = {
      * Определяет размер начальной выделенной памяти.
      * (`-Xms`, примерно равен `-Xmx`)
      */
-    min: number
+    min: number;
 
-}
+};
 
 type Overrides = {
 
     /**
      * Launcher brand. Is used for `-Dminecraft.launcher.brand` argument.
      */
-    launcherName: string
+    launcherName: string;
 
     /**
      * Launcher version. Is used for
      * `-Dminecraft.launcher.version` argument.
      */
-    launcherType: string
+    launcherType: string;
 
     /**
      * Overwrite version name of current version.
      * If this is absent, it will use
      * version ID from resolved version.
      */
-    versionName: string
+    versionName: string;
 
     /**
      * Overwrite version type of current version.
      * If this is absent, it will use
      * version type from resolved version.
      */
-    versionType: string
+    versionType: string;
 
     /**
      * Path to directory of natives.
      * It's `launcher/natives/<version>` by default.
      */
-    nativesDirectory: string
+    nativesDirectory: string;
 
-    cwd: string
+    cwd: string;
 
-    minecraftJarPath: string
+    minecraftJarPath: string;
 
     /**
      * Path to java executable, e.g. `java` or `D://jre/javaw.exe`.
      */
-    javaPath: string
+    javaPath: string;
 
     /**
      * Path to game directory.
      */
-    gameDirectory: string
+    gameDirectory: string;
 
-}
+};
 
-type Resolution = { width?: number, height?: number, fullscreen?: boolean }
+type Resolution = { width?: number; height?: number; fullscreen?: boolean };
 
-import * as child_process from 'child_process'
-import {
-    currentPlatform,
-    Platform,
-    IPlatform,
-} from '../../platform'
-
-import {
-    Argument,
-    IArgument,
-} from '../../argument'
-
-import {
-    LauncherFolder,
-    LauncherLocation,
-} from '../folder'
-
-import {
-    Version,
-    IVersion,
-    VersionArguments,
-    IVersionArguments,
-} from '../../version'
+import * as child_process from 'child_process';
+import { currentPlatform, Platform, IPlatform } from '../../platform';
+import { Argument, IArgument } from '../../argument';
+import { LauncherFolder, LauncherLocation } from '../folder';
+import { Version, IVersion, VersionArguments, IVersionArguments } from '../../version';
 
 export interface ILauncherOptions {
 
-    user: User
+    user: User;
 
-    launcherFolder: LauncherLocation
+    launcherFolder: LauncherLocation;
 
-    version: any
+    version: Partial<IVersion>;
 
-    features?: Record<string, boolean>
+    features?: Record<string, boolean>;
 
-    memory?: Memory
+    memory?: Memory;
 
-    extraArgs?: Partial<IVersionArguments>
+    extraArgs?: Partial<IVersionArguments>;
 
     /**
      * If you use this, `ignoreInvalidMinecraftCertificates`, `ignorePatchDiscrepancies` and `memory` props will not be used.
      */
-    baseJvmArgs?: IArgument[]
+    baseJvmArgs?: IArgument[];
 
     /**
      * Assign spawn options to process.
      */
-    extraSpawnOptions?: child_process.SpawnOptions
+    extraSpawnOptions?: child_process.SpawnOptions;
 
     /**
      * The platform of this launch will run. By default, it will fetch the current machine info if this is absent.
      */
-    platform?: Partial<IPlatform>
+    platform?: Partial<IPlatform>;
 
     /**
      * Simplified overrides so launcher devs
      * can set whatever they want.
      */
-    overrides?: Partial<Overrides>
+    overrides?: Partial<Overrides>;
 
     /**
      * Add `-Dfml.ignoreInvalidMinecraftCertificates` to JVM argument.
      */
-    ignoreInvalidMinecraftCertificates?: boolean
+    ignoreInvalidMinecraftCertificates?: boolean;
 
     /**
      * Add `-Dfml.ignorePatchDiscrepancies` to JVM argument.
      */
-    ignorePatchDiscrepancies?: boolean
+    ignorePatchDiscrepancies?: boolean;
 
     /**
      * Window resolution. This will add `--height` & `--width` or `--fullscreen` to arguments.
      */
-    resolution?: Resolution
+    resolution?: Resolution;
 
 }
 
 import {
     join,
-} from 'path'
+} from 'path';
 
 export class LauncherOptions implements ILauncherOptions {
 
-    static from(opts: ILauncherOptions) {
-        if (opts instanceof LauncherOptions) {
-            return opts
-        }
+    static from(opts: ILauncherOptions): LauncherOptions {
+        if (opts instanceof LauncherOptions) return opts;
 
         const {
             user,
@@ -200,15 +175,15 @@ export class LauncherOptions implements ILauncherOptions {
                     `-Dfml.ignoreInvalidMinecraftCertificates=${ignoreInvalidMinecraftCertificates}`,
                 ]),
             ],
-        } = opts
+        } = opts;
 
         switch (typeof launcherFolder) {
-            case 'string': break
+            case 'string': break;
             case 'object': {
-                if (launcherFolder instanceof LauncherFolder) break
+                if (launcherFolder instanceof LauncherFolder) break;
             }
             default: {
-                throw new Error('launcher folder not string or instance of launcher folder')
+                throw new Error('launcher folder not string or instance of launcher folder');
             }
         }
 
@@ -226,10 +201,10 @@ export class LauncherOptions implements ILauncherOptions {
             overrides,
             ignoreInvalidMinecraftCertificates,
             ignorePatchDiscrepancies,
-        )
+        );
     }
 
-    private _overrides: Overrides
+    private _overrides: Overrides;
 
     constructor(
         private _user: User,
@@ -256,7 +231,7 @@ export class LauncherOptions implements ILauncherOptions {
             cwd = gameDirectory,
             minecraftJarPath = _launcherFolder.getPathTo('versions', _version.id, `${_version.id}.jar`),
             javaPath = 'java',
-        } = _overrides
+        } = _overrides;
 
         this._overrides = {
             launcherName,
@@ -268,29 +243,29 @@ export class LauncherOptions implements ILauncherOptions {
             cwd,
             minecraftJarPath,
             javaPath,
-        }
+        };
     }
 
-    get user() { return this._user }
+    get user(): User { return this._user; }
 
-    get launcherFolder() { return this._launcherFolder }
+    get launcherFolder(): LauncherFolder { return this._launcherFolder; }
 
-    get version() { return this._version }
+    get version(): Version { return this._version; }
 
-    get features() { return this._features }
+    get features(): Record<string, boolean> { return this._features; }
 
-    get memory() { return this._memory }
+    get memory(): Memory { return this._memory; }
 
-    get resolution() { return this._resolution }
+    get resolution(): Resolution { return this._resolution; }
 
-    get platform() { return this._platform }
+    get platform(): Platform { return this._platform; }
 
-    get extraArgs() { return this._extraArgs }
-    
-    get baseJvmArgs() { return this._baseJvmArgs }
+    get extraArgs(): VersionArguments { return this._extraArgs; }
 
-    get extraSpawnOptions() { return this._extraSpawnOptions }
+    get baseJvmArgs(): Argument[] { return this._baseJvmArgs; }
 
-    get overrides() { return this._overrides }
+    get extraSpawnOptions(): child_process.SpawnOptions { return this._extraSpawnOptions; }
+
+    get overrides(): Overrides { return this._overrides; }
 
 }

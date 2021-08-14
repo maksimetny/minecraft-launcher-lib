@@ -1,25 +1,22 @@
 
-import { join, sep } from 'path'
+import { join } from 'path';
 
-import {
-    currentPlatform,
-    Platform,
-} from '../platform'
+import { currentPlatform } from '../platform';
 
-import { Artifact } from '../artifact'
-import { Argument } from '../argument'
-import { Library, LibraryDownloads } from '../library'
-import { Rule, Action } from '../rule'
+import { Artifact } from '../artifact';
+import { Argument } from '../argument';
+import { Library } from '../library';
+import { Rule, Action } from '../rule';
 
 import {
     Version,
     VersionDownloads,
     VersionArguments,
-} from '../version'
+} from '../version';
 
 import {
     Launcher,
-} from './launcher'
+} from './launcher';
 
 describe('Launcher', () => {
 
@@ -62,7 +59,7 @@ describe('Launcher', () => {
                     path: '1.14.json',
                 },
                 'net.minecraft.client.main.Main',
-            )
+            );
 
             const args = Launcher.constructArguments({
                 user: {
@@ -89,9 +86,9 @@ describe('Launcher', () => {
                 overrides: {
                     versionType: 'modified',
                 },
-            })
+            });
 
-            const s = currentPlatform.classpathSeparator
+            const s = currentPlatform.classpathSeparator;
 
             expect(args).toEqual([
                 '-Xmx1024M',
@@ -109,9 +106,9 @@ describe('Launcher', () => {
                 'dragonhay',
                 '--demo',
                 '--extra',
-            ])
-        })
+            ]);
+        });
 
-    })
+    });
 
-})
+});

@@ -1,3 +1,3 @@
 
-export * from './asset'
-export * from './assetIndex'
+export * from './asset';
+export * from './assetIndex';

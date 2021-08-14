@@ -1,21 +1,21 @@
 
-import { Artifact, IArtifact } from '../artifact'
-import { Argument, IArgument } from '../argument'
-import { VersionDownloads, IVersionDownloads } from './downloads'
-import { VersionArguments, IVersionArguments } from './arguments'
-import { Library, ILibrary } from '../library'
-import urls from '../../constants/urls'
+import { Artifact, IArtifact } from '../artifact';
+import { Argument } from '../argument';
+import { VersionDownloads, IVersionDownloads } from './downloads';
+import { VersionArguments, IVersionArguments } from './arguments';
+import { Library, ILibrary } from '../library';
+import { urls } from '../../constants/urls';
 
 export interface IVersion {
-    id: string
-    type: string
-    assets: string
-    downloads: IVersionDownloads
-    arguments: IVersionArguments
-    mainClass: string
-    libraries: ILibrary[]
-    minecraftArguments?: string
-    assetIndex: IAssetIndexArtifact
+    id: string;
+    type: string;
+    assets: string;
+    downloads: IVersionDownloads;
+    arguments: IVersionArguments;
+    mainClass: string;
+    libraries: ILibrary[];
+    minecraftArguments?: string;
+    assetIndex: IAssetIndexArtifact;
 }
 
 interface IAssetIndexArtifact extends IArtifact {
@@ -23,16 +23,20 @@ interface IAssetIndexArtifact extends IArtifact {
     /**
      * This like assets prop in version attrs.
      **/
-    id: string
+    id: string;
 
-    totalSize: number
+    totalSize: number;
 
 }
 
 export class Version {
 
-    static from(_version: Partial<IVersion>, _default: Partial<IVersion> = { /* parent */ }, _repoURL: string = urls.DEFAULT_LIBS_REPO) {
-        if (_version instanceof Version) return _version
+    static from(
+        _version: Partial<IVersion>,
+        _default: Partial<IVersion> = { /* parent */ },
+        _repoURL: string = urls.DEFAULT_LIBS_REPO,
+    ): Version {
+        if (_version instanceof Version) return _version;
         const {
             id: _id,
             type: _type,
@@ -43,7 +47,7 @@ export class Version {
             arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS },
             minecraftArguments: _minecraftArguments,
             assetIndex: _assetIndex,
-        } = _default
+        } = _default;
         const {
             id = _id,
             type = _type,
@@ -54,51 +58,51 @@ export class Version {
             arguments: args = _args,
             minecraftArguments = _minecraftArguments,
             assetIndex = _assetIndex,
-        } = _version
+        } = _version;
 
-        if (!assetIndex) throw new Error('missing asset index')
-        if (!id) throw new Error('missing id')
-        if (!type) throw new Error('missing type')
-        if (!assets) throw new Error('missing assets')
-        if (!downloads) throw new Error('missing downloads')
-        if (!mainClass) throw new Error('missing main class')
+        if (!assetIndex) throw new Error('missing asset index');
+        if (!id) throw new Error('missing id');
+        if (!type) throw new Error('missing type');
+        if (!assets) throw new Error('missing assets');
+        if (!downloads) throw new Error('missing downloads');
+        if (!mainClass) throw new Error('missing main class');
 
-        const flatLibs = libs.map(({ name }) => name)
+        const flatLibs = libs.map(({ name }) => name);
         _libs.forEach(_lib => {
-            const contains = flatLibs.includes(_lib.name)
-            if (!contains) libs.push(_lib)
-        })
+            const contains = flatLibs.includes(_lib.name);
+            if (!contains) libs.push(_lib);
+        });
 
-        const _versionArgs = VersionArguments.from(_args)
-        const versionArgs = VersionArguments.from(args)
+        const _versionArgs = VersionArguments.from(_args);
+        const versionArgs = VersionArguments.from(args);
 
-        const _gameArgs = _versionArgs.game.map(_arg => Argument.from(_arg))
-        const gameArgs = versionArgs.game.map(arg => Argument.from(arg))
-        const flatArgsSep = ' '
-        const flatGameArgs = gameArgs.map(({ value }) => value.join(flatArgsSep))
+        const _gameArgs = _versionArgs.game.map(_arg => Argument.from(_arg));
+        const gameArgs = versionArgs.game.map(arg => Argument.from(arg));
+        const flatArgsSep = ' ';
+        const flatGameArgs = gameArgs.map(({ value }) => value.join(flatArgsSep));
         _gameArgs.forEach(_arg => {
-            const contains = flatGameArgs.includes(_arg.value.join(flatArgsSep))
-            if (!contains) versionArgs.game.push(_arg)
-        })
+            const contains = flatGameArgs.includes(_arg.value.join(flatArgsSep));
+            if (!contains) versionArgs.game.push(_arg);
+        });
 
-        const _jvmArgs = _versionArgs.jvm.map(_arg => Argument.from(_arg))
-        const jvmArgs = versionArgs.jvm.map(arg => Argument.from(arg))
-        const flatJvmArgs = jvmArgs.map(({ value }) => value.join(flatArgsSep))
+        const _jvmArgs = _versionArgs.jvm.map(_arg => Argument.from(_arg));
+        const jvmArgs = versionArgs.jvm.map(arg => Argument.from(arg));
+        const flatJvmArgs = jvmArgs.map(({ value }) => value.join(flatArgsSep));
         _jvmArgs.forEach(_arg => {
-            const contains = flatJvmArgs.includes(_arg.value.join(flatArgsSep))
-            if (!contains) versionArgs.jvm.push(_arg)
-        })
+            const contains = flatJvmArgs.includes(_arg.value.join(flatArgsSep));
+            if (!contains) versionArgs.jvm.push(_arg);
+        });
 
         if (minecraftArguments) {
             const {
                 game,
                 jvm,
-            } = VersionArguments.fromLegacyArguments(minecraftArguments)
-            versionArgs.game = game.concat(versionArgs.game)
-            versionArgs.jvm = jvm.concat(versionArgs.jvm)
+            } = VersionArguments.fromLegacyArguments(minecraftArguments);
+            versionArgs.game = game.concat(versionArgs.game);
+            versionArgs.jvm = jvm.concat(versionArgs.jvm);
         }
 
-        const assetIndex_: IAssetIndexArtifact = Artifact.changePath(assets + '.json', assetIndex) as IAssetIndexArtifact
+        const assetIndex_: IAssetIndexArtifact = Artifact.changePath(assets + '.json', assetIndex) as IAssetIndexArtifact;
 
         return new Version(
             id,
@@ -109,7 +113,7 @@ export class Version {
             libs.map(lib => Library.from(lib, _repoURL)),
             assetIndex_,
             mainClass,
-        )
+        );
     }
 
     constructor(
@@ -123,28 +127,28 @@ export class Version {
         private _mainClass: string,
     ) { }
 
-    get id() { return this._id }
+    get id(): string { return this._id; }
 
-    get type() { return this._type }
+    get type(): string { return this._type; }
 
-    get assets() { return this._assets }
+    get assets(): string { return this._assets; }
 
-    get downloads() { return this._downloads }
+    get downloads(): VersionDownloads { return this._downloads; }
 
-    get libraries() { return this.libs }
+    get libraries(): Library[] { return this.libs; }
 
-    get libs() { return this._libs }
+    get libs(): Library[] { return this._libs; }
 
-    get args() { return this._args }
+    get args(): VersionArguments { return this._args; }
 
-    get assetIndex() { return this._assetIndex }
+    get assetIndex(): IAssetIndexArtifact { return this._assetIndex; }
 
-    get mainClass() { return this._mainClass }
+    get mainClass(): string { return this._mainClass; }
 
     // TODO isLegacy() { }
 
     toString(): string {
-        return `${this.type} ${this.id}`
+        return `${this.type} ${this.id}`;
     }
 
     toJSON(): IVersion {
@@ -157,7 +161,7 @@ export class Version {
             libs,
             mainClass,
             assetIndex,
-        } = this
+        } = this;
         return {
             id,
             type,
@@ -167,7 +171,7 @@ export class Version {
             'libraries': libs,
             mainClass,
             assetIndex,
-        }
+        };
     }
 
 }

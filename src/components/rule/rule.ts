@@ -1,6 +1,4 @@
 
-// export enum Features = { }
-
 export enum Action {
     ALLOW = 'allow',
     DISALLOW = 'disallow',
@@ -8,42 +6,39 @@ export enum Action {
 
 import {
     currentPlatform,
-    Platform,
     IPlatform,
-} from '../platform'
+} from '../platform';
 
 export interface IRule {
-    action: Action
-    os: Partial<IPlatform>
-    features: Record<string, boolean>
+    action: Action;
+    os: Partial<IPlatform>;
+    features: Record<string, boolean>;
 }
 
 export class Rule implements IRule {
 
     static from(_rule: Partial<IRule>, _default: Partial<IRule> = { /* default */ }): Rule {
-        if (_rule instanceof Rule) {
-            return _rule
-        }
+        if (_rule instanceof Rule) return _rule;
 
         const {
             action: defaultAction = Action.ALLOW,
             os: defaultOS = { /* platform */ },
             features: defaultFeatures = { /* features */ },
-        } = _default
+        } = _default;
 
         const {
             action = defaultAction,
             os = defaultOS,
             features = defaultFeatures,
-        } = _rule
+        } = _rule;
 
-        return new Rule(action, os, features)
+        return new Rule(action, os, features);
     }
 
-    static compare(a: boolean, b: boolean, action: Action) {
+    static compare(a: boolean, b: boolean, action: Action): boolean {
         switch (action) {
-            case Action.ALLOW: return a
-            default: return b
+            case Action.ALLOW: return a;
+            default: return b;
         }
     }
 
@@ -53,66 +48,66 @@ export class Rule implements IRule {
         private _features: Record<string, boolean>,
     ) { }
 
-    get action() {
-        return this._action
+    get action(): Action {
+        return this._action;
     }
 
-    get os() {
-        return this._os
+    get os(): Partial<IPlatform> {
+        return this._os;
     }
 
-    get features() {
-        return this._features
+    get features(): Record<string, boolean> {
+        return this._features;
     }
 
     /**
      * Check if rule are acceptable in certain
      * platform and features.
      */
-    isAllowable(platform: Partial<IPlatform>, features: Record<string, boolean>) {
-        let allowable = true
+    isAllowable(platform: Partial<IPlatform>, features: Record<string, boolean>): boolean {
+        let allowable = true;
 
         {
             if (this.os.name) {
-                const { name = currentPlatform.name } = platform
-                const { name: _name } = this.os
+                const { name = currentPlatform.name } = platform;
+                const { name: _name } = this.os;
 
-                allowable = Rule.compare(_name === name, _name !== name, this.action)
+                allowable = Rule.compare(_name === name, _name !== name, this.action);
             }
 
             if (this.os.version) {
-                const { version = currentPlatform.version } = platform
-                const { version: _version } = this.os
+                const { version = currentPlatform.version } = platform;
+                const { version: _version } = this.os;
 
-                const a: boolean = Boolean(version.match(_version))
-                const b: boolean = !version.match(_version)
+                const a: boolean = Boolean(version.match(_version));
+                const b: boolean = !version.match(_version);
 
-                allowable = Rule.compare(a, b, this.action)
+                allowable = Rule.compare(a, b, this.action);
             }
 
             if (this.os.arch) {
-                const { arch = currentPlatform.arch } = platform
-                const { arch: _arch } = this.os
+                const { arch = currentPlatform.arch } = platform;
+                const { arch: _arch } = this.os;
 
-                allowable = Rule.compare(_arch === arch, _arch !== arch, this.action)
+                allowable = Rule.compare(_arch === arch, _arch !== arch, this.action);
             }
         } // compare platform
 
         {
             Object.entries(this.features).forEach(([feature, value]) => {
-                allowable = Rule.compare(features[feature] === value, features[feature] !== value, this.action)
-            })
+                allowable = Rule.compare(features[feature] === value, features[feature] !== value, this.action);
+            });
         } // compare features
 
-        return allowable
+        return allowable;
     }
 
-    getFeature(name: string) {
-        return this.features[name]
+    getFeature(name: string): boolean {
+        return this.features[name];
     }
 
-    setFeature(name: string, value: boolean) {
-        return this.features[name] = value
+    setFeature(name: string, value: boolean): boolean {
+        return this.features[name] = value;
     }
 
     toJSON(): IRule {
@@ -120,13 +115,12 @@ export class Rule implements IRule {
             action,
             os,
             features,
-        } = this
-
+        } = this;
         return {
             action,
             os,
             features,
-        }
+        };
     }
 
 }

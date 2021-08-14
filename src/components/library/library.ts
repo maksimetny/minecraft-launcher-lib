@@ -1,66 +1,51 @@
 
-import urls from '../../constants/urls'
-
-import {
-    Artifact,
-    IArtifact,
-} from '../artifact'
+import { urls } from '../../constants/urls';
 
 import {
     Rule,
     IRule,
-} from '../rule'
+} from '../rule';
 
 import {
     currentPlatform,
-    Platform,
     IPlatform,
     OS,
-} from '../platform'
+} from '../platform';
 
-import {
-    LibraryDownloads,
-    ILibraryDownloads,
-} from './downloads'
+import { LibraryDownloads, ILibraryDownloads } from './downloads';
 
-export type LibraryNatives = Record<string, string> // TODO key => OS
+export type LibraryNatives = Record<string, string>; // TODO key => OS
 
 export type LibraryExtract = {
-    exclude: string[]
-}
+    exclude: string[];
+};
 
 export interface ILibrary {
 
-    downloads: ILibraryDownloads
+    downloads: ILibraryDownloads;
 
     /**
      * A maven name for library,
      * in form of `group:artifact:version`.
      */
-    name: string
+    name: string;
 
-    natives: LibraryNatives
+    natives: LibraryNatives;
 
-    rules: IRule[]
+    rules: IRule[];
 
-    extract: LibraryExtract
+    extract: LibraryExtract;
 
 }
 
 import {
     Argument,
-} from '../argument'
-
-import {
-    join,
-} from 'path'
+} from '../argument';
 
 export class Library implements ILibrary {
 
-    static from(_lib: Partial<ILibrary>, _repo: string = urls.DEFAULT_LIBS_REPO) {
-        if (_lib instanceof Library) {
-            return _lib
-        }
+    static from(_lib: Partial<ILibrary>, _repo: string = urls.DEFAULT_LIBS_REPO): Library {
+        if (_lib instanceof Library) return _lib;
 
         const {
             name: _name,
@@ -72,9 +57,9 @@ export class Library implements ILibrary {
             },
             rules: _rules = [],
             natives: _natives = { /* `${os}`: `natives-${os}` or `natives-${os}-${arch}` */ },
-        } = _lib
+        } = _lib;
 
-        if (typeof _name !== 'string') throw new Error('library name not string')
+        if (typeof _name !== 'string') throw new Error('library name not string');
 
         return new Library(
             _name,
@@ -82,7 +67,7 @@ export class Library implements ILibrary {
             _natives,
             _extract,
             _rules.map(_rule => Rule.from(_rule)),
-        )
+        );
     }
 
     constructor(
@@ -93,63 +78,63 @@ export class Library implements ILibrary {
         private _rules: Rule[],
     ) { }
 
-    get name() {
-        return this._name
+    get name(): string {
+        return this._name;
     }
 
-    get downloads() {
-        return this._downloads
+    get downloads(): LibraryDownloads {
+        return this._downloads;
     }
 
-    get natives() {
-        return this._natives
+    get natives(): LibraryNatives {
+        return this._natives;
     }
 
-    get extract() {
-        return this._extract
+    get extract(): LibraryExtract {
+        return this._extract;
     }
 
-    get rules() {
-        return this._rules
+    get rules(): Rule[] {
+        return this._rules;
     }
 
     isApplicable(platform: Partial<IPlatform> = { /* platform */ }, features: Record<string, boolean> = { /* features */ }): boolean {
         return !this.rules.map(rule => {
-            return rule.isAllowable(platform, features)
-        }).includes(false)
+            return rule.isAllowable(platform, features);
+        }).includes(false);
     }
 
     hasNative(os: OS = currentPlatform.name): boolean {
-        return this.natives.hasOwnProperty(os)
+        return os in this.natives;
     }
 
     getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
         const {
             name = currentPlatform.name,
             arch = currentPlatform.arch,
-        } = platform
+        } = platform;
 
         const format = (_arch: string) => {
-            const classifier = this.natives[name]
+            const classifier = this.natives[name];
             const fields = new Map([
                 ['arch', _arch],
-            ])
+            ]);
 
-            return Argument.format(classifier, fields)
-        }
+            return Argument.format(classifier, fields);
+        };
 
         switch (arch) {
             case 'x64': {
-                return format('64')
+                return format('64');
             }
             default: {
-                return format('32')
+                return format('32');
             } // x32 or unknown
         }
     }
 
-    toString() {
-        return this.name
+    toString(): string {
+        return this.name;
     }
 
     toJSON(): ILibrary {
@@ -159,15 +144,14 @@ export class Library implements ILibrary {
             natives,
             extract,
             rules,
-        } = this
-
+        } = this;
         return {
             name,
             downloads,
             natives,
             extract,
             rules,
-        }
+        };
     }
 
 }
