@@ -2,6 +2,7 @@
 import { Resource } from './resource'
 import * as path from 'path'
 import * as nock from 'nock'
+import { URL } from 'url'
 
 describe('Downloader', () => {
 
