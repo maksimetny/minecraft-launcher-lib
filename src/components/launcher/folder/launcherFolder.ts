@@ -1,34 +1,34 @@
 
 import {
     join,
-} from 'path'
+} from 'path';
 
 import {
     Folder,
-} from '../../folder'
+} from '../../folder';
 
 export class LauncherFolder extends Folder {
 
-    static from(location: LauncherLocation) { return location instanceof LauncherFolder ? location : new LauncherFolder(location) }
+    static from(location: LauncherLocation): LauncherFolder { return location instanceof LauncherFolder ? location : new LauncherFolder(location); }
 
-    constructor(_path: string) { super(_path) }
+    constructor(_path: string) { super(_path); }
 
-    get natives() {
-        return this.getPathTo('natives')
+    get natives(): string {
+        return this.getPathTo('natives');
     }
 
-    get libs() {
-        return this.getPathTo('libraries')
+    get libs(): string {
+        return this.getPathTo('libraries');
     }
 
-    get libraries() {
-        return this.libs
+    get libraries(): string {
+        return this.libs;
     }
 
-    getLibraryPath(relativeLibraryPath: string) {
-        return join(this.libs, relativeLibraryPath)
+    getLibraryPath(relativeLibraryPath: string): string {
+        return join(this.libs, relativeLibraryPath);
     }
 
 }
 
-export type LauncherLocation = LauncherFolder | string
+export type LauncherLocation = LauncherFolder | string;

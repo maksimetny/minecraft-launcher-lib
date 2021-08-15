@@ -6,53 +6,53 @@ export enum OS {
 } // mojang friendly OS
 
 export interface IPlatform {
-    arch: string
-    name: OS
-    version: string
+    arch: string;
+    name: OS;
+    version: string;
 }
 
-import * as os from 'os'
+import * as os from 'os';
 
 export class Platform implements IPlatform {
 
-    static from(_platform: Partial<IPlatform>) {
+    static from(_platform: Partial<IPlatform>): Platform {
         if (_platform instanceof Platform) {
-            return _platform
+            return _platform;
         }
 
         const {
             name = currentPlatform.name,
             arch = currentPlatform.arch,
             version = currentPlatform.version,
-        } = _platform
+        } = _platform;
 
         return new Platform(
             name,
             arch,
             version,
-        )
+        );
     }
 
     static get currentPlatform(): Platform {
-        if (currentPlatform) return currentPlatform
+        if (currentPlatform) return currentPlatform;
 
         const name: OS = (() => {
             switch (os.platform()) {
                 case 'win32': {
-                    return OS.WINDOWS
+                    return OS.WINDOWS;
                 }
                 case 'darwin': {
-                    return OS.OSX
+                    return OS.OSX;
                 }
                 default: {
-                    return OS.LINUX
+                    return OS.LINUX;
                 } // linux and unknown
             }
-        })()
-        const arch: string = os.arch()
-        const version: string = os.release()
+        })();
+        const arch: string = os.arch();
+        const version: string = os.release();
 
-        return new Platform(name, arch, version)
+        return new Platform(name, arch, version);
     }
 
     constructor(
@@ -61,33 +61,33 @@ export class Platform implements IPlatform {
         private _version: string,
     ) { }
 
-    get name() {
-        return this._name
+    get name(): OS {
+        return this._name;
     }
 
-    set name(name) {
-        this._name = name
+    set name(name: OS) {
+        this._name = name;
     }
 
-    get arch() {
-        return this._arch
+    get arch(): string {
+        return this._arch;
     }
 
-    set arch(arch) {
-        this._arch = arch
+    set arch(arch: string) {
+        this._arch = arch;
     }
 
-    get version() { return this._version }
+    get version(): string { return this._version; }
 
-    set version(version) { this._version = version }
+    set version(version: string) { this._version = version; }
 
     get classpathSeparator(): string {
         switch (this._name) {
             case OS.WINDOWS: {
-                return ';'
+                return ';';
             }
             default: {
-                return ':'
+                return ':';
             }
         }
     }
@@ -97,15 +97,14 @@ export class Platform implements IPlatform {
             name,
             arch,
             version,
-        } = this
-
+        } = this;
         return {
             name,
             arch,
             version,
-        }
+        };
     }
 
 }
 
-export const currentPlatform = Platform.currentPlatform
+export const currentPlatform = Platform.currentPlatform;

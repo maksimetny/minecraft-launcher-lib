@@ -1,13 +1,12 @@
 
-import { Artifact, IArtifact } from '../artifact'
-import { join } from 'path'
-import { Asset, IAsset } from './asset'
+import { Artifact } from '../artifact';
+import { Asset } from './asset';
 
 describe('Asset', () => {
 
     const objects: Record<string, {
-        hash: string,
-        size: number,
+        hash: string;
+        size: number;
     }> = {
         'icons/icon_16x16.png': {
             hash: 'bdf48ef6b5d0d23bbb02e17d04865216179f510a',
@@ -21,7 +20,7 @@ describe('Asset', () => {
             hash: '991b421dfd401f115241601b2b373140a8d78572',
             size: 114786,
         },
-    }
+    };
 
     describe('#subhash', () => {
 
@@ -29,23 +28,23 @@ describe('Asset', () => {
             'bdf48ef6b5d0d23bbb02e17d04865216179f510a': 'bd',
             '92750c5f93c312ba9ab413d546f32190c56d6f1f': '92',
             '991b421dfd401f115241601b2b373140a8d78572': '99',
-        }
+        };
 
         it('should returns subhash', () => {
             Object.keys(objects).forEach(path => {
                 const {
                     hash,
                     size,
-                } = objects[path]
+                } = objects[path];
                 const {
                     subhash,
-                } = new Asset(path, hash, size)
+                } = new Asset(path, hash, size);
 
-                expect(subhash).toBe(subhashes[hash])
-            })
-        })
+                expect(subhash).toBe(subhashes[hash]);
+            });
+        });
 
-    })
+    });
 
     describe('#toArtifact', () => {
 
@@ -54,13 +53,13 @@ describe('Asset', () => {
                 const {
                     hash,
                     size,
-                } = objects[path]
-                const artifact = new Asset(path, hash, size).toArtifact()
+                } = objects[path];
+                const artifact = new Asset(path, hash, size).toArtifact();
 
-                expect((artifact instanceof Artifact)).toBeTruthy()
-            })
-        })
+                expect((artifact instanceof Artifact)).toBeTruthy();
+            });
+        });
 
-    })
+    });
 
-})
+});

@@ -1,72 +1,72 @@
 
 export interface IArtifact {
-    path: string
-    url: string
-    sha1: string
+    path: string;
+    url: string;
+    sha1: string;
 }
 
 import {
     Resource,
-} from '../resource'
+} from '../resource';
 
-import { join } from 'path'
+import { join } from 'path';
 
 export class Artifact implements IArtifact {
 
     static from(_artifact: Partial<IArtifact>, _default: Partial<IArtifact> = { /* default */ }): Artifact {
         if (_artifact instanceof Artifact) {
-            return _artifact
+            return _artifact;
         }
 
         const {
             path: _path = _default.path,
             url: _url = _default.url,
             sha1: _sha1 = _default.sha1,
-        } = _artifact
+        } = _artifact;
 
-        if (typeof _path !== 'string') throw new Error('artifact path not string')
+        if (typeof _path !== 'string') throw new Error('artifact path not string');
 
-        if (typeof _url !== 'string') throw new Error('artifact url not string')
+        if (typeof _url !== 'string') throw new Error('artifact url not string');
 
-        if (typeof _sha1 !== 'string') throw new Error('artifact sha1 not string')
+        if (typeof _sha1 !== 'string') throw new Error('artifact sha1 not string');
 
-        return new Artifact(_path, _url, _sha1)
+        return new Artifact(_path, _url, _sha1);
     }
 
-    static changePath(path: string, artifact: Partial<IArtifact>) {
-        artifact.path = path
-        return artifact
+    static changePath(path: string, artifact: Partial<IArtifact>): Partial<IArtifact> {
+        artifact.path = path;
+        return artifact;
     }
 
-    static changeURL(url: string, artifact: Partial<IArtifact>) {
-        artifact.url = url
-        return artifact
+    static changeURL(url: string, artifact: Partial<IArtifact>): Partial<IArtifact> {
+        artifact.url = url;
+        return artifact;
     }
 
-    static changeSHA1(sha1: string, artifact: Partial<IArtifact>) {
-        artifact.sha1 = sha1
-        return artifact
+    static changeSHA1(sha1: string, artifact: Partial<IArtifact>): Partial<IArtifact> {
+        artifact.sha1 = sha1;
+        return artifact;
     }
 
-    static isDownloadable(artifact: Partial<IArtifact>) {
+    static isDownloadable(artifact: Partial<IArtifact>): boolean {
         return ![
             'path',
             'url',
             'sha1',
-        ].map(prop => artifact.hasOwnProperty(prop)).includes(false)
+        ].map(prop => prop in artifact).includes(false);
     }
 
     /**
      * @param a name, it should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
      * @param a repo, it should look like URL, e.g. `https://libraries.mojang.com` or `http://127.0.0.1`.
      */
-    static fromString(name: string, repoURL: string, sha1 = '') {
-        const parts = name.split(':')
+    static fromString(name: string, repoURL: string, sha1 = ''): Artifact {
+        const parts = name.split(':');
 
         if (parts.length >= 3) {
-            const [grp, art] = parts
-            const ext = parts.length > 3 ? parts[2] : 'jar'
-            const ver = parts[parts.length - 1]
+            const [grp, art] = parts;
+            const ext = parts.length > 3 ? parts[2] : 'jar';
+            const ver = parts[parts.length - 1];
 
             const paths: string[] = [
                 ...grp.split('.'),
@@ -78,16 +78,16 @@ export class Artifact implements IArtifact {
                     parts.length > 4 ? '-' + parts[3] : '',
                     '.' + ext,
                 ].join(''),
-            ]
+            ];
 
             return Artifact.from({
                 path: join(...paths),
                 url: repoURL + '/' + paths.join('/'),
                 sha1,
-            })
+            });
         }
 
-        throw new Error('a name string not include maven name')
+        throw new Error('a name string not include maven name');
     }
 
     constructor(
@@ -96,56 +96,56 @@ export class Artifact implements IArtifact {
         private _sha1: string,
     ) { }
 
-    get url() {
-        return this._url
+    get url(): string {
+        return this._url;
     }
 
-    set url(_url) {
-        this._url = _url
+    set url(_url: string) {
+        this._url = _url;
     }
 
-    get path() { return this._path }
+    get path(): string { return this._path; }
 
-    set path(_path) { this._path = _path }
+    set path(_path: string) { this._path = _path; }
 
-    get sha1() { return this._sha1 }
+    get sha1(): string { return this._sha1; }
 
-    set sha1(_sha1) { this._sha1 = _sha1 }
+    set sha1(_sha1: string) { this._sha1 = _sha1; }
 
     changePath(path: string): Artifact {
-        return Artifact.from(Artifact.changePath(path, this))
+        return Artifact.from(Artifact.changePath(path, this));
     }
 
     changeURL(url: string): Artifact {
-        return Artifact.from(Artifact.changeURL(url, this))
+        return Artifact.from(Artifact.changeURL(url, this));
     }
 
     changeSHA1(sha1: string): Artifact {
-        return Artifact.from(Artifact.changeSHA1(sha1, this))
+        return Artifact.from(Artifact.changeSHA1(sha1, this));
     }
 
     toResource(directory: string): Resource {
-        return new Resource(join(directory, this.path), this.url, this.sha1)
+        return new Resource(join(directory, this.path), this.url, this.sha1);
     }
 
     /**
      * @returns a name, it should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
      */
     toString(): string {
-        const parts: string[] = this.path.split('/')
-        const name = parts.slice(-1).join()
+        const parts: string[] = this.path.split('/');
+        const name = parts.slice(-1).join();
 
-        const extSepIndex = name.lastIndexOf('.')
-        const firstNumIndex = name.search(/\d/)
+        const extSepIndex = name.lastIndexOf('.');
+        const firstNumIndex = name.search(/\d/);
 
-        const grp = parts.slice(0, parts.length - 3).join('.')
-        const art = name.slice(0, firstNumIndex - 1)
-        const ver = name.slice(firstNumIndex, extSepIndex)
+        const grp = parts.slice(0, parts.length - 3).join('.');
+        const art = name.slice(0, firstNumIndex - 1);
+        const ver = name.slice(firstNumIndex, extSepIndex);
         // const ext = name.slice(extSepIndex).slice(1)
 
         // TODO classifier, extension
 
-        return `${grp}:${art}:${ver}`
+        return `${grp}:${art}:${ver}`;
     }
 
     toJSON(): IArtifact {
@@ -153,13 +153,12 @@ export class Artifact implements IArtifact {
             path,
             url,
             sha1,
-        } = this
-
+        } = this;
         return {
             path,
             url,
             sha1,
-        }
+        };
     }
 
 }

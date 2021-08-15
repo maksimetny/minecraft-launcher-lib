@@ -1,36 +1,36 @@
 
-import { Artifact, IArtifact } from '../../artifact'
+import { Artifact, IArtifact } from '../../artifact';
 
 export interface IVersionDownloads {
-    client: IArtifact
+    client: IArtifact;
     // server: IArtifact
 }
 
 export class VersionDownloads implements IVersionDownloads {
 
-    static from(_downloads: Partial<IVersionDownloads>) {
+    static from(_downloads: Partial<IVersionDownloads>): VersionDownloads {
         if (_downloads instanceof VersionDownloads) {
-            return _downloads
+            return _downloads;
         }
 
         const {
             client: _client,
             // server: _server,
-        } = _downloads
+        } = _downloads;
 
-        if (!_client) throw new Error('missing client artifact')
-        // if (!_server) throw new Error('missing server artifact')
+        if (!_client) throw new Error('missing client artifact');
+        // if (!_server) throw new Error('missing server artifact');
 
-        const client = Artifact.from(_client, { path: 'client.jar' })
-        // const server = Artifact.from(_server, { path: 'server.jar' })
+        const client = Artifact.from(_client, { path: 'client.jar' });
+        // const server = Artifact.from(_server, { path: 'server.jar' });
 
-        return new VersionDownloads(client)
+        return new VersionDownloads(client);
     }
 
     constructor(private _client: Artifact) { }
 
-    get client() { return this._client }
+    get client(): Artifact { return this._client; }
 
-    set client(_client) { this._client = _client }
+    set client(_client: Artifact) { this._client = _client; }
 
 }

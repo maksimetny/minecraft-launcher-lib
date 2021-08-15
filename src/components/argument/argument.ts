@@ -14,26 +14,26 @@ export interface IArgument {
 
     rules: IRule[];
 
-};
+}
 
 export class Argument {
 
     static STRING_ARG_SEP = String.fromCharCode(160);
 
-    static from(_arg: Partial<IArgument> | ArgumentValue) {
+    static from(_arg: Partial<IArgument> | ArgumentValue): Argument {
         if (_arg instanceof Argument) return _arg;
         switch (typeof _arg) {
             case 'string': {
                 return Argument.fromString(_arg);
-            };
+            }
             case 'object': {
                 if (Array.isArray(_arg)) return new Argument(_arg);
                 break;
-            };
+            }
             default: {
                 throw new Error('argument not object or string, string array');
-            };
-        };
+            }
+        }
 
         const {
             rules: _rules = [],
@@ -45,58 +45,58 @@ export class Argument {
             case 'string': {
                 value = [_value];
                 break;
-            };
+            }
             case 'object': {
                 if (Array.isArray(_value)) {
                     value = _value;
                     break;
-                };
-            };
+                }
+            }
             default: {
                 throw new Error('argument value not string or string array');
-            };
-        };
+            }
+        }
 
         const rules = _rules.map(_rule => Rule.from(_rule));
         return new Argument(value, rules);
-    };
+    }
 
-    static fromString(value: string) {
+    static fromString(value: string): Argument {
         return new Argument(value.split(/\s/g));
-    };
+    }
 
-    static format(template: string, fields: Map<string, string>) {
+    static format(template: string, fields: Map<string, string>): string {
         return template.replace(/\$\{(.*?)}/g, key => {
             return fields.get(key.substring(2).substring(0, key.length - 3)) ?? key;
         });
-    }; // github.com/voxelum/minecraft-launcher-core-node/blob/3d5aa7a38cbc66cdfc9b9d68a8bdf4988905cb72/packages/core/launch.ts
+    } // github.com/voxelum/minecraft-launcher-core-node/blob/3d5aa7a38cbc66cdfc9b9d68a8bdf4988905cb72/packages/core/launch.ts
 
     constructor(
         private _value: string[],
         private _rules: Rule[] = [],
-    ) { };
+    ) { }
 
-    get value() {
+    get value(): string[] {
         return this._value;
-    };
+    }
 
-    get rules() {
+    get rules(): Rule[] {
         return this._rules;
-    };
+    }
 
     isApplicable(platform: Partial<IPlatform>, features: Record<string, boolean> = { /* features */ }): boolean {
         return !this.rules.map(rule => {
             return rule.isAllowable(platform, features);
         }).includes(false);
-    };
+    }
 
-    format(fields: Map<string, string>) {
+    format(fields: Map<string, string>): string[] {
         return this.value.map(value => Argument.format(value, fields));
-    };
+    }
 
     toString(): string {
         return this.value.join(Argument.STRING_ARG_SEP);
-    };
+    }
 
     toJSON(): IArgument {
         const {
@@ -107,7 +107,7 @@ export class Argument {
             value,
             rules,
         };
-    };
+    }
 
 }
 
