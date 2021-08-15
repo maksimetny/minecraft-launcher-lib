@@ -3,7 +3,7 @@ import { config } from 'dotenv';
 config();
 
 import {
-    events,
+    baseEvents,
 } from '../constants';
 
 import {
@@ -56,8 +56,8 @@ async function download(resources: Resource[], partLength = 4) {
     });
 
     const downloadResource = async (resource: Resource, force = false) => {
-        resource.on(events.DEBUG, (e) => console.log(`${resource.name} => ${e}`));
-        resource.on(events.ERROR, (e, err) => {
+        resource.on(baseEvents.DEBUG, (e) => console.log(`${resource.name} => ${e}`));
+        resource.on(baseEvents.ERROR, (e, err) => {
             console.error(`${resource.name} => ${e}`, err);
         });
 

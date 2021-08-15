@@ -1,8 +1,11 @@
 
-export const enum events {
+export const enum baseEvents {
     DEBUG = 'debug',
     ERROR = 'error',
-    DOWNLOAD_STATUS = 'download-status',
 }
 
-export default events;
+// export const enum launcherEvents { }
+
+// export const enum downloaderEvents { }
+
+// export const enum authenticatorEvents { }

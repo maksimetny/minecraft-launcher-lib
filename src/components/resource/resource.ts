@@ -16,7 +16,7 @@ import {
     createHash,
 } from 'crypto'
 
-import events from '../../constants/events'
+import { baseEvents } from '../../constants/events'
 
 import {
     createWriteStream,
@@ -89,7 +89,7 @@ export class Resource extends EventEmitter implements IResource {
             try {
                 await ensureDir(this.directory)
             } catch (err) {
-                this.emit(events.ERROR, 'an error occurred while create directory', err)
+                this.emit(baseEvents.ERROR, 'an error occurred while create directory', err)
                 resolve(false)
                 return
             }
@@ -104,7 +104,7 @@ export class Resource extends EventEmitter implements IResource {
                     responseType: 'stream',
                 })
 
-                this.emit(events.DEBUG, `downloading from ${url}`.concat(sha1 ? ` with hash (SHA1) ${sha1}..` : '..'))
+                this.emit(baseEvents.DEBUG, `downloading from ${url}`.concat(sha1 ? ` with hash (SHA1) ${sha1}..` : '..'))
 
                 const {
                     ['content-length']: contentLength = '0',
@@ -119,7 +119,7 @@ export class Resource extends EventEmitter implements IResource {
 
                 dataStream.on('data', chunk => {
                     progress.bytes.current += chunk.length
-                    this.emit(events.DOWNLOAD_STATUS, progress)
+                    this.emit('download-status', progress)
                 })
 
                 const writeStream = createWriteStream(path)
@@ -131,15 +131,15 @@ export class Resource extends EventEmitter implements IResource {
                         success = await this.isSuccess()
                     }
 
-                    this.emit(events.DEBUG, success ? `download successful` : `download not successful`)
+                    this.emit(baseEvents.DEBUG, success ? `download successful` : `download not successful`)
                     resolve(success)
                 })
                 writeStream.on('error', err => {
-                    this.emit(events.ERROR, 'an error occurred while write', err)
+                    this.emit(baseEvents.ERROR, 'an error occurred while write', err)
                     resolve(false)
                 })
             } catch (err) {
-                this.emit(events.ERROR, `an error occurred while download`, err)
+                this.emit(baseEvents.ERROR, `an error occurred while download`, err)
                 resolve(false)
             }
         })
@@ -166,7 +166,7 @@ export class Resource extends EventEmitter implements IResource {
 
             return e
         } catch (err) {
-            this.emit(events.ERROR, 'an error occurred while check hash', err)
+            this.emit(baseEvents.ERROR, 'an error occurred while check hash', err)
             return false
         }
     }
@@ -235,7 +235,7 @@ export class Resource extends EventEmitter implements IResource {
                             reject(err)
                         })
                     })
-                    
+
                     const nameSep = '.'
                     const nameParts = entry.fileName.split(nameSep)
                     nameParts.pop()
@@ -283,12 +283,12 @@ export class Resource extends EventEmitter implements IResource {
                             }
                         }
 
-                        this.emit(events.DEBUG, `extracting ${path}`.concat(sha1 ? `, with hash (SHA1) ${sha1}..` : '..'))
+                        this.emit(baseEvents.DEBUG, `extracting ${path}`.concat(sha1 ? `, with hash (SHA1) ${sha1}..` : '..'))
 
                         const readStream = await openReadStream(entry), writeStream = createWriteStream(path)
 
                         writeStream.on('finish', () => {
-                            this.emit(events.DEBUG, `${name} extracted`)
+                            this.emit(baseEvents.DEBUG, `${name} extracted`)
                             resolve()
                         })
                         writeStream.on('error', err => {
@@ -297,7 +297,7 @@ export class Resource extends EventEmitter implements IResource {
 
                         readStream.pipe(writeStream)
                     } catch (err) {
-                        this.emit(events.ERROR, `an error occurred while extract ${name}`, err)
+                        this.emit(baseEvents.ERROR, `an error occurred while extract ${name}`, err)
                         resolve()
                     }
                 })
@@ -308,7 +308,7 @@ export class Resource extends EventEmitter implements IResource {
     }
 
     get path() { return this._path }
-    
+
     get url() { return this._url }
 
     get sha1() { return this._sha1 }
