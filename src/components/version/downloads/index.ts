@@ -1,2 +1,2 @@
 
-export * from './versionDownloads';
+export * from './versionDownloads'

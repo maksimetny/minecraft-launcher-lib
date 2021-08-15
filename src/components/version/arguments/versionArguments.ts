@@ -1,9 +1,9 @@
 
-import { Argument, IArgument } from '../../argument';
+import { Argument, IArgument } from '../../argument'
 
-export type VersionArgument = string | Partial<IArgument>;
+export type VersionArgument = string | Partial<IArgument>
 
-export interface IVersionArguments { game: VersionArgument[]; jvm: VersionArgument[] }
+export interface IVersionArguments { game: VersionArgument[], jvm: VersionArgument[] }
 
 export class VersionArguments implements IVersionArguments {
 
@@ -18,39 +18,38 @@ export class VersionArguments implements IVersionArguments {
             '-Djava.library.path=${natives_directory}',
         ]),
         new Argument(['-cp', '${classpath}']),
-    ];
+    ]
 
-    static from(_versionArgs: Partial<IVersionArguments>): VersionArguments {
-        if (_versionArgs instanceof VersionArguments) return _versionArgs;
-
-        const { game: _game = [], jvm: _jvm = [] } = _versionArgs;
+    static from(_versionArgs: Partial<IVersionArguments>) {
+        if (_versionArgs instanceof VersionArguments) return _versionArgs
+        const { game: _game = [], jvm: _jvm = [] } = _versionArgs
         const resolveArg = (value: VersionArgument) => {
             switch (typeof value) {
                 case 'string': {
-                    return Argument.fromString(value);
+                    return Argument.fromString(value)
                 }
                 default: {
-                    return Argument.from(value);
+                    return Argument.from(value)
                 }
             }
-        };
+        }
 
-        return new VersionArguments(_game.map(resolveArg), _jvm.map(resolveArg));
+        return new VersionArguments(_game.map(resolveArg), _jvm.map(resolveArg))
     }
 
-    static fromLegacyArguments(minecraftArguments: string): VersionArguments {
-        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => Argument.fromString(value));
-        return new VersionArguments(gameArgs);
+    static fromLegacyArguments(minecraftArguments: string) {
+        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => Argument.fromString(value))
+        return new VersionArguments(gameArgs)
     }
 
     constructor(private _game: Argument[] = [], private _jvm: Argument[] = VersionArguments.DEFAULT_JVM_ARGS) { }
 
-    get game(): Argument[] { return this._game; }
+    get game() { return this._game }
 
-    set game(_game: Argument[]) { this._game = _game; }
+    set game(_game) { this._game = _game }
 
-    get jvm(): Argument[] { return this._jvm; }
+    get jvm() { return this._jvm }
 
-    set jvm(_jvm: Argument[]) { this._jvm = _jvm; }
+    set jvm(_jvm) { this._jvm = _jvm }
 
 }

@@ -2,10 +2,11 @@
 import {
     spawn,
     ChildProcess,
-} from 'child_process';
-import { join } from 'path';
-import { LauncherOptions, ILauncherOptions } from './options';
-import { Argument } from '../argument';
+} from 'child_process'
+import { join } from 'path'
+import { LauncherOptions, ILauncherOptions } from './options'
+import { Platform } from '../platform'
+import { Argument } from '../argument'
 
 export class Launcher {
 
@@ -28,16 +29,16 @@ export class Launcher {
             resolution,
             extraArgs,
             baseJvmArgs,
-        } = LauncherOptions.from(options);
+        } = LauncherOptions.from(options)
 
         const classpath = new Set([
             ...version.libs.filter(lib => {
-                return lib.isApplicable(platform, features);
+                return lib.isApplicable(platform, features)
             }).map(lib => {
-                return launcherFolder.getLibraryPath(lib.downloads.artifact.path);
+                return launcherFolder.getLibraryPath(lib.downloads.artifact.path)
             }),
             overrides.minecraftJarPath,
-        ]); // construct libs paths for `classpath` argument
+        ]) // construct libs paths for `classpath` argument
 
         const fields: Map<string, string> = new Map([
             ['auth_access_token', user.accessToken],
@@ -57,13 +58,13 @@ export class Launcher {
                 (() => {
                     switch (version.assets) {
                         case 'legacy': {
-                            return launcherFolder.getPathTo('assets', 'virtual', 'legacy');
+                            return launcherFolder.getPathTo('assets', 'virtual', 'legacy')
                         }
                         default: {
-                            return join(overrides.gameDirectory, 'resources');
+                            return join(overrides.gameDirectory, 'resources')
                         } // pre-1.6
                     }
-                })(),
+                })()
             ],
             ['assets_index_name', version.assets],
             ['version_name', overrides.versionName],
@@ -77,29 +78,29 @@ export class Launcher {
             [
                 'classpath',
                 (() => {
-                    return Array.from(classpath).join(platform.classpathSeparator);
+                    return Array.from(classpath).join(platform.classpathSeparator)
                 })(),
             ],
-        ]); // construct values of fields in arguments
+        ]) // construct values of fields in arguments
 
         const formatArgs = (_args: Argument[], _extraArgs: Argument[] = []) => {
-            const _formatedArgs: string[] = [];
+            const _formatedArgs: string[] = []
 
             _args.concat(_extraArgs).filter(_arg => {
-                return _arg.isApplicable(platform, features);
+                return _arg.isApplicable(platform, features)
             }).forEach(_arg => {
                 _arg.format(fields).forEach(_value => {
-                    _formatedArgs.push(_value);
-                });
-            });
+                    _formatedArgs.push(_value)
+                })
+            })
 
-            return _formatedArgs;
-        };
+            return _formatedArgs
+        }
 
         if (resolution.height && resolution.width) {
-            features.has_custom_resolution = true;
+            features.has_custom_resolution = true
         } else if (resolution.fullscreen) {
-            extraArgs.game.push(Argument.fromString('--fullscreen'));
+            extraArgs.game.push(Argument.fromString('--fullscreen'))
         }
 
         return [
@@ -107,7 +108,7 @@ export class Launcher {
             ...formatArgs(version.args.jvm, extraArgs.jvm),
             version.mainClass,
             ...formatArgs(version.args.game, extraArgs.game),
-        ];
+        ]
     }
 
     /**
@@ -119,16 +120,16 @@ export class Launcher {
      * @param options
      */
     static launch(options: ILauncherOptions): ChildProcess {
-        const opts = LauncherOptions.from(options);
+        const opts = LauncherOptions.from(options)
         const {
             javaPath,
             cwd,
-        } = opts.overrides;
+        } = opts.overrides
 
         return spawn(javaPath, Launcher.constructArguments(opts), {
             cwd,
             ...opts.extraSpawnOptions,
-        });
+        })
     }
 
 }

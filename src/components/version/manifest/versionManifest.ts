@@ -4,8 +4,8 @@
  * @see https://minecraft.gamepedia.com/version_manifest.json
  */
 export interface IVersionManifest {
-    latest: { snapshot: string; release: string };
-    versions: IVersionManifestItem[];
+    latest: { snapshot: string, release: string }
+    versions: IVersionManifestItem[]
 }
 
 /**
@@ -17,27 +17,27 @@ export interface IVersionManifestItem {
     /**
      * URL to `<id>.json` for this version.
      */
-    url: string;
+    url: string
 
     /**
      * ID of this version.
      */
-    id: string;
+    id: string
 
     /**
      * Type of this version (`release`, `snapshot`).
      */
-    type: string;
+    type: string
 
     /**
      * A timestamp in `ISO 8601` format of when version files
      * were last updated on the manifest.
      */
-    time: string;
+    time: string
 
     /**
      * The release time of this version in `ISO 8601` format.
      */
-    releaseTime: string;
+    releaseTime: string
 
 }

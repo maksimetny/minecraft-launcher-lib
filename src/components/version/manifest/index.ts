@@ -1,2 +1,2 @@
 
-export * from './versionManifest';
+export * from './versionManifest'

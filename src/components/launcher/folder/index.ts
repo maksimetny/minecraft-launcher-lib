@@ -1,2 +1,2 @@
 
-export * from './launcherFolder';
+export * from './launcherFolder'

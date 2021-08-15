@@ -1,71 +1,73 @@
 
 export interface IAuthResponse {
-    accessToken: string;              // hexadecimal
-    clientToken: string;              // identical to one received
-    availableProfiles: IProfile[];
-    selectedProfile: IProfile;        // only present if agent field was received
-    user?: IUser;                     // only present if requestUser was true in request payload
+    accessToken: string              // hexadecimal
+    clientToken: string              // identical to one received
+    availableProfiles: IProfile[]
+    selectedProfile: IProfile        // only present if agent field was received
+    user?: IUser                     // only present if requestUser was true in request payload
 }
 
 export interface IProfile {
-    id: string;                       // hexadecimal (uuid without dashes)
-    name: string;                     // nickname
-    userId?: string;                  // hex string
-    createdAt?: number;
-    legacyProfile?: boolean;
-    suspended?: boolean;
-    paid?: boolean;
-    migrated?: boolean;
-    legacy?: boolean;                 // in practice, this field only appears in response if true (default to false)
+    id: string                       // hexadecimal (uuid without dashes)
+    name: string                     // nickname
+    userId?: string                  // hex string
+    createdAt?: number
+    legacyProfile?: boolean
+    suspended?: boolean
+    paid?: boolean
+    migrated?: boolean
+    legacy?: boolean                 // in practice, this field only appears in response if true (default to false)
 }
 
 interface IUser {
-    id: string;                       // hexadecimal
-    email: string;                    // hashed(?) value for unmigrated accounts
-    username: string;                 // regular name for unmigrated accounts, email for migrated ones
-    registerIp: string;               // IP address with last digit censored
-    migratedFrom: string;
-    migratedAt: number;
-    registeredAt: number;             // may be a few minutes earlier than createdAt for profile
-    passwordChangedAt: number;
-    dateOfBirth: number;
-    suspended: boolean;
-    blocked: boolean;
-    secured: boolean;
-    migrated: boolean;                // seems to be false even when migratedAt and migratedFrom are present..
-    emailVerified: boolean;
-    legacyUser: boolean;
-    verifiedByParent: boolean;
-    properties: UserProperties;
+    id: string                       // hexadecimal
+    email: string                    // hashed(?) value for unmigrated accounts
+    username: string                 // regular name for unmigrated accounts, email for migrated ones
+    registerIp: string               // IP address with last digit censored
+    migratedFrom: string
+    migratedAt: number
+    registeredAt: number             // may be a few minutes earlier than createdAt for profile
+    passwordChangedAt: number
+    dateOfBirth: number
+    suspended: boolean
+    blocked: boolean
+    secured: boolean
+    migrated: boolean                // seems to be false even when migratedAt and migratedFrom are present..
+    emailVerified: boolean
+    legacyUser: boolean
+    verifiedByParent: boolean
+    properties: UserProperties
 }
 
 export type UserProperties = {
-    [prop: number]: { name: string; value: string };
-};
+    [prop: number]: { name: string, value: string }
+}
 
 export interface IAuthException {
-    error: string;
-    errorMessage: string;
+    error: string
+    errorMessage: string
 }
 
 export interface IAuthEndpoints {
-    base: string;
-    readonly _authenticate: string;
-    readonly _refresh: string;
-    readonly _validate: string;
-    readonly _invalidate: string;
-    readonly _signout: string;
+    base: string
+    readonly _authenticate: string
+    readonly _refresh: string
+    readonly _validate: string
+    readonly _invalidate: string
+    readonly _signout: string
 }
 
 import axios, {
     AxiosPromise,
-} from 'axios';
+    // AxiosError,
+    AxiosResponse,
+} from 'axios'
 
-import * as uuid from 'uuid';
+import * as uuid from 'uuid'
 
 import {
     urls,
-} from '../../constants';
+} from '../../constants'
 
 export class Authenticator {
 
@@ -73,7 +75,7 @@ export class Authenticator {
      * Random generate a new token by UUID v4.
      * @returns a new token.
      */
-    static newToken = (): string => uuid.v4().replace(/-/g, '');
+    static newToken = () => uuid.v4().replace(/-/g, '')
 
     /**
      * Create a new default auth response.
@@ -82,7 +84,7 @@ export class Authenticator {
         const _profile: IProfile = {
             name,
             id: Authenticator.newToken(),
-        };
+        }
 
         return {
             accessToken: Authenticator.newToken(),
@@ -91,7 +93,7 @@ export class Authenticator {
             availableProfiles: [
                 _profile,
             ],
-        };
+        }
     }
 
     /**
@@ -116,8 +118,8 @@ export class Authenticator {
                 username,
                 password,
                 agent: { name: 'minecraft', version: 1 },
-            },
-        });
+            }
+        })
     }
 
     /**
@@ -148,7 +150,7 @@ export class Authenticator {
                 clientToken,
                 requestUser,
             },
-        });
+        })
     }
 
     /**
@@ -167,7 +169,7 @@ export class Authenticator {
         return Authenticator.query({
             username,
             password,
-        }, url);
+        }, url)
     }
 
     /**
@@ -189,7 +191,7 @@ export class Authenticator {
         return Authenticator.query({
             accessToken,
             clientToken,
-        }, url);
+        }, url)
     }
 
     /**
@@ -210,7 +212,7 @@ export class Authenticator {
         return Authenticator.query({
             accessToken,
             clientToken,
-        }, url);
+        }, url)
     }
 
     private static query(payload: { [prop: string]: string }, url: string): Promise<boolean> {
@@ -221,17 +223,17 @@ export class Authenticator {
                 ...payload,
             },
         })
-            .then(({ status }) => {
-                switch (status) {
-                    case 204: break;
-                    default: {
-                        return (false);
-                    }
+        .then(({ status }) => {
+            switch (status) {
+                case 204: break
+                default: {
+                    return (false)
                 }
+            }
 
-                return true;
-            })
-            .catch(() => (false));
+            return true
+        })
+        .catch(() => (false))
     }
 
     constructor(
@@ -239,24 +241,24 @@ export class Authenticator {
         private readonly endpoints: IAuthEndpoints,
     ) { }
 
-    authenticate(username: string, password: string, requestUser = false): AxiosPromise<IAuthResponse> {
-        return Authenticator.authenticate(username, password, this.clientToken, requestUser, this.endpoints.base + this.endpoints._authenticate);
+    authenticate(username: string, password: string, requestUser = false) {
+        return Authenticator.authenticate(username, password, this.clientToken, requestUser, this.endpoints.base + this.endpoints._authenticate)
     }
 
-    refresh(accessToken: string, requestUser = false): AxiosPromise<IAuthResponse> {
-        return Authenticator.refresh(accessToken, this.clientToken, requestUser, this.endpoints.base + this.endpoints._refresh);
+    refresh(accessToken: string, requestUser = false) {
+        return Authenticator.refresh(accessToken, this.clientToken, requestUser, this.endpoints.base + this.endpoints._refresh)
     }
 
-    signout(username: string, password: string): Promise<boolean> {
-        return Authenticator.signout(username, password, this.endpoints.base + this.endpoints._signout);
+    signout(username: string, password: string) {
+        return Authenticator.signout(username, password, this.endpoints.base + this.endpoints._signout)
     }
 
-    validate(accessToken: string): Promise<boolean> {
-        return Authenticator.validate(accessToken, this.clientToken, this.endpoints.base + this.endpoints._validate);
+    validate(accessToken: string) {
+        return Authenticator.validate(accessToken, this.clientToken, this.endpoints.base + this.endpoints._validate)
     }
 
-    invalidate(accessToken: string): Promise<boolean> {
-        return Authenticator.invalidate(accessToken, this.clientToken, this.endpoints.base + this.endpoints._invalidate);
+    invalidate(accessToken: string) {
+        return Authenticator.invalidate(accessToken, this.clientToken, this.endpoints.base + this.endpoints._invalidate)
     }
 
 }

@@ -1,2 +1,2 @@
 
-export * from './launcherOptions';
+export * from './launcherOptions'
