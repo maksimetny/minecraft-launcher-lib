@@ -30,7 +30,7 @@ describe('Version', () => {
 
         const args = new VersionArguments(
             [
-                Argument.fromString('--username ${auth_player_name}'),
+                Argument.from('--username ${auth_player_name}'),
                 // new Argument([
                 //     '--username',
                 //     '${auth_player_name}',

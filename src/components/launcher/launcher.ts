@@ -99,7 +99,7 @@ export class Launcher {
         if (resolution.height && resolution.width) {
             features.has_custom_resolution = true;
         } else if (resolution.fullscreen) {
-            extraArgs.game.push(Argument.fromString('--fullscreen'));
+            extraArgs.game.push(Argument.from('--fullscreen'));
         }
 
         return [

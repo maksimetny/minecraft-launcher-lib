@@ -26,7 +26,7 @@ export class VersionArguments implements IVersionArguments {
         const resolveArg = (value: VersionArgument) => {
             switch (typeof value) {
                 case 'string': {
-                    return Argument.fromString(value);
+                    return Argument.from(value);
                 }
                 default: {
                     return Argument.from(value);
@@ -38,7 +38,7 @@ export class VersionArguments implements IVersionArguments {
     }
 
     static fromLegacyArguments(minecraftArguments: string): VersionArguments {
-        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => Argument.fromString(value));
+        const gameArgs = minecraftArguments.split(/\s(?!\$)/g).map(value => Argument.from(value));
         return new VersionArguments(gameArgs);
     }
 

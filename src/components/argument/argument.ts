@@ -16,65 +16,50 @@ export interface IArgument {
 
 }
 
-export class Argument {
+export class Argument implements IArgument {
 
-    static STRING_ARG_SEP = String.fromCharCode(160);
+    static from(arg: ArgumentValue | Partial<IArgument>): Argument {
+        if (arg instanceof Argument) return arg;
 
-    static from(_arg: Partial<IArgument> | ArgumentValue): Argument {
-        if (_arg instanceof Argument) return _arg;
-        switch (typeof _arg) {
-            case 'string': {
-                return Argument.fromString(_arg);
-            }
+        switch (typeof arg) {
+            case 'string': break;
             case 'object': {
-                if (Array.isArray(_arg)) return new Argument(_arg);
-                break;
+                if (Array.isArray(arg)) break;
+                else if (arg.value) return new Argument(arg.value, arg.rules);
             }
-            default: {
-                throw new Error('argument not object or string, string array');
-            }
+            default: throw new Error('missing argument value');
         }
 
-        const {
-            rules: _rules = [],
-            value: _value,
-        } = _arg;
-        let value: string[];
-
-        switch (typeof _value) {
-            case 'string': {
-                value = [_value];
-                break;
-            }
-            case 'object': {
-                if (Array.isArray(_value)) {
-                    value = _value;
-                    break;
-                }
-            }
-            default: {
-                throw new Error('argument value not string or string array');
-            }
-        }
-
-        const rules = _rules.map(_rule => Rule.from(_rule));
-        return new Argument(value, rules);
-    }
-
-    static fromString(value: string): Argument {
-        return new Argument(value.split(/\s/g));
+        return new Argument(arg);
     }
 
     static format(template: string, fields: Map<string, string>): string {
-        return template.replace(/\$\{(.*?)}/g, key => {
-            return fields.get(key.substring(2).substring(0, key.length - 3)) ?? key;
-        });
+        return template.replace(/\$\{(.*?)}/g, key => fields.get(key.substring(2).substring(0, key.length - 3)) ?? key);
     } // github.com/voxelum/minecraft-launcher-core-node/blob/3d5aa7a38cbc66cdfc9b9d68a8bdf4988905cb72/packages/core/launch.ts
 
+    private _value: string[];
+    private _rules: Rule[];
+
     constructor(
-        private _value: string[],
-        private _rules: Rule[] = [],
-    ) { }
+        value: ArgumentValue,
+        rules: Partial<IRule>[] = [],
+    ) {
+        switch (typeof value) {
+            case 'string': {
+                this._value = value.split(/\s/g);
+                break;
+            }
+            case 'object': {
+                if (Array.isArray(value)) {
+                    this._value = value;
+                    break;
+                }
+            }
+            default: throw new Error('argument value is not string or string array');
+        }
+
+        this._rules = rules.map(rule => Rule.from(rule));
+    }
 
     get value(): string[] {
         return this._value;
@@ -84,10 +69,8 @@ export class Argument {
         return this._rules;
     }
 
-    isApplicable(platform: Partial<IPlatform>, features: Record<string, boolean> = { /* features */ }): boolean {
-        return !this.rules.map(rule => {
-            return rule.isAllowable(platform, features);
-        }).includes(false);
+    isApplicable(platform: Partial<IPlatform>, features: Record<string, boolean> = {}): boolean {
+        return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 
     format(fields: Map<string, string>): string[] {
@@ -95,7 +78,7 @@ export class Argument {
     }
 
     toString(): string {
-        return this.value.join(Argument.STRING_ARG_SEP);
+        return this.value.join(' ');
     }
 
     toJSON(): IArgument {
@@ -111,4 +94,4 @@ export class Argument {
 
 }
 
-export type ArgumentValue = string[] | string;
+export type ArgumentValue = string | string[];

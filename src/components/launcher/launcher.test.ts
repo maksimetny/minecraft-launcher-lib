@@ -34,7 +34,7 @@ describe('Launcher', () => {
                 ),
                 new VersionArguments(
                     [
-                        Argument.fromString('--username ${auth_player_name}'),
+                        Argument.from('--username ${auth_player_name}'),
                         new Argument(['--demo'], [
                             new Rule(Action.ALLOW, { /* platform */ }, { is_demo_user: true }),
                         ]),
@@ -75,7 +75,7 @@ describe('Launcher', () => {
                 launcherFolder: 'launcher',
                 version,
                 extraArgs: new VersionArguments(
-                    [Argument.fromString('--extra')],
+                    [Argument.from('--extra')],
                     [
                         // this parameter is required when using a new instance of version arguments, because it defaults to DEFAULT_JVM_ARGS, which causes arguments to be repeated in some vars
 
