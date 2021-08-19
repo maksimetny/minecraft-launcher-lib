@@ -3,7 +3,7 @@ import { urls } from '../../constants/urls';
 import { Rule, IRule } from '../rule';
 
 import {
-    currentPlatform,
+    Platform,
     IPlatform,
     OS,
 } from '../platform';
@@ -102,14 +102,14 @@ export class Library implements ILibrary {
         }).includes(false);
     }
 
-    hasNative(os: OS = currentPlatform.name): boolean {
+    hasNative(os: OS = Platform.current.name): boolean {
         return os in this.natives;
     }
 
     getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
         const {
-            name = currentPlatform.name,
-            arch = currentPlatform.arch,
+            name = Platform.current.name,
+            arch = Platform.current.arch,
         } = platform;
 
         const format = (_arch: string) => {

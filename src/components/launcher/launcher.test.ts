@@ -2,7 +2,7 @@
 import { join } from 'path';
 
 import {
-    currentPlatform,
+    Platform,
 } from '../platform';
 
 import { Artifact } from '../artifact';
@@ -90,7 +90,7 @@ describe('Launcher', () => {
                 },
             });
 
-            const s = currentPlatform.classpathSeparator;
+            const s = Platform.current.classpathSeparator;
 
             expect(args).toEqual([
                 '-Xmx1024M',

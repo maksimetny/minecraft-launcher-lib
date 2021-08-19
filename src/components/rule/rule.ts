@@ -6,10 +6,7 @@ export enum Action {
     DISALLOW = 'disallow',
 }
 
-import {
-    currentPlatform,
-    IPlatform,
-} from '../platform';
+import { Platform, IPlatform } from '../platform';
 
 export interface IRule {
     action: Action;
@@ -73,14 +70,14 @@ export class Rule implements IRule {
 
         {
             if (this.os.name) {
-                const { name = currentPlatform.name } = platform;
+                const { name = Platform.current.name } = platform;
                 const { name: _name } = this.os;
 
                 allowable = Rule.compare(_name === name, _name !== name, this.action);
             }
 
             if (this.os.version) {
-                const { version = currentPlatform.version } = platform;
+                const { version = Platform.current.version } = platform;
                 const { version: _version } = this.os;
 
                 const a: boolean = Boolean(version.match(_version));
@@ -90,7 +87,7 @@ export class Rule implements IRule {
             }
 
             if (this.os.arch) {
-                const { arch = currentPlatform.arch } = platform;
+                const { arch = Platform.current.arch } = platform;
                 const { arch: _arch } = this.os;
 
                 allowable = Rule.compare(_arch === arch, _arch !== arch, this.action);

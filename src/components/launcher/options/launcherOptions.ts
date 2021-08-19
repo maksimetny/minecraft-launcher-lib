@@ -90,7 +90,6 @@ type Resolution = { width?: number; height?: number; fullscreen?: boolean };
 
 import * as child_process from 'child_process';
 import {
-    currentPlatform,
     Platform,
     IPlatform,
 } from '../../platform';
@@ -178,7 +177,7 @@ export class LauncherOptions implements ILauncherOptions {
             version,
             launcherFolder,
             features = { /* enabled features */ },
-            platform = currentPlatform,
+            platform = new Platform(),
             memory = { max: 1024, min: 512 },
             extraArgs = { game: [/* default game args */], jvm: [/* default jvm args */] },
             extraSpawnOptions = { /* spawn options */ },
