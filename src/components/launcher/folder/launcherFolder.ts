@@ -14,11 +14,11 @@ export class LauncherFolder extends Folder {
     constructor(_path: string) { super(_path); }
 
     get natives(): string {
-        return this.getPathTo('natives');
+        return this.join('natives');
     }
 
     get libs(): string {
-        return this.getPathTo('libraries');
+        return this.join('libraries');
     }
 
     get libraries(): string {

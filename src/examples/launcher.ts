@@ -91,7 +91,7 @@ async function download(resources: Resource[], partLength = 4) {
 
     const launcherFolder = LauncherFolder.from(resolve(LAUNCHER_DIR));
 
-    const gameDirectory = launcherFolder.getPathTo('instances', versionId);
+    const gameDirectory = launcherFolder.join('instances', versionId);
     await ensureDir(gameDirectory);
 
     const resources_1: Resource[] = [];
@@ -132,22 +132,22 @@ async function download(resources: Resource[], partLength = 4) {
             return pushToResources(resource, resources_1);
         });
 
-    const versionJar = version.downloads.client.changePath(version.id + '.jar').toResource(launcherFolder.getPathTo('versions', version.id));
+    const versionJar = version.downloads.client.changePath(version.id + '.jar').toResource(launcherFolder.join('versions', version.id));
     pushToResources(versionJar, resources_1);
 
-    const assetIndexJson = Artifact.from(version.assetIndex).toResource(launcherFolder.getPathTo('assets', 'indexes'));
+    const assetIndexJson = Artifact.from(version.assetIndex).toResource(launcherFolder.join('assets', 'indexes'));
     pushToResources(assetIndexJson, resources_1);
 
     await download(resources_1);
 
     for await (const native of natives) {
-        await native.extractTo(launcherFolder.getPathTo('natives', versionId));
+        await native.extractTo(launcherFolder.join('natives', versionId));
     }
 
     const assetIndex = AssetIndex.from(await assetIndexJson.parseJSON());
 
     assetIndex.objectsToAssets().map(asset => {
-        const resource = asset.toArtifact().toResource(launcherFolder.getPathTo('assets'));
+        const resource = asset.toArtifact().toResource(launcherFolder.join('assets'));
         return pushToResources(resource, resources_2);
     });
 

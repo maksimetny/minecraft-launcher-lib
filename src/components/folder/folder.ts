@@ -1,7 +1,5 @@
 
-import {
-    join,
-} from 'path';
+import { join } from 'path';
 
 export interface IFolder {
     path: string;
@@ -9,9 +7,25 @@ export interface IFolder {
 
 export class Folder implements IFolder {
 
-    constructor(private _path: string) { }
+    static from(location: Location): Folder {
+        if (location instanceof Folder) return location;
 
-    getPathTo(...parts: string[]): string {
+        switch (typeof location) {
+            case 'string': return new Folder(location);
+            case 'object': {
+                if (typeof location.path !== 'string') break;
+                return new Folder(location.path);
+            }
+        }
+
+        throw new Error('path is not a string');
+    }
+
+    private _path: string;
+
+    constructor(path: string) { this._path = path; }
+
+    join(...parts: string[]): string {
         return join(this.path, ...parts);
     }
 
@@ -28,7 +42,9 @@ export class Folder implements IFolder {
     }
 
     toJSON(): string {
-        return this._path;
+        return this.toString();
     }
 
 }
+
+export type Location = string | Partial<IFolder>;

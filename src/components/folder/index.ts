@@ -1,2 +1,2 @@
 
-export * from './folder';
+export { Folder, IFolder, Location } from './folder';

@@ -251,7 +251,7 @@ export class LauncherOptions implements ILauncherOptions {
             gameDirectory = _launcherFolder.path,
             nativesDirectory = join(_launcherFolder.natives, _version.id),
             cwd = gameDirectory,
-            minecraftJarPath = _launcherFolder.getPathTo('versions', _version.id, `${_version.id}.jar`),
+            minecraftJarPath = _launcherFolder.join('versions', _version.id, `${_version.id}.jar`),
             javaPath = 'java',
         } = _overrides;
 

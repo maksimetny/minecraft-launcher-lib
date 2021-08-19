@@ -51,13 +51,13 @@ export class Launcher {
                     // default user prop
                 }),
             ],
-            ['assets_root', launcherFolder.getPathTo('assets')],
+            ['assets_root', launcherFolder.join('assets')],
             [
                 'game_assets',
                 (() => {
                     switch (version.assets) {
                         case 'legacy': {
-                            return launcherFolder.getPathTo('assets', 'virtual', 'legacy');
+                            return launcherFolder.join('assets', 'virtual', 'legacy');
                         }
                         default: {
                             return join(overrides.gameDirectory, 'resources');
