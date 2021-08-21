@@ -32,6 +32,20 @@ export class Platform implements IPlatform {
         );
     }
 
+    static friendlifyNodePlatform(platform: NodeJS.Platform): OS {
+        switch (platform) {
+            case 'win32': {
+                return OS.WINDOWS;
+            }
+            case 'darwin': {
+                return OS.OSX;
+            }
+            default: {
+                return OS.LINUX;
+            } // linux and unknown
+        }
+    }
+
     static get current(): Platform {
         return Platform._current ? Platform._current : Platform._current = new Platform();
     }
@@ -43,30 +57,13 @@ export class Platform implements IPlatform {
     private _version: string;
 
     constructor(
-        name?: OS,
-        arch?: string,
-        version?: string,
+        name: OS = Platform.friendlifyNodePlatform(os.platform()),
+        arch: string = os.arch(),
+        version: string = os.release(),
     ) {
-        if (!name) {
-            switch (os.platform()) {
-                case 'win32': {
-                    name = OS.WINDOWS;
-                    break;
-                }
-                case 'darwin': {
-                    name = OS.OSX;
-                    break;
-                }
-                default: {
-                    name = OS.LINUX;
-                    break;
-                } // linux and unknown
-            }
-        }
-
-        this._version = version ? version : os.release();
+        this._version = version;
         this._name = name;
-        this._arch = arch ? arch : os.arch();
+        this._arch = arch;
     }
 
     get name(): OS {
