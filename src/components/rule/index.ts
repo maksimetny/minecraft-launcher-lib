@@ -1,2 +1,2 @@
 
-export * from './rule';
+export { Rule, IRule, RuleAction } from './rule';

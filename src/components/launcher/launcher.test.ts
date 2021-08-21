@@ -8,7 +8,7 @@ import {
 import { Artifact } from '../artifact';
 import { Argument } from '../argument';
 import { Library } from '../library';
-import { Rule, Action } from '../rule';
+import { Rule, RuleAction } from '../rule';
 
 import {
     Version,
@@ -36,7 +36,7 @@ describe('Launcher', () => {
                     [
                         Argument.from('--username ${auth_player_name}'),
                         new Argument(['--demo'], [
-                            new Rule(Action.ALLOW, { /* platform */ }, { is_demo_user: true }),
+                            new Rule(RuleAction.ALLOW, { /* platform */ }, { is_demo_user: true }),
                         ]),
                     ],
                     [

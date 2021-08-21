@@ -1,7 +1,7 @@
 
 import { Artifact } from '../artifact';
 import { Argument } from '../argument';
-import { Rule, Action } from '../rule';
+import { Rule, RuleAction } from '../rule';
 import { OS } from '../platform';
 import { Library } from '../library';
 import { VersionArguments } from './arguments';
@@ -78,7 +78,7 @@ describe('Version', () => {
                 new Argument([
                     '--demo',
                 ], [
-                    new Rule(Action.ALLOW, { /* platform */ }, { is_demo_user: true }),
+                    new Rule(RuleAction.ALLOW, { /* platform */ }, { is_demo_user: true }),
                 ]),
                 new Argument([
                     '--width',
@@ -86,30 +86,30 @@ describe('Version', () => {
                     '--height',
                     '${resolution_height}',
                 ], [
-                    new Rule(Action.ALLOW, { /* platform */ }, { has_custom_resolution: true }),
+                    new Rule(RuleAction.ALLOW, { /* platform */ }, { has_custom_resolution: true }),
                 ]),
             ],
             [
                 new Argument([
                     '-XstartOnFirstThread',
                 ], [
-                    new Rule(Action.ALLOW, { name: OS.OSX }, { /* features */ }),
+                    new Rule(RuleAction.ALLOW, { name: OS.OSX }, { /* features */ }),
                 ]),
                 new Argument([
                     '-XX:HeapDumpPath=MojangTricksIntelDriversForPerformance_javaw.exe_minecraft.exe.heapdump',
                 ], [
-                    new Rule(Action.ALLOW, { name: OS.WINDOWS }, { /* features */ }),
+                    new Rule(RuleAction.ALLOW, { name: OS.WINDOWS }, { /* features */ }),
                 ]),
                 new Argument([
                     '-Dos.name=Windows 10',
                     '-Dos.version=10.0',
                 ], [
-                    new Rule(Action.ALLOW, { name: OS.WINDOWS, version: '^10\\.' }, { /* features */ }),
+                    new Rule(RuleAction.ALLOW, { name: OS.WINDOWS, version: '^10\\.' }, { /* features */ }),
                 ]),
                 new Argument([
                     '-Xss1M',
                 ], [
-                    new Rule(Action.ALLOW, { arch: 'x86' }, { /* features */ }),
+                    new Rule(RuleAction.ALLOW, { arch: 'x86' }, { /* features */ }),
                 ]),
                 new Argument([
                     '-Djava.library.path=${natives_directory}',

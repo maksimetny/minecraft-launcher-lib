@@ -1,6 +1,6 @@
 
 import { Argument } from './argument';
-import { Rule, Action } from '../rule';
+import { Rule, RuleAction } from '../rule';
 
 describe('Argument', () => {
 
@@ -37,7 +37,7 @@ describe('Argument', () => {
                     '${resolution_height}',
                 ],
                 [
-                    new Rule(Action.ALLOW, {}, features),
+                    new Rule(RuleAction.ALLOW, {}, features),
                 ],
             );
 
@@ -46,7 +46,7 @@ describe('Argument', () => {
                     '-Xss1M',
                 ],
                 [
-                    new Rule(Action.ALLOW, platform, {}),
+                    new Rule(RuleAction.ALLOW, platform, {}),
                 ],
             );
 
@@ -58,7 +58,7 @@ describe('Argument', () => {
 
     it('should add new rule', () => {
         const argument = new Argument(['--demo']);
-        const rule = Rule.from({ action: Action.ALLOW });
+        const rule = Rule.from({ action: RuleAction.ALLOW });
         argument.rules.push(rule);
         expect(argument.rules.length).toBe(1);
     });
