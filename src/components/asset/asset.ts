@@ -1,7 +1,7 @@
 
 import { Artifact } from '../artifact';
 import { join } from 'path';
-import { urls } from '../../constants';
+import { MOJANG } from '../../constants';
 
 export interface IAsset {
     path: string;
@@ -47,7 +47,7 @@ export class Asset {
         return join('objects', this.subhash, this.hash);
     }
 
-    toArtifact(legacy = false, repoURL = urls.DEFAULT_RESOURCE_REPO): Artifact {
+    toArtifact(legacy = false, repoURL = MOJANG.RESOURCE_REPO): Artifact {
         const path = legacy ? this.objectLegacyPath : this.objectPath;
         const url = `${repoURL}/${this.subhash}/${this.hash}`;
         const sha1 = this.hash;

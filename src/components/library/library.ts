@@ -1,5 +1,5 @@
 
-import { urls } from '../../constants/urls';
+import { MOJANG } from '../../constants/urls';
 import { Rule, IRule } from '../rule';
 
 import {
@@ -40,7 +40,7 @@ import {
 
 export class Library implements ILibrary {
 
-    static from(_lib: Partial<ILibrary>, _repo: string = urls.DEFAULT_LIBS_REPO): Library {
+    static from(_lib: Partial<ILibrary>, _repo: string = MOJANG.LIBS_REPO): Library {
         if (_lib instanceof Library) {
             return _lib;
         }

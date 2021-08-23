@@ -1,6 +1,5 @@
 
-import { urls } from '../../../constants/urls';
-
+import { MOJANG } from '../../../constants/urls';
 import { Artifact, IArtifact } from '../../artifact';
 
 export interface ILibraryDownloads {
@@ -14,7 +13,7 @@ import {
 
 export class LibraryDownloads implements ILibraryDownloads {
 
-    static from(_downloads: Partial<ILibraryDownloads>, _name: string, _natives: LibraryNatives, _repoURL: string = urls.DEFAULT_LIBS_REPO): LibraryDownloads {
+    static from(_downloads: Partial<ILibraryDownloads>, _name: string, _natives: LibraryNatives, _repoURL: string = MOJANG.LIBS_REPO): LibraryDownloads {
         if (_downloads instanceof LibraryDownloads) return _downloads;
 
         const defaultArtifact = Artifact.fromString(_name, _repoURL);

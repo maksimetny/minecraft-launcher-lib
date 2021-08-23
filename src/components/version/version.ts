@@ -4,7 +4,7 @@ import { Argument } from '../argument';
 import { VersionDownloads, IVersionDownloads } from './downloads';
 import { VersionArguments, IVersionArguments } from './arguments';
 import { Library, ILibrary } from '../library';
-import { urls } from '../../constants/urls';
+import { MOJANG } from '../../constants/urls';
 
 export interface IVersion {
     id: string;
@@ -31,7 +31,7 @@ interface IAssetIndexArtifact extends IArtifact {
 
 export class Version {
 
-    static from(_version: Partial<IVersion>, _default: Partial<IVersion> = { /* parent */ }, _repoURL: string = urls.DEFAULT_LIBS_REPO): Version {
+    static from(_version: Partial<IVersion>, _default: Partial<IVersion> = { /* parent */ }, _repoURL: string = MOJANG.LIBS_REPO): Version {
         if (_version instanceof Version) return _version;
         const {
             id: _id,

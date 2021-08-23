@@ -62,10 +62,7 @@ import axios, {
 } from 'axios';
 
 import * as uuid from 'uuid';
-
-import {
-    urls,
-} from '../../constants';
+import { MOJANG } from '../../constants';
 
 export class Authenticator {
 
@@ -106,7 +103,7 @@ export class Authenticator {
      *
      * @throws This may throw the error object with type AxiosError<IAuthException>.
      */
-    static authenticate(username: string, password: string, clientToken: string, requestUser = false, url = `${urls.DEFAULT_AUTH}/authenticate`): AxiosPromise<IAuthResponse> {
+    static authenticate(username: string, password: string, clientToken: string, requestUser = false, url = `${MOJANG.AUTH}/authenticate`): AxiosPromise<IAuthResponse> {
         return axios({
             method: 'POST',
             url,
@@ -138,7 +135,7 @@ export class Authenticator {
         accessToken: string,
         clientToken: string,
         requestUser = true,
-        url = `${urls.DEFAULT_AUTH}/refresh`,
+        url = `${MOJANG.AUTH}/refresh`,
     ): AxiosPromise<IAuthResponse> {
         return axios({
             method: 'POST',
@@ -162,7 +159,7 @@ export class Authenticator {
     static signout(
         username: string,
         password: string,
-        url = `${urls.DEFAULT_AUTH}/signout`,
+        url = `${MOJANG.AUTH}/signout`,
     ): Promise<boolean> {
         return Authenticator.query({
             username,
@@ -184,7 +181,7 @@ export class Authenticator {
     static validate(
         accessToken: string,
         clientToken: string,
-        url = `${urls.DEFAULT_AUTH}/validate`,
+        url = `${MOJANG.AUTH}/validate`,
     ): Promise<boolean> {
         return Authenticator.query({
             accessToken,
@@ -205,7 +202,7 @@ export class Authenticator {
     static invalidate(
         accessToken: string,
         clientToken: string,
-        url = `${urls.DEFAULT_AUTH}/invalidate`,
+        url = `${MOJANG.AUTH}/invalidate`,
     ): Promise<boolean> {
         return Authenticator.query({
             accessToken,

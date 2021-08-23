@@ -1,11 +1,6 @@
 
-export const enum baseEvents {
-    DEBUG = 'debug',
-    ERROR = 'error',
-}
+// export const enum LAUNCHER_EVENTS { }
 
-// export const enum launcherEvents { }
+// export const enum DOWNLOADER_EVENTS { }
 
-// export const enum downloaderEvents { }
-
-// export const enum authenticatorEvents { }
+// export const enum AUTHENTICATOR_EVENTS { }
