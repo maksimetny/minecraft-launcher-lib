@@ -3,7 +3,7 @@ import { MOJANG } from '../../../constants/urls';
 import { Artifact, IArtifact } from '../../artifact';
 
 export interface ILibraryDownloads {
-    artifact: IArtifact;
+    artifact: Partial<IArtifact>;
     classifiers: Record<string, IArtifact>;
 }
 
@@ -16,7 +16,7 @@ export class LibraryDownloads implements ILibraryDownloads {
     static from(_downloads: Partial<ILibraryDownloads>, _name: string, _natives: LibraryNatives, _repoURL: string = MOJANG.LIBS_REPO): LibraryDownloads {
         if (_downloads instanceof LibraryDownloads) return _downloads;
 
-        const defaultArtifact = Artifact.fromString(_name, _repoURL);
+        const defaultArtifact = Artifact.fromId(_name, undefined, _repoURL);
         const {
             artifact: _artifact = defaultArtifact,
             classifiers: _classifiers = { /* [classifier]: artifact */ },
@@ -29,7 +29,7 @@ export class LibraryDownloads implements ILibraryDownloads {
             const ver = nameParts[nameParts.length - 1];
 
             nameParts.pop();
-            nameParts.push('jar', classifier, ver);
+            nameParts.push(ver, classifier);
             return nameParts.join(namePartsSep);
         }
 
@@ -50,7 +50,7 @@ export class LibraryDownloads implements ILibraryDownloads {
             }) => {
                 // TODO format classifier
                 const nameWithClassifier = getNameWithClassifier(classifier);
-                downloads.setArtifactByClassifier(classifier, Artifact.fromString(nameWithClassifier, _repoURL));
+                downloads.setArtifactByClassifier(classifier, Artifact.fromId(nameWithClassifier, undefined, _repoURL));
             });
 
         Object.entries(_classifiers)
@@ -59,7 +59,7 @@ export class LibraryDownloads implements ILibraryDownloads {
                 artifact,
             ]) => {
                 const nameWithClassifier = getNameWithClassifier(classifier);
-                const _artifact = Artifact.from(artifact, Artifact.fromString(nameWithClassifier, _repoURL));
+                const _artifact = Artifact.from(artifact, Artifact.fromId(nameWithClassifier, undefined, _repoURL));
 
                 downloads.setArtifactByClassifier(classifier, _artifact);
             });

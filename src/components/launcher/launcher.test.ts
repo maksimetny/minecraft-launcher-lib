@@ -1,14 +1,10 @@
 
-import { join } from 'path';
-
-import {
-    Platform,
-} from '../platform';
-
+import { Platform } from '../platform';
 import { Artifact } from '../artifact';
 import { Argument } from '../argument';
 import { Library } from '../library';
 import { Rule, RuleAction } from '../rule';
+import { join } from 'path';
 
 import {
     Version,
@@ -30,7 +26,7 @@ describe('Launcher', () => {
                 'release',
                 '1.0',
                 new VersionDownloads(
-                    new Artifact('example.jar', 'https://example.com/example.jar', '624c22a8c8f8c93f18fe5ecd4713100c8d754507'),
+                    new Artifact('example.jar', 'https://example.com/example.jar', undefined, '624c22a8c8f8c93f18fe5ecd4713100c8d754507'),
                 ),
                 new VersionArguments(
                     [
@@ -55,7 +51,7 @@ describe('Launcher', () => {
                 {
                     id: '1.14',
                     sha1: 'd6c94fad4f7a03a8e46083c023926515fc0e551e',
-                    // size: 226753,
+                    size: 226753,
                     totalSize: 209234283,
                     url: 'https://launchermeta.mojang.com/v1/packages/d6c94fad4f7a03a8e46083c023926515fc0e551e/1.14.json',
                     path: '1.14.json',

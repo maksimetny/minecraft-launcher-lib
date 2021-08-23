@@ -49,10 +49,7 @@ export class Asset {
 
     toArtifact(legacy = false, repoURL = MOJANG.RESOURCE_REPO): Artifact {
         const path = legacy ? this.objectLegacyPath : this.objectPath;
-        const url = `${repoURL}/${this.subhash}/${this.hash}`;
-        const sha1 = this.hash;
-
-        return new Artifact(path, url, sha1);
+        return new Artifact(path, `${repoURL}/${this.subhash}/${this.hash}`, this.size, this.hash);
     }
 
     toString(): string {

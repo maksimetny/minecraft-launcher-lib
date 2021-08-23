@@ -1,5 +1,5 @@
 
-import { Artifact, IArtifact } from '../artifact';
+import { IArtifact } from '../artifact';
 import { Argument } from '../argument';
 import { VersionDownloads, IVersionDownloads } from './downloads';
 import { VersionArguments, IVersionArguments } from './arguments';
@@ -98,7 +98,7 @@ export class Version {
             versionArgs.jvm = jvm.concat(versionArgs.jvm);
         }
 
-        const assetIndex_: IAssetIndexArtifact = Artifact.changePath(assets + '.json', assetIndex) as IAssetIndexArtifact;
+        assetIndex.path = assets + '.json';
 
         return new Version(
             id,
@@ -107,7 +107,7 @@ export class Version {
             VersionDownloads.from(downloads),
             VersionArguments.from(versionArgs),
             libs.map(lib => Library.from(lib, _repoURL)),
-            assetIndex_,
+            assetIndex,
             mainClass,
         );
     }

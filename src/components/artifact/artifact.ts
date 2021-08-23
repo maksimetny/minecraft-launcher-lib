@@ -1,100 +1,77 @@
 
+import { MOJANG } from '../../constants';
+import { join } from 'path';
+
 export interface IArtifact {
     path: string;
     url: string;
-    sha1: string;
+    size: number;
+    sha1?: string;
+    // TODO hash type
 }
-
-import {
-    Resource,
-} from '../resource';
-
-import { join } from 'path';
 
 export class Artifact implements IArtifact {
 
-    static from(_artifact: Partial<IArtifact>, _default: Partial<IArtifact> = { /* default */ }): Artifact {
-        if (_artifact instanceof Artifact) {
-            return _artifact;
-        }
+    static from(artifact: string | Partial<IArtifact>, def: Partial<IArtifact> = {}): Artifact {
+        if (artifact instanceof Artifact) return artifact;
+        else if (typeof artifact !== 'object') return Artifact.fromId(artifact);
 
         const {
-            path: _path = _default.path,
-            url: _url = _default.url,
-            sha1: _sha1 = _default.sha1,
-        } = _artifact;
+            path = def.path,
+            url = def.url,
+            size = def.size,
+            sha1 = def.sha1,
+        } = artifact;
 
-        if (typeof _path !== 'string') throw new Error('artifact path not string');
+        if (typeof path !== 'string') throw new Error('artifact path is not string');
+        if (typeof url !== 'string') throw new Error('artifact url is not string');
 
-        if (typeof _url !== 'string') throw new Error('artifact url not string');
-
-        if (typeof _sha1 !== 'string') throw new Error('artifact sha1 not string');
-
-        return new Artifact(_path, _url, _sha1);
-    }
-
-    static changePath(path: string, artifact: Partial<IArtifact>): Partial<IArtifact> {
-        artifact.path = path;
-        return artifact;
-    }
-
-    static changeURL(url: string, artifact: Partial<IArtifact>): Partial<IArtifact> {
-        artifact.url = url;
-        return artifact;
-    }
-
-    static changeSHA1(sha1: string, artifact: Partial<IArtifact>): Partial<IArtifact> {
-        artifact.sha1 = sha1;
-        return artifact;
-    }
-
-    static isDownloadable(artifact: Partial<IArtifact>): boolean {
-        return ![
-            'path',
-            'url',
-            'sha1',
-        ].map(prop => prop in artifact).includes(false);
+        return new Artifact(path, url, size, sha1);
     }
 
     /**
-     * @param a name, it should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
-     * @param a repo, it should look like URL, e.g. `https://libraries.mojang.com` or `http://127.0.0.1`.
+     * @param id should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
+     * @param defaultExtension should look like `jar`, `tar.xz` or other.
+     * @param repoURL e.g. `https://libraries.mojang.com`.
      */
-    static fromString(name: string, repoURL: string, sha1 = ''): Artifact {
-        const parts = name.split(':');
+    static fromId(id: string, defaultExtension: string = 'jar', repoURL: string = MOJANG.LIBS_REPO): Artifact {
+        const parts = id.split(':');
 
-        if (parts.length >= 3) {
-            const [grp, art] = parts;
-            const ext = parts.length > 3 ? parts[2] : 'jar';
-            const ver = parts[parts.length - 1];
+        if (parts.length < 3) throw new Error('passed string is not include a valid artifact id');
 
-            const paths: string[] = [
-                ...grp.split('.'),
-                art,
-                ver,
-                [
-                    art,
-                    '-' + ver,
-                    parts.length > 4 ? '-' + parts[3] : '',
-                    '.' + ext,
-                ].join(''),
-            ];
+        const [group, artifact, unsplittedVersion] = parts;
+        const [version, versionExtension = defaultExtension] = unsplittedVersion.split('@');
+        const paths: string[] = [...group.split('.'), artifact, version];
 
-            return Artifact.from({
-                path: join(...paths),
-                url: repoURL + '/' + paths.join('/'),
-                sha1,
-            });
+        if (parts.length > 3) {
+            const [unsplittedClassifier] = parts.slice(3);
+            const [classifier, classifierExtension = defaultExtension] = unsplittedClassifier.split('@');
+            paths.push(`${artifact}-${version}-${classifier}.${classifierExtension}`);
+        } else {
+            paths.push(`${artifact}-${version}.${versionExtension}`);
         }
 
-        throw new Error('a name string not include maven name');
+        return new Artifact(join(...paths), repoURL + '/' + paths.join('/'));
     }
 
+    private _path: string;
+    private _url: string;
+    private _size: number;
+
     constructor(
-        private _path: string,
-        private _url: string,
-        private _sha1: string,
-    ) { }
+        path: string,
+        url: string,
+        size: number = 0,
+        public sha1?: string,
+    ) {
+        this._path = path;
+        this._url = url;
+        this._size = size;
+    }
+
+    get size(): number { return this._size; }
+
+    set size(_size: number) { this._size = _size; }
 
     get url(): string {
         return this._url;
@@ -108,55 +85,45 @@ export class Artifact implements IArtifact {
 
     set path(_path: string) { this._path = _path; }
 
-    get sha1(): string { return this._sha1; }
-
-    set sha1(_sha1: string) { this._sha1 = _sha1; }
-
-    changePath(path: string): Artifact {
-        return Artifact.from(Artifact.changePath(path, this));
-    }
-
-    changeURL(url: string): Artifact {
-        return Artifact.from(Artifact.changeURL(url, this));
-    }
-
-    changeSHA1(sha1: string): Artifact {
-        return Artifact.from(Artifact.changeSHA1(sha1, this));
-    }
-
-    toResource(directory: string): Resource {
-        return new Resource(join(directory, this.path), this.url, this.sha1);
-    }
-
     /**
-     * @returns a name, it should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
+     * @returns a artifact id, it should look like `<group>:<artifact>:<version>@<extension>`, e.g. `com.mojang:patchy:1.1@jar`.
      */
-    toString(): string {
-        const parts: string[] = this.path.split('/');
-        const name = parts.slice(-1).join();
+    toString(defaultExtension = 'jar'): string {
+        const parts: string[] = this.path.split('/').reverse();
+        const target = parts.shift();
+        const version = parts.shift();
+        const artifact = parts.shift();
+        const group = parts.reverse().join('.');
 
-        const extSepIndex = name.lastIndexOf('.');
-        const firstNumIndex = name.search(/\d/);
+        if (!target || !version || !artifact) throw new Error('artifact path parse error');
 
-        const grp = parts.slice(0, parts.length - 3).join('.');
-        const art = name.slice(0, firstNumIndex - 1);
-        const ver = name.slice(firstNumIndex, extSepIndex);
-        // const ext = name.slice(extSepIndex).slice(1)
+        const targetSep = '-';
+        const splittedTarget = target.split(targetSep);
 
-        // TODO classifier, extension
+        const i = splittedTarget.indexOf(version);
+        const ext = i >= 1 ? splittedTarget.slice(i + 1).join(targetSep) : (splittedTarget.reverse().shift() || defaultExtension).replace(version, '');
 
-        return `${grp}:${art}:${ver}`;
+        const extSep = '.';
+        const idSep = ':';
+
+        if (ext.startsWith(extSep)) return [group, artifact, version].join(idSep) + '@' + ext.replace(extSep, '');
+
+        const splittedExtension = ext.split(extSep);
+        const classifier = splittedExtension.shift();
+        return [group, artifact, version, classifier].join(idSep) + '@' + splittedExtension.join(extSep);
     }
 
     toJSON(): IArtifact {
         const {
             path,
             url,
+            size,
             sha1,
         } = this;
         return {
             path,
             url,
+            size,
             sha1,
         };
     }
