@@ -9,7 +9,6 @@ export * from './components/launcher';
 export * from './components/authenticator';
 export * from './components/argument';
 export * from './components/artifact';
-export * from './components/resource';
 export * from './components/platform';
 export * from './components/folder';
 export * from './components/asset';

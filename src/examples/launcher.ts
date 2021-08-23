@@ -18,10 +18,9 @@ import {
     // Library,
     // Rule,
     // Asset,
-    AssetIndex,
+    // AssetIndex,
     // Argument,
-    Artifact,
-    Resource,
+    // Artifact,
     // Action,
     // OS,
     // Platform,
@@ -40,50 +39,50 @@ const {
     LAUNCHER_DIR = 'launcher',
 } = process.env;
 
-async function download(resources: Resource[], partLength = 4) {
-    const parts: Resource[][] = [];
+// async function download(resources: Resource[], partLength = 4) {
+//     const parts: Resource[][] = [];
 
-    resources.forEach(resource => {
-        const part = [resource]; // new part
-        if (parts.length) {
-            const last = parts[parts.length - 1];
-            if (last.length < partLength) {
-                last.push(resource);
-                return;
-            }
-        }
-        parts.push(part);
-    });
+//     resources.forEach(resource => {
+//         const part = [resource]; // new part
+//         if (parts.length) {
+//             const last = parts[parts.length - 1];
+//             if (last.length < partLength) {
+//                 last.push(resource);
+//                 return;
+//             }
+//         }
+//         parts.push(part);
+//     });
 
-    const downloadResource = async (resource: Resource, force = false) => {
-        resource.on(baseEvents.DEBUG, (e) => console.log(`${resource.name} => ${e}`));
-        resource.on(baseEvents.ERROR, (e, err) => {
-            console.error(`${resource.name} => ${e}`, err);
-        });
+//     const downloadResource = async (resource: Resource, force = false) => {
+//         resource.on(baseEvents.DEBUG, (e) => console.log(`${resource.name} => ${e}`));
+//         resource.on(baseEvents.ERROR, (e, err) => {
+//             console.error(`${resource.name} => ${e}`, err);
+//         });
 
-        if (!force) {
-            const success = await resource.isSuccess();
-            if (success) return success;
-        }
+//         if (!force) {
+//             const success = await resource.isSuccess();
+//             if (success) return success;
+//         }
 
-        return await resource.download();
-    };
+//         return await resource.download();
+//     };
 
-    for await (const part of parts) {
-        const downloadPromises = part.map(async resource => {
-            const success = await downloadResource(resource);
-            return {
-                resource,
-                success,
-            };
-        });
+//     for await (const part of parts) {
+//         const downloadPromises = part.map(async resource => {
+//             const success = await downloadResource(resource);
+//             return {
+//                 resource,
+//                 success,
+//             };
+//         });
 
-        const results = await Promise.all(downloadPromises);
-        results.forEach(({ resource, success }) => {
-            console.log(resource.path + ' =>', success);
-        });
-    }
-}
+//         const results = await Promise.all(downloadPromises);
+//         results.forEach(({ resource, success }) => {
+//             console.log(resource.path + ' =>', success);
+//         });
+//     }
+// }
 
 (async () => {
     const versionJsonPath = join('mock', 'versions', versionId, `${versionId}.json`);
@@ -94,64 +93,64 @@ async function download(resources: Resource[], partLength = 4) {
     const gameDirectory = launcherFolder.join('instances', versionId);
     await ensureDir(gameDirectory);
 
-    const resources_1: Resource[] = [];
-    const resources_2: Resource[] = [];
+    // const resources_1: Resource[] = [];
+    // const resources_2: Resource[] = [];
 
-    const pushToResources = (resource: Resource, resources: Resource[]) => {
-        const include = resources
-            .map(({ path }) => path)
-            .includes(resource.path);
+    // const pushToResources = (resource: Resource, resources: Resource[]) => {
+    //     const include = resources
+    //         .map(({ path }) => path)
+    //         .includes(resource.path);
 
-        if (!include) resources.push(resource);
-        return resource;
-    };
+    //     if (!include) resources.push(resource);
+    //     return resource;
+    // };
 
-    version.libs
-        .filter(lib => {
-            return lib.isApplicable();
-        }).map(lib => {
-            return lib.downloads.artifact.toResource(launcherFolder.libs);
-        }).map(resource => {
-            return pushToResources(resource, resources_1);
-        });
+    // version.libs
+    //     .filter(lib => {
+    //         return lib.isApplicable();
+    //     }).map(lib => {
+    //         return lib.downloads.artifact.toResource(launcherFolder.libs);
+    //     }).map(resource => {
+    //         return pushToResources(resource, resources_1);
+    //     });
 
-    const natives = version.libs
-        .filter(lib => {
-            return lib.isApplicable();
-        })
-        .filter(lib => {
-            return lib.hasNative();
-        })
-        .map(lib => {
-            const classifier = lib.getNativeClassifier();
-            const native = lib.downloads.getArtifactByClassifier(classifier);
+    // const natives = version.libs
+    //     .filter(lib => {
+    //         return lib.isApplicable();
+    //     })
+    //     .filter(lib => {
+    //         return lib.hasNative();
+    //     })
+    //     .map(lib => {
+    //         const classifier = lib.getNativeClassifier();
+    //         const native = lib.downloads.getArtifactByClassifier(classifier);
 
-            return native.toResource(launcherFolder.libs);
-        })
-        .map(resource => {
-            return pushToResources(resource, resources_1);
-        });
+    //         return native.toResource(launcherFolder.libs);
+    //     })
+    //     .map(resource => {
+    //         return pushToResources(resource, resources_1);
+    //     });
 
-    const versionJar = version.downloads.client.changePath(version.id + '.jar').toResource(launcherFolder.join('versions', version.id));
-    pushToResources(versionJar, resources_1);
+    // const versionJar = version.downloads.client.changePath(version.id + '.jar').toResource(launcherFolder.join('versions', version.id));
+    // pushToResources(versionJar, resources_1);
 
-    const assetIndexJson = Artifact.from(version.assetIndex).toResource(launcherFolder.join('assets', 'indexes'));
-    pushToResources(assetIndexJson, resources_1);
+    // const assetIndexJson = Artifact.from(version.assetIndex).toResource(launcherFolder.join('assets', 'indexes'));
+    // pushToResources(assetIndexJson, resources_1);
 
-    await download(resources_1);
+    // await download(resources_1);
 
-    for await (const native of natives) {
-        await native.extractTo(launcherFolder.join('natives', versionId));
-    }
+    // for await (const native of natives) {
+    //     await native.extractTo(launcherFolder.join('natives', versionId));
+    // }
 
-    const assetIndex = AssetIndex.from(await assetIndexJson.parseJSON());
+    // const assetIndex = AssetIndex.from(await assetIndexJson.parseJSON());
 
-    assetIndex.objectsToAssets().map(asset => {
-        const resource = asset.toArtifact().toResource(launcherFolder.join('assets'));
-        return pushToResources(resource, resources_2);
-    });
+    // assetIndex.objectsToAssets().map(asset => {
+    //     const resource = asset.toArtifact().toResource(launcherFolder.join('assets'));
+    //     return pushToResources(resource, resources_2);
+    // });
 
-    await download(resources_2);
+    // await download(resources_2);
 
     const _process = Launcher.launch({
         user: {
