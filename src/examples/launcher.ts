@@ -23,7 +23,7 @@ import {
     // currentPlatform,
 } from '../index';
 
-import { readJson, ensureDir } from 'fs-extra';
+import { readJson } from '../util';
 
 import {
     resolve,
@@ -87,7 +87,7 @@ const {
     const launcherFolder = LauncherFolder.from(resolve(LAUNCHER_DIR));
 
     const gameDirectory = launcherFolder.join('instances', versionId);
-    await ensureDir(gameDirectory);
+    // await ensureDir(gameDirectory);
 
     // const resources_1: Resource[] = [];
     // const resources_2: Resource[] = [];

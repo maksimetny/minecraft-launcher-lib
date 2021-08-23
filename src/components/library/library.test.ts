@@ -1,13 +1,7 @@
 
-import {
-    resolve,
-} from 'path';
-
-import { readJson } from 'fs-extra';
-
-import {
-    Library,
-} from './library';
+import { readJson } from '../../util';
+import { resolve } from 'path';
+import { Library } from './library';
 
 describe('Library', () => {
 

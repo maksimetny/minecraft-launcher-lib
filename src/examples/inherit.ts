@@ -7,18 +7,14 @@ const {
     MODDED_VERSION_ID: moddedId,
 } = process.env;
 
-import {
-    readJson,
-} from 'fs-extra';
+import { readJson } from '../util';
 
 import {
     resolve,
     join,
 } from 'path';
 
-import {
-    Version,
-} from '../index';
+import { Version, IVersion } from '../index';
 
 (async () => {
     const directory = resolve('mock', 'versions');
@@ -26,10 +22,10 @@ import {
     if (!parentId) throw new Error('parent id is undefined');
     if (!moddedId) throw new Error('modded id is undefined');
 
-    const parent = await readJson(join(directory, parentId, parentId + '.json'));
+    const parent: Partial<IVersion> = await readJson(join(directory, parentId, parentId + '.json'));
     console.log(parent);
 
-    const modded = await readJson(join(directory, moddedId, moddedId + '.json'));
+    const modded: Partial<IVersion> = await readJson(join(directory, moddedId, moddedId + '.json'));
     console.log(modded);
 
     const result = Version.from(modded, parent);

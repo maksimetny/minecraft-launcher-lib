@@ -4,9 +4,7 @@ import {
     Library,
 } from '../index';
 
-import {
-    readJson,
-} from 'fs-extra';
+import { readJson } from '../util';
 
 (async () => {
     const minLib = Library.from({ name: 'com.mojang:patchy:1.1' });

@@ -7,7 +7,7 @@ import { Library } from '../library';
 import { VersionArguments } from './arguments';
 import { VersionDownloads } from './downloads';
 import { join } from 'path';
-import { readJson } from 'fs-extra';
+import { readJson } from '../../util';
 
 import {
     Version,
