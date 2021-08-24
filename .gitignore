@@ -4,7 +4,7 @@
 /launcher
 
 ## compiled output
-/dist
+/lib
 
 ## dependencies
 node_modules/

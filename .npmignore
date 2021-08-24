@@ -1,6 +1,6 @@
 *.test.*
 src/
-dist/examples/
+lib/examples/
 mock/
 launcher/
 tsconfig.json
