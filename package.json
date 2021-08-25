@@ -11,7 +11,7 @@
     "build": "gulp build",
     "clean": "gulp clean",
     "lint": "gulp lint",
-    "test": "gulp && jest lib --env=node"
+    "test": "gulp && jest \"lib/.*\\.test\\.js\" --env=node"
   },
   "repository": {
     "type": "git",
