@@ -4,8 +4,8 @@ import { Argument } from '../argument';
 import { Rule, RuleAction } from '../rule';
 import { OS } from '../platform';
 import { Library } from '../library';
-import { VersionArguments } from './arguments';
-import { VersionDownloads } from './downloads';
+import { VersionArguments } from './version-arguments';
+import { VersionDownloads } from './version-downloads';
 import { join } from 'path';
 import { readJson } from '../../util';
 
@@ -22,10 +22,10 @@ describe('Version', () => {
                 sha1: '8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9',
                 url: 'https://launcher.mojang.com/v1/objects/8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9/client.jar',
             }, { path: 'client.jar' }),
-            // Artifact.from({
-            //     sha1: '3dc3d84a581f14691199cf6831b71ed1296a9fdf',
-            //     url: 'https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar',
-            // }, { path: 'server.jar' }),
+            Artifact.from({
+                sha1: '3dc3d84a581f14691199cf6831b71ed1296a9fdf',
+                url: 'https://launcher.mojang.com/v1/objects/3dc3d84a581f14691199cf6831b71ed1296a9fdf/server.jar',
+            }, { path: 'server.jar' }),
         );
 
         const args = new VersionArguments(

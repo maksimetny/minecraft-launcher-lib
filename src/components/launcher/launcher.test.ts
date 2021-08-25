@@ -26,7 +26,8 @@ describe('Launcher', () => {
                 'release',
                 '1.0',
                 new VersionDownloads(
-                    new Artifact('example.jar', 'https://example.com/example.jar', undefined, '624c22a8c8f8c93f18fe5ecd4713100c8d754507'),
+                    new Artifact('client.jar', 'https://maksimetny.com/client.jar', undefined, '624c22a8c8f8c93f18fe5ecd4713100c8d754507'),
+                    new Artifact('server.jar', 'https://maksimetny.com/server.jar', undefined, '705457d8c0013174dce5ef81f39c8f8c8a22c426'),
                 ),
                 new VersionArguments(
                     [

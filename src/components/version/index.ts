@@ -1,6 +1,11 @@
 
-export { IVersionManifest, IVersionManifestItem } from './version-manifest';
+export {
+    IVersionManifest,
+    IVersionManifestItem,
+} from './version-manifest';
 
 export * from './version';
-export * from './downloads';
-export * from './arguments';
+
+export { VersionDownloads, IVersionDownloads } from './version-downloads';
+
+export { VersionArguments, IVersionArguments, VersionArgument } from './version-arguments';

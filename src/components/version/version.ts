@@ -1,8 +1,8 @@
 
 import { IArtifact } from '../artifact';
 import { Argument } from '../argument';
-import { VersionDownloads, IVersionDownloads } from './downloads';
-import { VersionArguments, IVersionArguments } from './arguments';
+import { VersionDownloads, IVersionDownloads } from './version-downloads';
+import { VersionArguments, IVersionArguments } from './version-arguments';
 import { Library, ILibrary } from '../library';
 import { MOJANG } from '../../constants/urls';
 
@@ -40,7 +40,7 @@ export class Version {
             downloads: _downloads,
             mainClass: _mainClass,
             libraries: _libs = [],
-            arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS },
+            arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS.concat() },
             minecraftArguments: _minecraftArguments,
             assetIndex: _assetIndex,
         } = _default;
