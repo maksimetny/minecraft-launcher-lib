@@ -9,6 +9,7 @@ const babel = require('gulp-babel');
 const merge = require('merge2');
 
 const project = ts.createProject('tsconfig.json');
+const defaultOutDir = 'lib';
 
 gulp.task('lint', () => {
     return project
@@ -31,13 +32,13 @@ gulp.task('build', () => {
             .dts,
     ])
         .pipe(sm.write('.'))
-        .pipe(gulp.dest(path.join(project.options.outDir = 'dist')));
+        .pipe(gulp.dest(path.join(project.options.outDir = defaultOutDir)));
 });
 
 gulp.task('clean', () => {
     return gulp
-        .src(path.join(project.options.outDir = 'dist', '*'))
+        .src(path.join(project.options.outDir = defaultOutDir, '*'))
         .pipe(clean());
 });
 
-gulp.task('default', gulp.series('clean', 'build'));
+gulp.task('default', gulp.series('lint', 'clean', 'build'));
