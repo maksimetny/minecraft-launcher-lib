@@ -12,7 +12,7 @@ export interface IArgument {
      */
     value: ArgumentValue;
 
-    rules: IRule[];
+    rules: Partial<IRule>[];
 
 }
 
