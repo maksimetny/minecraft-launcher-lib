@@ -1,31 +1,30 @@
 
 import { MOJANG } from '../../constants/urls';
 import { Rule, IRule } from '../rule';
+import { Platform, OS, IPlatform } from '../platform';
+import { Argument } from '../argument';
+import { LibraryDownloads, ILibraryDownloads } from './library-downloads';
 
-import {
-    Platform,
-    IPlatform,
-    OS,
-} from '../platform';
-
-import { LibraryDownloads, ILibraryDownloads } from './downloads';
-
-export type LibraryNatives = Record<string, string>; // TODO key => OS
+export type LibraryNatives = Partial<Record<OS, string>>;
 
 export type LibraryExtract = {
-    exclude: string[];
+    exclude?: string[];
 };
 
 export interface ILibrary {
 
-    downloads: ILibraryDownloads;
+    downloads: Partial<ILibraryDownloads>;
 
     /**
-     * A maven name for library,
-     * in form of `group:artifact:version`.
+     * A library id, it like `<group>:<artifact>:<version>` or
+     * `<group>:<artifact>:<version>@<ext>`.
      */
     name: string;
 
+    /**
+     * A native atrifacts classifiers, e.g.
+     * `'linux': 'natives-linux'`.
+     */
     natives: LibraryNatives;
 
     rules: IRule[];
@@ -34,47 +33,66 @@ export interface ILibrary {
 
 }
 
-import {
-    Argument,
-} from '../argument';
-
 export class Library implements ILibrary {
 
-    static from(_lib: Partial<ILibrary>, _repo: string = MOJANG.LIBS_REPO): Library {
-        if (_lib instanceof Library) {
-            return _lib;
-        }
+    // TODO library from id
+    static from(lib: Partial<ILibrary>, repoURL: string = MOJANG.LIBS_REPO): Library {
+        if (lib instanceof Library) return lib;
 
         const {
-            name: _name,
-            downloads: _downloads = { /* artifact, classifiers */ },
-            extract: _extract = {
-                exclude: [
-                    'META-INF/',
-                ],
-            },
-            rules: _rules = [],
-            natives: _natives = { /* `${os}`: `natives-${os}` or `natives-${os}-${arch}` */ },
-        } = _lib;
+            name,
+            downloads = {},
+            extract,
+            rules,
+            natives,
+        } = lib;
 
-        if (typeof _name !== 'string') throw new Error('library name not string');
+        if (typeof name !== 'string') throw new Error('library name is not string');
 
         return new Library(
-            _name,
-            LibraryDownloads.from(_downloads, _name, _natives, _repo),
-            _natives,
-            _extract,
-            _rules.map(_rule => Rule.from(_rule)),
+            name,
+            LibraryDownloads.from(downloads, name, natives, repoURL),
+            natives,
+            extract,
+            rules,
         );
     }
 
+    static concatNameWithClassifier(name: string, classifier: string): string {
+        const s = ':';
+        const parts = name.split(s);
+        const [group, artifact, unsplittedVersion] = parts;
+        const [version, versionExtension] = unsplittedVersion.split('@');
+
+        return [
+            group,
+            artifact,
+            version,
+            versionExtension ? classifier + '@' + versionExtension : classifier,
+        ].join(s);
+    }
+
+    private _name: string;
+    private _downloads: LibraryDownloads;
+    private _extract: Required<LibraryExtract>;
+    private _rules: Rule[];
+
     constructor(
-        private _name: string,
-        private _downloads: LibraryDownloads,
-        private _natives: LibraryNatives,
-        private _extract: LibraryExtract,
-        private _rules: Rule[],
-    ) { }
+        name: string,
+        downloads: Partial<LibraryDownloads> = {},
+        readonly natives: LibraryNatives = {},
+        extract: LibraryExtract = {},
+        rules: Partial<IRule>[] = [],
+    ) {
+        this._name = name;
+
+        this._downloads = LibraryDownloads.from(downloads, name, natives);
+
+        const { exclude = ['META-INF/'] } = extract;
+        this._extract = { exclude };
+
+        this._rules = rules.map(rule => Rule.from(rule));
+    }
 
     get name(): string {
         return this._name;
@@ -84,11 +102,7 @@ export class Library implements ILibrary {
         return this._downloads;
     }
 
-    get natives(): LibraryNatives {
-        return this._natives;
-    }
-
-    get extract(): LibraryExtract {
+    get extract(): Required<LibraryExtract> {
         return this._extract;
     }
 
@@ -96,39 +110,26 @@ export class Library implements ILibrary {
         return this._rules;
     }
 
-    isApplicable(platform: Partial<IPlatform> = { /* platform */ }, features: Record<string, boolean> = { /* features */ }): boolean {
-        return !this.rules.map(rule => {
-            return rule.isAllowable(platform, features);
-        }).includes(false);
+    isApplicable(
+        platform: Partial<IPlatform> = {},
+        features: Record<string, boolean> = {},
+    ): boolean {
+        return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 
-    hasNative(os: OS = Platform.current.name): boolean {
-        return os in this.natives;
-    }
+    hasNativeClassifier(os: OS = Platform.current.name): boolean { return os in this.natives; }
 
-    getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
+    createNativeClassifier(platform: Partial<IPlatform> = {}, format = false): string {
         const {
-            name = Platform.current.name,
-            arch = Platform.current.arch,
-        } = platform;
+            name,
+            arch,
+        } = Platform.from(platform);
+        if (!this.hasNativeClassifier(name)) throw new Error('library has not native classifier');
 
-        const format = (_arch: string) => {
-            const classifier = this.natives[name];
-            const fields = new Map([
-                ['arch', _arch],
-            ]);
+        const fields: Map<string, string> = new Map();
+        if (format) fields.set('arch', arch.match(/\d\d/g)?.shift() ?? '32');
 
-            return Argument.format(classifier, fields);
-        };
-
-        switch (arch) {
-            case 'x64': {
-                return format('64');
-            }
-            default: {
-                return format('32');
-            } // x32 or unknown
-        }
+        return Argument.format(this.natives[name] as string, fields);
     }
 
     toString(): string {
