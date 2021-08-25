@@ -4,63 +4,74 @@ import { Rule, RuleAction } from '../rule';
 
 describe('Argument', () => {
 
-    describe('#from', () => {
+    it('should resolve string argument', () => {
+        const arg = '--demo';
+        const { value, rules } = Argument.from(arg);
 
-        it('should turn string argument into an instance of argument', () => {
-            const argument = Argument.from('--demo');
-            const [value] = argument.value;
-            expect(value).toBe('--demo');
-            expect(argument.rules).toBeTruthy();
-        });
-
-        it('should turn string argument with two substrings into an instance of argument', () => {
-            const argument = Argument.from('--username ${auth_player_name}');
-            const [value1, value2] = argument.value;
-            expect(value1).toBe('--username');
-            expect(value2).toBe('${auth_player_name}');
-            expect(argument.rules).toBeTruthy();
-        });
-
+        expect(value).toEqual([arg]);
+        expect(rules).toEqual([]);
     });
 
-    describe('#isApplicable', () => {
-
-        it('should be able to check platform and features', () => {
-            const platform = { arch: 'x64' };
-            const features = { has_custom_resolution: true };
-
-            const argument1 = new Argument(
-                [
-                    '--width',
-                    '${resolution_width}',
-                    '--height',
-                    '${resolution_height}',
-                ],
-                [
-                    new Rule(RuleAction.ALLOW, {}, features),
-                ],
-            );
-
-            const argument2 = new Argument(
-                [
-                    '-Xss1M',
-                ],
-                [
-                    new Rule(RuleAction.ALLOW, platform, {}),
-                ],
-            );
-
-            expect(argument1.isApplicable(platform, features)).toBeTruthy();
-            expect(argument2.isApplicable(platform, features)).toBeTruthy();
+    it('should resolve normal argument', () => {
+        const value = '--demo';
+        const arg = Argument.from({
+            rules: [
+                {
+                    action: RuleAction.ALLOW,
+                },
+            ],
+            value,
         });
 
+        expect(arg.value).toEqual([value]);
+        expect(arg.rules[0].action).toBe('allow');
+        expect(arg.rules[0].os).toEqual({});
+        expect(arg.rules[0].features).toEqual({});
+    });
+
+    it('should resolve string argument with two substrings', () => {
+        const args = ['--username', '${auth_player_name}'];
+        const { value, rules } = Argument.from(args.join(' '));
+
+        expect(value[0]).toBe(args[0]);
+        expect(value[1]).toBe(args[1]);
+
+        expect(rules).toEqual([]);
+    });
+
+    it('should be able to check platform and features', () => {
+        const platform = { arch: 'x64' };
+        const features = { has_custom_resolution: true };
+
+        const argument1 = new Argument(
+            [
+                '--width',
+                '${resolution_width}',
+                '--height',
+                '${resolution_height}',
+            ],
+            [
+                new Rule(RuleAction.ALLOW, {}, features),
+            ],
+        );
+
+        const argument2 = new Argument(
+            [
+                '-Xss1M',
+            ],
+            [
+                new Rule(RuleAction.ALLOW, platform, {}),
+            ],
+        );
+
+        expect(argument1.isApplicable(platform, features)).toBeTruthy();
+        expect(argument2.isApplicable(platform, features)).toBeTruthy();
     });
 
     it('should add new rule', () => {
-        const argument = new Argument(['--demo']);
-        const rule = Rule.from({ action: RuleAction.ALLOW });
-        argument.rules.push(rule);
-        expect(argument.rules.length).toBe(1);
+        const arg = new Argument(['--demo']);
+        arg.rules.push(new Rule());
+        expect(arg.rules.length).toBe(1);
     });
 
 });
