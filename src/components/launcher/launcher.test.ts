@@ -25,10 +25,22 @@ describe('Launcher', () => {
                 '1.0',
                 'release',
                 '1.0',
+                {
+                    id: '1.14',
+                    sha1: 'd6c94fad4f7a03a8e46083c023926515fc0e551e',
+                    size: 226753,
+                    totalSize: 209234283,
+                    url: 'https://launchermeta.mojang.com/v1/packages/d6c94fad4f7a03a8e46083c023926515fc0e551e/1.14.json',
+                    path: '1.14.json',
+                },
+                'net.minecraft.client.main.Main',
                 new VersionDownloads(
                     new Artifact('client.jar', 'https://maksimetny.com/client.jar', undefined, '624c22a8c8f8c93f18fe5ecd4713100c8d754507'),
                     new Artifact('server.jar', 'https://maksimetny.com/server.jar', undefined, '705457d8c0013174dce5ef81f39c8f8c8a22c426'),
                 ),
+                [
+                    Library.from({ name: 'com.launcher:auth:2.0' }),
+                ],
                 new VersionArguments(
                     [
                         Argument.from('--username ${auth_player_name}'),
@@ -46,18 +58,6 @@ describe('Launcher', () => {
                         ]),
                     ],
                 ),
-                [
-                    Library.from({ name: 'com.launcher:auth:2.0' }),
-                ],
-                {
-                    id: '1.14',
-                    sha1: 'd6c94fad4f7a03a8e46083c023926515fc0e551e',
-                    size: 226753,
-                    totalSize: 209234283,
-                    url: 'https://launchermeta.mojang.com/v1/packages/d6c94fad4f7a03a8e46083c023926515fc0e551e/1.14.json',
-                    path: '1.14.json',
-                },
-                'net.minecraft.client.main.Main',
             );
 
             const args = Launcher.constructArguments({

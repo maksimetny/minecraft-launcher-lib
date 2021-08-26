@@ -1,93 +1,90 @@
 
-import { IArtifact } from '../artifact';
-import { Argument } from '../argument';
+import { Library, ILibrary } from '../library';
 import { VersionDownloads, IVersionDownloads } from './version-downloads';
 import { VersionArguments, IVersionArguments } from './version-arguments';
-import { Library, ILibrary } from '../library';
 import { MOJANG } from '../../constants/urls';
+import { VersionAssetIndexArtifact, IVersionAssetIndexArtifact } from './version-asset-index-artifact';
 
 export interface IVersion {
+
     id: string;
     type: string;
     assets: string;
-    downloads: IVersionDownloads;
-    arguments: IVersionArguments;
+    assetIndex: Partial<IVersionAssetIndexArtifact>;
     mainClass: string;
-    libraries: ILibrary[];
-    minecraftArguments?: string;
-    assetIndex: IAssetIndexArtifact;
-}
-
-interface IAssetIndexArtifact extends IArtifact {
+    downloads: Partial<IVersionDownloads>;
+    libraries: Partial<ILibrary>[];
+    arguments: Partial<IVersionArguments>;
 
     /**
-     * This like assets prop in version attrs.
-     **/
-    id: string;
-
-    totalSize: number;
+     * *(only old versions)*
+     */
+    minecraftArguments?: string;
 
 }
 
 export class Version {
 
-    static from(_version: Partial<IVersion>, _default: Partial<IVersion> = { /* parent */ }, _repoURL: string = MOJANG.LIBS_REPO): Version {
-        if (_version instanceof Version) return _version;
+    static from(version: Partial<IVersion>, parentVersion: Partial<IVersion> = {}, repoURL: string = MOJANG.LIBS_REPO): Version {
+        if (version instanceof Version) return version;
+
         const {
             id: _id,
             type: _type,
             assets: _assets,
-            downloads: _downloads,
+            assetIndex: _assetIndex = {},
             mainClass: _mainClass,
+            downloads: _downloads = {},
             libraries: _libs = [],
             arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS.concat() },
             minecraftArguments: _minecraftArguments,
-            assetIndex: _assetIndex,
-        } = _default;
+        } = parentVersion;
         const {
             id = _id,
             type = _type,
             assets = _assets,
-            downloads = _downloads,
+            assetIndex = _assetIndex,
             mainClass = _mainClass,
+            downloads = _downloads,
             libraries: libs = _libs,
             arguments: args = _args,
             minecraftArguments = _minecraftArguments,
-            assetIndex = _assetIndex,
-        } = _version;
+        } = version;
 
-        if (!assetIndex) throw new Error('missing asset index');
-        if (!id) throw new Error('missing id');
-        if (!type) throw new Error('missing type');
-        if (!assets) throw new Error('missing assets');
-        if (!downloads) throw new Error('missing downloads');
-        if (!mainClass) throw new Error('missing main class');
+        if (typeof mainClass !== 'string') throw new Error('version main class is not string');
+        if (typeof id !== 'string') throw new Error('version id is not string');
+        if (typeof type !== 'string') throw new Error('version type is not string');
+        if (typeof assets !== 'string') throw new Error('version assets id is not string');
 
-        const flatLibs = libs.map(({ name }) => name);
-        _libs.forEach(_lib => {
-            const contains = flatLibs.includes(_lib.name);
-            if (!contains) libs.push(_lib);
-        });
+        {
+            const flatLibs = libs.map(({ name }) => name);
+            _libs.filter(_lib => !flatLibs.includes(_lib.name)).forEach(_lib => libs.push(_lib));
+        } // consolidate libs
 
         const _versionArgs = VersionArguments.from(_args);
         const versionArgs = VersionArguments.from(args);
 
-        const _gameArgs = _versionArgs.game.map(_arg => Argument.from(_arg));
-        const gameArgs = versionArgs.game.map(arg => Argument.from(arg));
-        const flatArgsSep = ' ';
-        const flatGameArgs = gameArgs.map(({ value }) => value.join(flatArgsSep));
-        _gameArgs.forEach(_arg => {
-            const contains = flatGameArgs.includes(_arg.value.join(flatArgsSep));
-            if (!contains) versionArgs.game.push(_arg);
-        });
+        {
+            const flatArgsSep = ' ';
 
-        const _jvmArgs = _versionArgs.jvm.map(_arg => Argument.from(_arg));
-        const jvmArgs = versionArgs.jvm.map(arg => Argument.from(arg));
-        const flatJvmArgs = jvmArgs.map(({ value }) => value.join(flatArgsSep));
-        _jvmArgs.forEach(_arg => {
-            const contains = flatJvmArgs.includes(_arg.value.join(flatArgsSep));
-            if (!contains) versionArgs.jvm.push(_arg);
-        });
+            {
+                const flatGameArgs = versionArgs.game.map(({ value }) => value.join(flatArgsSep));
+                _versionArgs.game
+                    .filter(_arg => {
+                        return !flatGameArgs.includes(_arg.value.join(flatArgsSep));
+                    })
+                    .forEach(_arg => versionArgs.game.push(_arg));
+            }
+
+            {
+                const flatJvmArgs = versionArgs.jvm.map(({ value }) => value.join(flatArgsSep));
+                _versionArgs.jvm
+                    .filter(_arg => {
+                        return !flatJvmArgs.includes(_arg.value.join(flatArgsSep));
+                    })
+                    .forEach(_arg => versionArgs.jvm.push(_arg));
+            }
+        } // consolidate args
 
         if (minecraftArguments) {
             const {
@@ -98,30 +95,46 @@ export class Version {
             versionArgs.jvm = jvm.concat(versionArgs.jvm);
         }
 
-        assetIndex.path = assets + '.json';
-
         return new Version(
             id,
             type,
             assets,
-            VersionDownloads.from(downloads),
-            VersionArguments.from(versionArgs),
-            libs.map(lib => Library.from(lib, _repoURL)),
-            assetIndex,
+            VersionAssetIndexArtifact.from(assetIndex, { path: assets + '.json' }),
             mainClass,
+            VersionDownloads.from(downloads),
+            libs.map(lib => Library.from(lib, repoURL)),
+            VersionArguments.from(versionArgs),
         );
     }
 
+    private _id: string;
+    private _type: string;
+    private _assets: string;
+    private _assetIndex: VersionAssetIndexArtifact;
+    private _mainClass: string;
+    private _downloads: VersionDownloads;
+    private _libs: Library[];
+    private _args: VersionArguments;
+
     constructor(
-        private _id: string,
-        private _type: string,
-        private _assets: string,
-        private _downloads: VersionDownloads,
-        private _args: VersionArguments,
-        private _libs: Library[],
-        private _assetIndex: IAssetIndexArtifact,
-        private _mainClass: string,
-    ) { }
+        id: string,
+        type: string,
+        assets: string,
+        assetIndex: Partial<IVersionAssetIndexArtifact>,
+        mainClass: string,
+        downloads: Partial<IVersionDownloads>,
+        libs: Partial<ILibrary>[] = [],
+        args: Partial<IVersionArguments> = {},
+    ) {
+        this._id = id;
+        this._type = type;
+        this._assets = assets;
+        this._assetIndex = VersionAssetIndexArtifact.from(assetIndex);
+        this._downloads = VersionDownloads.from(downloads);
+        this._mainClass = mainClass;
+        this._args = VersionArguments.from(args);
+        this._libs = libs.map(lib => Library.from(lib));
+    }
 
     get id(): string { return this._id; }
 
@@ -137,7 +150,7 @@ export class Version {
 
     get args(): VersionArguments { return this._args; }
 
-    get assetIndex(): IAssetIndexArtifact { return this._assetIndex; }
+    get assetIndex(): VersionAssetIndexArtifact { return this._assetIndex; }
 
     get mainClass(): string { return this._mainClass; }
 
@@ -154,7 +167,7 @@ export class Version {
             assets,
             downloads,
             args,
-            libs,
+            libraries,
             mainClass,
             assetIndex,
         } = this;
@@ -164,7 +177,7 @@ export class Version {
             assets,
             downloads,
             'arguments': args,
-            'libraries': libs,
+            libraries,
             mainClass,
             assetIndex,
         };
