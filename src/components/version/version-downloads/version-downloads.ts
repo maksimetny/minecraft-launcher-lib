@@ -45,4 +45,15 @@ export class VersionDownloads implements IVersionDownloads {
 
     set server(_server: Artifact) { this._server = Artifact.from(_server); }
 
+    toJSON(): IVersionDownloads {
+        const {
+            client,
+            server,
+        } = this;
+        return {
+            client,
+            server,
+        };
+    }
+
 }

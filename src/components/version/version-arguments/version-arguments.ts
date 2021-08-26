@@ -65,4 +65,15 @@ export class VersionArguments implements IVersionArguments {
 
     set jvm(jvm: Argument[]) { this._jvm = jvm.map(jvmArg => Argument.from(jvmArg)); }
 
+    toJSON(): IVersionArguments {
+        const {
+            game,
+            jvm,
+        } = this;
+        return {
+            game,
+            jvm,
+        };
+    }
+
 }
