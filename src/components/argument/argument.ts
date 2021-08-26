@@ -81,15 +81,12 @@ export class Argument implements IArgument {
         return this.value.join(' ');
     }
 
-    toJSON(): IArgument {
+    toJSON(): ArgumentValue | IArgument {
         const {
             value,
             rules,
         } = this;
-        return {
-            value,
-            rules,
-        };
+        return rules.length ? { value, rules } : this.toString();
     }
 
 }
