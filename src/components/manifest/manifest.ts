@@ -3,7 +3,7 @@
  * The version manifest.
  * @see https://minecraft.gamepedia.com/version_manifest.json
  */
-export interface IVersionManifest {
+export interface IManifest {
 
     latest: {
         snapshot: string;
@@ -13,14 +13,14 @@ export interface IVersionManifest {
     /**
      * The list of available versions.
      */
-    versions: IVersionManifestItem[];
+    versions: IManifestItem[];
 
 }
 
 /**
  * Containing version metadata.
  */
-export interface IVersionManifestItem {
+export interface IManifestItem {
 
     /**
      * The link to `<id>.json`.
