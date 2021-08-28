@@ -13,36 +13,24 @@ export class Folder implements IFolder {
         switch (typeof location) {
             case 'string': return new Folder(location);
             case 'object': {
-                if (!location.path) break;
-                return new Folder(location.path);
+                if (location.path) return new Folder(location.path);
+                throw new Error('missing folder path');
             }
         }
-
-        throw new Error('path is not a string');
     }
 
-    private _path: string;
-
-    constructor(path: string) { this._path = path; }
+    constructor(public path: string) { }
 
     join(...parts: string[]): string {
         return join(this.path, ...parts);
     }
 
-    get path(): string {
-        return this._path;
-    }
-
-    set path(path: string) {
-        this._path = path;
-    }
-
     toString(): string {
-        return this._path;
+        return this.path;
     }
 
     toJSON(): string {
-        return this.toString();
+        return this.path;
     }
 
 }
