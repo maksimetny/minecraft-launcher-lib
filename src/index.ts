@@ -1,9 +1,4 @@
 
-/*
-    MCLL
-    https://github.com/maksimetny/minecraft-launcher-lib
-*/
-
 export * from './components/launcher';
 // export * from './components/downloader';
 export * from './components/authenticator';

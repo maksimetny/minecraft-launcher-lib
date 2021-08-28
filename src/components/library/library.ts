@@ -47,7 +47,7 @@ export class Library implements ILibrary {
             natives,
         } = lib;
 
-        if (typeof name !== 'string') throw new Error('library name is not string');
+        if (!name) throw new Error('missing library name');
 
         return new Library(
             name,
@@ -72,30 +72,23 @@ export class Library implements ILibrary {
         ].join(s);
     }
 
-    private _name: string;
     private _downloads: LibraryDownloads;
     private _extract: Required<LibraryExtract>;
     private _rules: Rule[];
 
     constructor(
-        name: string,
-        downloads: Partial<LibraryDownloads> = {},
-        readonly natives: LibraryNatives = {},
+        public name: string,
+        downloads: Partial<ILibraryDownloads> = {},
+        public natives: LibraryNatives = {},
         extract: LibraryExtract = {},
         rules: Partial<IRule>[] = [],
     ) {
-        this._name = name;
-
         this._downloads = LibraryDownloads.from(downloads, name, natives);
 
         const { exclude = ['META-INF/'] } = extract;
         this._extract = { exclude };
 
         this._rules = rules.map(rule => Rule.from(rule));
-    }
-
-    get name(): string {
-        return this._name;
     }
 
     get downloads(): LibraryDownloads {
@@ -110,6 +103,10 @@ export class Library implements ILibrary {
         return this._rules;
     }
 
+    set rules(rules: Rule[]) {
+        this._rules = rules.map(rule => Rule.from(rule));
+    }
+
     isApplicable(
         platform: Partial<IPlatform> = {},
         features: Record<string, boolean> = {},
@@ -117,19 +114,19 @@ export class Library implements ILibrary {
         return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 
-    hasNativeClassifier(os: OS = Platform.current.name): boolean { return os in this.natives; }
-
-    createNativeClassifier(platform: Partial<IPlatform> = {}, format = false): string {
+    getNativeClassifier(platform: Partial<IPlatform> = {}, format = false): string {
         const {
             name,
             arch,
         } = Platform.from(platform);
-        if (!this.hasNativeClassifier(name)) throw new Error('library has not native classifier');
+
+        const classifier = this.natives[name];
+        if (!classifier) throw new Error('library has not native classifier');
 
         const fields: Map<string, string> = new Map();
         if (format) fields.set('arch', arch.match(/\d\d/g)?.shift() ?? '32');
 
-        return Argument.format(this.natives[name] as string, fields);
+        return Argument.format(classifier, fields);
     }
 
     toString(): string {

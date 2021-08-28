@@ -25,7 +25,7 @@ export interface IVersion {
 
 export class Version {
 
-    static from(version: Partial<IVersion>, parentVersion: Partial<IVersion> = {}, repoURL: string = MOJANG.LIBS_REPO): Version {
+    static from(version: Partial<IVersion>, parent: Partial<IVersion> = {}, repoURL: string = MOJANG.LIBS_REPO): Version {
         if (version instanceof Version) return version;
 
         const {
@@ -38,7 +38,7 @@ export class Version {
             libraries: _libs = [],
             arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS.concat() },
             minecraftArguments: _minecraftArguments,
-        } = parentVersion;
+        } = parent;
         const {
             id = _id,
             type = _type,

@@ -13,7 +13,7 @@ export class Folder implements IFolder {
         switch (typeof location) {
             case 'string': return new Folder(location);
             case 'object': {
-                if (typeof location.path !== 'string') break;
+                if (!location.path) break;
                 return new Folder(location.path);
             }
         }

@@ -7,31 +7,45 @@ export interface IArtifact {
     url: string;
     size: number;
     sha1?: string;
-    // TODO hash type
 }
 
 export class Artifact implements IArtifact {
 
-    static from(artifact: string | Partial<IArtifact>, def: Partial<IArtifact> = {}): Artifact {
+    static from(
+        artifact: string | Partial<IArtifact>,
+        parent: Partial<IArtifact> = {},
+    ): Artifact {
         if (artifact instanceof Artifact) return artifact;
-        else if (typeof artifact !== 'object') return Artifact.fromId(artifact);
 
-        const {
-            path = def.path,
-            url = def.url,
-            size = def.size,
-            sha1 = def.sha1,
-        } = artifact;
+        switch (typeof artifact) {
+            case 'string': return Artifact.fromId(artifact);
+            case 'object': {
+                const {
+                    path = parent.path,
+                    url = parent.url,
+                    size = parent.size,
+                    sha1 = parent.sha1,
+                } = artifact;
 
-        if (typeof path !== 'string') throw new Error('artifact path is not string');
-        if (typeof url !== 'string') throw new Error('artifact url is not string');
+                const errMsg = (param: string) => `missing artifact ${param}`;
 
-        return new Artifact(path, url, size, sha1);
+                if (!path) throw new Error(errMsg('path'));
+                if (!url) throw new Error(errMsg('url'));
+
+                return new Artifact(
+                    path,
+                    url,
+                    size,
+                    sha1,
+                );
+            }
+        }
     }
 
     /**
-     * @param id should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
-     * @param defaultExtension should look like `jar`, `tar.xz` or other.
+     * Transform artifact id to artifact instance.
+     * @param id The artifact id. It should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
+     * @param defaultExtension The default extension. It should look like `jar`, `tar.xz` or other.
      * @param repoURL e.g. `https://libraries.mojang.com`.
      */
     static fromId(id: string, defaultExtension: string = 'jar', repoURL: string = MOJANG.LIBS_REPO): Artifact {
@@ -54,39 +68,16 @@ export class Artifact implements IArtifact {
         return new Artifact(join(...paths), repoURL + '/' + paths.join('/'));
     }
 
-    private _path: string;
-    private _url: string;
-    private _size: number;
-
     constructor(
-        path: string,
-        url: string,
-        size: number = 0,
+        public path: string,
+        public url: string,
+        public size: number = 0,
         public sha1?: string,
-    ) {
-        this._path = path;
-        this._url = url;
-        this._size = size;
-    }
-
-    get size(): number { return this._size; }
-
-    set size(_size: number) { this._size = _size; }
-
-    get url(): string {
-        return this._url;
-    }
-
-    set url(_url: string) {
-        this._url = _url;
-    }
-
-    get path(): string { return this._path; }
-
-    set path(_path: string) { this._path = _path; }
+    ) { }
 
     /**
-     * @returns a artifact id, it should look like `<group>:<artifact>:<version>@<extension>`, e.g. `com.mojang:patchy:1.1@jar`.
+     * Transform this artifact to string representation.
+     * @returns The artifact id. It should look like `<group>:<artifact>:<version>@<extension>`, e.g. `com.mojang:patchy:1.1@jar`.
      */
     toString(defaultExtension = 'jar'): string {
         const parts: string[] = this.path.split('/').reverse();
@@ -101,7 +92,7 @@ export class Artifact implements IArtifact {
         const splittedTarget = target.split(targetSep);
 
         const i = splittedTarget.indexOf(version);
-        const ext = i >= 1 ? splittedTarget.slice(i + 1).join(targetSep) : (splittedTarget.reverse().shift() || defaultExtension).replace(version, '');
+        const ext = (i >= 1) ? splittedTarget.slice(i + 1).join(targetSep) : (splittedTarget.reverse().shift()?.replace(version, '') || defaultExtension);
 
         const extSep = '.';
         const idSep = ':';
@@ -111,21 +102,6 @@ export class Artifact implements IArtifact {
         const splittedExtension = ext.split(extSep);
         const classifier = splittedExtension.shift();
         return [group, artifact, version, classifier].join(idSep) + '@' + splittedExtension.join(extSep);
-    }
-
-    toJSON(): IArtifact {
-        const {
-            path,
-            url,
-            size,
-            sha1,
-        } = this;
-        return {
-            path,
-            url,
-            size,
-            sha1,
-        };
     }
 
 }

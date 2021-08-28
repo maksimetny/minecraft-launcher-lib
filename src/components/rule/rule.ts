@@ -21,47 +21,32 @@ export interface IRule {
 
 export class Rule implements IRule {
 
-    static from(rule: Partial<IRule>, def: Partial<IRule> = {}): Rule {
+    static from(rule: Partial<IRule>, parent: Partial<IRule> = {}): Rule {
         if (rule instanceof Rule) return rule;
 
         const {
-            action = def.action,
-            os = def.os,
-            features = def.features,
+            action = parent.action,
+            os = parent.os,
+            features = parent.features,
         } = rule;
 
-        return new Rule(action, os, features);
+        return new Rule(
+            action,
+            os,
+            features,
+        );
     }
-
-    private _action: RuleAction;
-    private _os: Partial<IPlatform>;
-    private _features: Record<string, boolean>;
 
     constructor(
-        action = RuleAction.ALLOW,
-        os: Partial<IPlatform> = {},
-        features: Record<string, boolean> = {},
-    ) {
-        this._action = action;
-        this._os = os;
-        this._features = features;
-    }
-
-    get action(): RuleAction {
-        return this._action;
-    }
-
-    get os(): Partial<IPlatform> {
-        return this._os;
-    }
-
-    get features(): Record<string, boolean> {
-        return this._features;
-    }
+        public action = RuleAction.ALLOW,
+        public os: Partial<IPlatform> = {},
+        public features: Record<string, boolean> = {},
+    ) { }
 
     /**
      * Compare current platform and features with params
      * required for rule to take action.
+     *
      * @param platform Current platform.
      * @param features Enabled or disabled features.
      */
@@ -115,27 +100,6 @@ export class Rule implements IRule {
             case RuleAction.ALLOW: return a;
             default: return b;
         }
-    }
-
-    getFeatureValue(name: string): boolean {
-        return this.features[name];
-    }
-
-    setFeatureValue(name: string, value: boolean): boolean {
-        return this.features[name] = value;
-    }
-
-    toJSON(): IRule {
-        const {
-            action,
-            os,
-            features,
-        } = this;
-        return {
-            action,
-            os,
-            features,
-        };
     }
 
 }

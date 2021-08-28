@@ -16,28 +16,28 @@ export class VersionAssetIndexArtifact extends Artifact implements IVersionAsset
 
     static from(
         assetIndex: Partial<IVersionAssetIndexArtifact>,
-        parentAssetIndex: Partial<IVersionAssetIndexArtifact> = {},
+        parent: Partial<IVersionAssetIndexArtifact> = {},
     ): VersionAssetIndexArtifact {
         if (assetIndex instanceof VersionAssetIndexArtifact) return assetIndex;
 
         const {
             id: _id,
             totalSize: _totalSize,
-        } = parentAssetIndex;
+        } = parent;
         const {
             id = _id,
             totalSize = _totalSize,
         } = assetIndex;
 
-        if (typeof id !== 'string') throw new Error('version asset index id is not string');
-        if (typeof totalSize !== 'number') throw new Error('version asset index id is not number');
+        if (!id) throw new Error('missing version asset index id');
+        if (!totalSize) throw new Error('missing version asset index total size');
 
         const {
             path,
             url,
             size,
             sha1,
-        } = Artifact.from(assetIndex, parentAssetIndex);
+        } = Artifact.from(assetIndex, parent);
 
         return new VersionAssetIndexArtifact(
             id,

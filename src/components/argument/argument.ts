@@ -18,55 +18,40 @@ export interface IArgument {
 
 export class Argument implements IArgument {
 
-    static from(arg: ArgumentValue | Partial<IArgument>): Argument {
+    static from(arg: ArgumentValue | Partial<IArgument>, parent: Partial<IArgument> = {}): Argument {
         if (arg instanceof Argument) return arg;
 
         switch (typeof arg) {
             case 'string': break;
             case 'object': {
                 if (Array.isArray(arg)) break;
-                else if (arg.value) return new Argument(arg.value, arg.rules);
+
+                const {
+                    value,
+                    rules = parent.rules,
+                } = arg;
+
+                if (value) return new Argument(value, rules);
             }
             default: throw new Error('missing argument value');
         }
 
-        return new Argument(arg);
+        return new Argument(arg, parent.rules);
     }
 
     static format(template: string, fields: Map<string, string>): string {
         return template.replace(/\$\{(.*?)}/g, key => fields.get(key.substring(2).substring(0, key.length - 3)) ?? key);
     } // github.com/voxelum/minecraft-launcher-core-node/blob/3d5aa7a38cbc66cdfc9b9d68a8bdf4988905cb72/packages/core/launch.ts
 
-    private _value: string[];
-    private _rules: Rule[];
+    public value: string[];
+    public rules: Rule[];
 
     constructor(
         value: ArgumentValue,
         rules: Partial<IRule>[] = [],
     ) {
-        switch (typeof value) {
-            case 'string': {
-                this._value = value.split(/\s/g);
-                break;
-            }
-            case 'object': {
-                if (Array.isArray(value)) {
-                    this._value = value;
-                    break;
-                }
-            }
-            default: throw new Error('argument value is not string or string array');
-        }
-
-        this._rules = rules.map(rule => Rule.from(rule));
-    }
-
-    get value(): string[] {
-        return this._value;
-    }
-
-    get rules(): Rule[] {
-        return this._rules;
+        this.value = Array.isArray(value) ? value : value.split(/\s/g);
+        this.rules = rules.map(rule => Rule.from(rule));
     }
 
     isApplicable(platform: Partial<IPlatform>, features: Record<string, boolean> = {}): boolean {
@@ -82,11 +67,9 @@ export class Argument implements IArgument {
     }
 
     toJSON(): ArgumentValue | IArgument {
-        const {
-            value,
-            rules,
-        } = this;
-        return rules.length ? { value, rules } : this.toString();
+        const rules = this.rules;
+        const value = this.value.length > 2 ? this.value : this.toString();
+        return rules.length ? { value, rules } : value;
     }
 
 }

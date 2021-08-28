@@ -11,41 +11,29 @@ export interface IAsset {
 
 export class Asset {
 
-    static from(assetObject: Omit<Partial<IAsset>, 'path'>, defaultAssetObject: Partial<IAsset> = {}): Asset {
+    static from(assetObject: Omit<Partial<IAsset>, 'path'>, parent: Partial<IAsset> = {}): Asset {
         if (assetObject instanceof Asset) return assetObject;
 
         const {
-            hash = defaultAssetObject.hash,
-            size = defaultAssetObject.size,
+            hash = parent.hash,
+            size = parent.size,
         } = assetObject;
 
-        if (typeof defaultAssetObject.path !== 'string') throw new Error('default asset path is not string');
-        if (typeof hash !== 'string') throw new Error('asset hash is not string');
-        if (typeof size !== 'number') throw new Error('asset size is not number');
+        if (!parent.path) throw new Error('missing parent asset path');
+        if (!hash) throw new Error('missing asset hash');
+        if (!size) throw new Error('missing asset size');
 
-        return new Asset(defaultAssetObject.path, hash, size);
+        return new Asset(parent.path, hash, size);
     }
 
     constructor(
-        private _path: string,
-        private _hash: string,
-        private _size: number,
+        public path: string,
+        public hash: string,
+        public size: number,
     ) { }
 
-    get path(): string {
-        return this._path;
-    }
-
-    get hash(): string {
-        return this._hash;
-    }
-
     get subhash(): string {
-        return this._hash.substring(0, 2);
-    }
-
-    get size(): number {
-        return this._size;
+        return this.hash.substring(0, 2);
     }
 
     /**
@@ -75,15 +63,13 @@ export class Asset {
         return this.legacyPath;
     }
 
-    toJSON(): IAsset {
+    toJSON(): Omit<IAsset, 'path'> {
         const {
             hash,
-            path,
             size,
         } = this;
         return {
             hash,
-            path,
             size,
         };
     }

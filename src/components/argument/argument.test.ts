@@ -6,7 +6,10 @@ describe('Argument', () => {
 
     it('should resolve string argument', () => {
         const arg = '--demo';
-        const { value, rules } = Argument.from(arg);
+        const {
+            value,
+            rules,
+        } = Argument.from(arg);
 
         expect(value).toEqual([arg]);
         expect(rules).toEqual([]);
@@ -16,9 +19,7 @@ describe('Argument', () => {
         const value = '--demo';
         const arg = Argument.from({
             rules: [
-                {
-                    action: RuleAction.ALLOW,
-                },
+                { action: RuleAction.ALLOW },
             ],
             value,
         });
@@ -31,7 +32,10 @@ describe('Argument', () => {
 
     it('should resolve string argument with two substrings', () => {
         const args = ['--username', '${auth_player_name}'];
-        const { value, rules } = Argument.from(args.join(' '));
+        const {
+            value,
+            rules,
+        } = Argument.from(args.join(' '));
 
         expect(value[0]).toBe(args[0]);
         expect(value[1]).toBe(args[1]);
@@ -56,9 +60,7 @@ describe('Argument', () => {
         );
 
         const argument2 = new Argument(
-            [
-                '-Xss1M',
-            ],
+            ['-Xss1M'],
             [
                 new Rule(RuleAction.ALLOW, platform, {}),
             ],

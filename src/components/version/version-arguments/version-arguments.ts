@@ -23,13 +23,13 @@ export class VersionArguments implements IVersionArguments {
         new Argument(['-cp', '${classpath}']),
     ];
 
-    static from(versionArgs: Partial<IVersionArguments>, parentVersionArgs: Partial<IVersionArguments> = {}): VersionArguments {
+    static from(versionArgs: Partial<IVersionArguments>, parent: Partial<IVersionArguments> = {}): VersionArguments {
         if (versionArgs instanceof VersionArguments) return versionArgs;
 
         const {
             game: _game = [],
             jvm: _jvm = VersionArguments.DEFAULT_JVM_ARGS.concat(),
-        } = parentVersionArgs;
+        } = parent;
         const {
             game = _game,
             jvm = _jvm,

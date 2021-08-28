@@ -8,13 +8,13 @@ export interface IVersionDownloads {
 
 export class VersionDownloads implements IVersionDownloads {
 
-    static from(versionDownloads: Partial<IVersionDownloads>, parentVersionDownloads: Partial<IVersionDownloads> = {}): VersionDownloads {
+    static from(versionDownloads: Partial<IVersionDownloads>, parent: Partial<IVersionDownloads> = {}): VersionDownloads {
         if (versionDownloads instanceof VersionDownloads) return versionDownloads;
 
         const {
             client: parentClient = {},
             server: parentServer = {},
-        } = parentVersionDownloads;
+        } = parent;
         const {
             client = parentClient,
             server = parentServer,
