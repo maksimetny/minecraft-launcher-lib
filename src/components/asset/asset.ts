@@ -11,19 +11,23 @@ export interface IAsset {
 
 export class Asset {
 
-    static from(assetObject: Omit<Partial<IAsset>, 'path'>, parent: Partial<IAsset> = {}): Asset {
-        if (assetObject instanceof Asset) return assetObject;
+    static from(child: Omit<Partial<IAsset>, 'path'>, parent: Partial<IAsset> = {}): Asset {
+        if (child instanceof Asset) return child;
 
         const {
             hash = parent.hash,
             size = parent.size,
-        } = assetObject;
+        } = child;
 
         if (!parent.path) throw new Error('missing parent asset path');
         if (!hash) throw new Error('missing asset hash');
         if (!size) throw new Error('missing asset size');
 
-        return new Asset(parent.path, hash, size);
+        return new Asset(
+            parent.path,
+            hash,
+            size,
+        );
     }
 
     constructor(
@@ -32,19 +36,22 @@ export class Asset {
         public size: number,
     ) { }
 
+    /**
+     * The first 2 hex letters of hash.
+     */
     get subhash(): string {
         return this.hash.substring(0, 2);
     }
 
     /**
-     * @returns a legacy path, e.g. `virtual/legacy/lang/ru_RU.lang`.
+     * The legacy path. It should look like `virtual/legacy/<path>`, e.g. `virtual/legacy/lang/ru_RU.lang`.
      */
     get legacyPath(): string {
         return join('virtual', 'legacy', this.path);
     }
 
     /**
-     * @returns a path, it should look like `objects/<subhash>/<hash>`, e.g. `objects/00/00..b8f`.
+     * The object path. It should look like `objects/<subhash>/<hash>`, e.g. `objects/00/00..b8f`.
      **/
     get objectPath(): string {
         return join('objects', this.subhash, this.hash);

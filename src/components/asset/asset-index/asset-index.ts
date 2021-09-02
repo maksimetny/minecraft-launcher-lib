@@ -1,34 +1,48 @@
 
 import { Asset, IAsset } from '../asset';
 
-export type AssetIndexObject = Omit<IAsset, 'path'>;
-
 export interface IAssetIndex {
-    objects: Record<string, AssetIndexObject>;
-    virtual: boolean;
+
+    /**
+     * The asset list.
+     */
+    objects: {
+        [path: string]: Omit<IAsset, 'path'>;
+    };
+
+    virtual?: boolean;
     map_to_resources?: boolean;
+
 }
 
 export class AssetIndex {
 
-    static from(index: Partial<IAssetIndex>): AssetIndex {
-        if (index instanceof AssetIndex) return index;
+    static from(child: Partial<IAssetIndex>, parent: Partial<IAssetIndex> = {}): AssetIndex {
+        if (child instanceof AssetIndex) return child;
 
         const {
+            objects = parent.objects,
+            virtual = parent.virtual,
+            map_to_resources = parent.map_to_resources,
+        } = child;
+
+        return new AssetIndex(
             objects,
             virtual,
             map_to_resources,
-        } = index;
-
-        return new AssetIndex(objects, virtual, map_to_resources);
+        );
     }
 
     constructor(
-        readonly objects: Record<string, AssetIndexObject> = {},
-        readonly virtual: boolean = false,
-        readonly map_to_resources: boolean = false,
+        public objects: IAssetIndex['objects'] = {},
+        public virtual: boolean = false,
+        public map_to_resources: boolean = false,
     ) { }
 
+    /**
+     * Gets new array of resolved assets.
+     * @returns The asset array.
+     */
     transformObjects(): Asset[] {
         return Object.entries(this.objects).map(([path, object]) => Asset.from(object, { path }));
     }

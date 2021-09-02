@@ -1,2 +1,2 @@
 
-export { AssetIndex, IAssetIndex, AssetIndexObject } from './asset-index';
+export { AssetIndex, IAssetIndex } from './asset-index';
