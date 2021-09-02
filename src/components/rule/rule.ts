@@ -11,24 +11,27 @@ export interface IRule {
     action: RuleAction;
 
     /**
-     * Required platform.
+     * The required platform.
      */
     os: Partial<IPlatform>;
 
+    /**
+     * The enabled or disabled features.
+     */
     features: Record<string, boolean>;
 
 }
 
 export class Rule implements IRule {
 
-    static from(rule: Partial<IRule>, parent: Partial<IRule> = {}): Rule {
-        if (rule instanceof Rule) return rule;
+    static from(child: Partial<IRule>, parent: Partial<IRule> = {}): Rule {
+        if (child instanceof Rule) return child;
 
         const {
-            action = parent.action,
+            action,
             os = parent.os,
             features = parent.features,
-        } = rule;
+        } = child;
 
         return new Rule(
             action,
@@ -44,11 +47,13 @@ export class Rule implements IRule {
     ) { }
 
     /**
-     * Compare current platform and features with params
-     * required for rule to take action.
+     * Compare the current platform and enabled features with params and features
+     * of this rule required for this rule to take action.
      *
-     * @param platform Current platform.
-     * @param features Enabled or disabled features.
+     * @param platform The current platform.
+     * @param features The enabled or disabled features.
+     *
+     * @returns The result for this rule.
      */
     isAllowable(
         platform: Partial<IPlatform> = {},
@@ -95,6 +100,9 @@ export class Rule implements IRule {
         return allowable;
     }
 
+    /**
+     * Compare two boolean values using this rule's action.
+     */
     compare(a: boolean, b: boolean): boolean {
         switch (this.action) {
             case RuleAction.ALLOW: return a;
