@@ -1,5 +1,7 @@
 
-/** Mojang friendly OS name. */
+/**
+ * Mojang friendly platform name.
+ */
 export enum OS {
     WINDOWS = 'windows',
     LINUX = 'linux',
@@ -16,14 +18,14 @@ import * as os from 'os';
 
 export class Platform implements IPlatform {
 
-    static from(platform: Partial<IPlatform>, parent: Partial<IPlatform> = Platform.current): Platform {
-        if (platform instanceof Platform) return platform;
+    static from(child: Partial<IPlatform>, parent: Partial<IPlatform> = Object.assign({}, Platform.current)): Platform {
+        if (child instanceof Platform) return child;
 
         const {
             version = parent.version,
             name = parent.name,
             arch = parent.arch,
-        } = platform;
+        } = child;
 
         return new Platform(
             name,
@@ -32,8 +34,12 @@ export class Platform implements IPlatform {
         );
     }
 
-    static friendlifyNodePlatform(platform: NodeJS.Platform): OS {
-        switch (platform) {
+    /**
+     * Transforms node platform name to a Mojang-friendly platform name.
+     * @param nodePlatform The node platform name. E.g. `win32`.
+     */
+    static friendlifyNodePlatform(nodePlatform: NodeJS.Platform): OS {
+        switch (nodePlatform) {
             case 'win32': return OS.WINDOWS;
             case 'darwin': {
                 return OS.OSX;
@@ -42,7 +48,10 @@ export class Platform implements IPlatform {
         }
     }
 
-    static get current(): Platform {
+    /**
+     * The current platform.
+     */
+    static get current(): Readonly<Platform> {
         return Platform._current ? Platform._current : Platform._current = new Platform();
     }
 
@@ -54,6 +63,9 @@ export class Platform implements IPlatform {
         public version: string = os.release(),
     ) { }
 
+    /**
+     * The classpath sep for this platform.
+     */
     get classpathSeparator(): string {
         return (this.name !== OS.WINDOWS) ? ':' : ';';
     }
