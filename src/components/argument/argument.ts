@@ -1,42 +1,39 @@
 
 import { Rule, IRule } from '../rule';
-import {
-    IPlatform,
-} from '../platform';
+import { IPlatform } from '../platform';
 
 export interface IArgument {
 
     /**
-     * An argument or a list of args that is
-     * added when condition is matched.
+     * An argument or a args list.
      */
-    value: ArgumentValue;
+    value: string | string[];
 
-    rules: Partial<IRule>[];
+    rules: Array<Partial<IRule>>;
 
 }
 
 export class Argument implements IArgument {
 
-    static from(arg: ArgumentValue | Partial<IArgument>, parent: Partial<IArgument> = {}): Argument {
-        if (arg instanceof Argument) return arg;
+    static from(child: IArgument['value'] | Partial<IArgument>, parent: Partial<IArgument> = {}): Argument {
+        if (child instanceof Argument) return child;
 
-        switch (typeof arg) {
+        switch (typeof child) {
             case 'string': break;
             case 'object': {
-                if (Array.isArray(arg)) break;
+                if (Array.isArray(child)) break;
 
                 const {
                     value,
                     rules = parent.rules,
-                } = arg;
+                } = child;
 
                 if (value) return new Argument(value, rules);
             }
             default: throw new Error('missing argument value');
         }
 
-        return new Argument(arg, parent.rules);
+        return new Argument(child, parent.rules);
     }
 
     static format(template: string, fields: Map<string, string>): string {
@@ -47,17 +44,28 @@ export class Argument implements IArgument {
     public rules: Rule[];
 
     constructor(
-        value: ArgumentValue,
+        value: IArgument['value'],
         rules: Partial<IRule>[] = [],
     ) {
         this.value = Array.isArray(value) ? value : value.split(/\s/g);
         this.rules = rules.map(rule => Rule.from(rule));
     }
 
+    /**
+     * Checks if this argument is applicable to the current platform and features.
+     *
+     * @param platform The current platform.
+     * @param features The current featutes.
+     *
+     * @returns Is argument applicable?
+     */
     isApplicable(platform: Partial<IPlatform>, features: Record<string, boolean> = {}): boolean {
         return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 
+    /**
+     * Formats and returns this argument as a string.
+     */
     format(fields: Map<string, string>): string[] {
         return this.value.map(value => Argument.format(value, fields));
     }
@@ -66,12 +74,10 @@ export class Argument implements IArgument {
         return this.value.join(' ');
     }
 
-    toJSON(): ArgumentValue | IArgument {
-        const rules = this.rules;
+    toJSON(): IArgument['value'] | IArgument {
         const value = this.value.length > 2 ? this.value : this.toString();
-        return rules.length ? { value, rules } : value;
+        const rules = this.rules;
+        return (rules.length) ? { value, rules } : value;
     }
 
 }
-
-export type ArgumentValue = string | string[];
