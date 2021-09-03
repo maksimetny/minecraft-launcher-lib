@@ -14,9 +14,10 @@ export class Folder implements IFolder {
             case 'string': return new Folder(location);
             case 'object': {
                 if (location.path) return new Folder(location.path);
-                throw new Error('missing folder path');
             }
         }
+
+        throw new Error('missing folder path');
     }
 
     constructor(public path: string) { }
