@@ -4,6 +4,7 @@ import { join } from 'path';
 import { Library } from './library';
 import { OS } from '../platform';
 import { MOJANG } from '../../constants/urls';
+import { Rule, RuleAction } from '../rule';
 
 describe('Library', () => {
 
@@ -101,6 +102,18 @@ describe('Library', () => {
             } // expect artifact
 
             expect(lib.name).toBe('net.minecraftforge:forge:1.14.4-28.2.0');
+        });
+
+    });
+
+    describe('#isApplicable', () => {
+
+        it('enabled features', () => {
+            const enabledFeatures: Record<string, boolean> = { download_only: false };
+            const downloadOnly = Rule.from({ action: RuleAction.ALLOW, features: { download_only: true } });
+
+            expect(Library.from({ name: 'com.launcher:auth-lib:1.0', rules: [downloadOnly] }).isApplicable({}, enabledFeatures)).toBeFalsy();
+            expect(new Library('com.launcher:auth-core:1.0').isApplicable({}, enabledFeatures)).toBeTruthy();
         });
 
     });
