@@ -1,7 +1,7 @@
 
-import { Argument, IArgument, ArgumentValue } from '../../argument';
+import { Argument, IArgument } from '../../argument';
 
-export type VersionArgument = ArgumentValue | Partial<IArgument>;
+export type VersionArgument = IArgument['value'] | Partial<IArgument>;
 
 export interface IVersionArguments {
     game: VersionArgument[];
