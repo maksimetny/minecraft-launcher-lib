@@ -24,19 +24,16 @@ export interface IRule {
 
 export class Rule implements IRule {
 
-    static from(child: Partial<IRule>, parent: Partial<IRule> = {}): Rule {
-        if (child instanceof Rule) return child;
-
-        const {
-            action,
-            os = parent.os,
-            features = parent.features,
-        } = child;
+    static from(child: Partial<IRule>, parent?: Partial<IRule>): Rule {
+        if (!parent) {
+            if (child instanceof Rule) return child;
+            parent = {};
+        }
 
         return new Rule(
-            action,
-            os,
-            features,
+            child.action,
+            Object.assign({}, parent.os, child.os),
+            Object.assign({}, parent.features, child.features),
         );
     }
 
