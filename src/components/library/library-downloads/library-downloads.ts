@@ -44,11 +44,11 @@ export class LibraryDownloads implements ILibraryDownloads {
             }) => {
                 // TODO format classifier
                 const libraryIdWithNativeClassifier = Library.concatNameWithClassifier(libraryId, classifier);
-                classifiers[classifier] = Artifact.fromId(libraryIdWithNativeClassifier, undefined, repoURL);
+                classifiers[classifier] = Artifact.fromId(libraryIdWithNativeClassifier, repoURL);
             });
 
         return new LibraryDownloads(
-            Artifact.from(artifact, Artifact.fromId(libraryId, undefined, repoURL)),
+            Artifact.from(artifact, Artifact.fromId(libraryId, repoURL)),
             Object.fromEntries(
                 Object
                     .entries(classifiers)
@@ -57,7 +57,7 @@ export class LibraryDownloads implements ILibraryDownloads {
                         artifact,
                     ]) => {
                         const libIdWithNativeClassifier = Library.concatNameWithClassifier(libraryId, classifier);
-                        const defaultArtifact = Artifact.fromId(libIdWithNativeClassifier, undefined, repoURL);
+                        const defaultArtifact = Artifact.fromId(libIdWithNativeClassifier, repoURL);
                         return [classifier, Artifact.from(artifact, defaultArtifact)];
                     }),
             ),

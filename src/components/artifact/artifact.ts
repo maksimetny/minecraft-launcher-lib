@@ -1,5 +1,4 @@
 
-import { MOJANG } from '../../constants';
 import { join } from 'path';
 
 export interface IArtifact {
@@ -45,10 +44,10 @@ export class Artifact implements IArtifact {
     /**
      * Transform artifact id to artifact instance.
      * @param id The artifact id. It should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
+     * @param repo It this usually looks like an URL address.
      * @param defaultExtension The default extension. It should look like `jar`, `tar.xz` or other.
-     * @param repoURL e.g. `https://libraries.mojang.com`.
      */
-    static fromId(id: string, defaultExtension: string = 'jar', repoURL: string = MOJANG.LIBS_REPO): Artifact {
+    static fromId(id: string, repo: string = '/', defaultExtension: string = 'jar'): Artifact {
         const parts = id.split(':');
 
         if (parts.length < 3) throw new Error('passed string is not include a valid artifact id');
@@ -65,7 +64,7 @@ export class Artifact implements IArtifact {
             paths.push(`${artifact}-${version}.${versionExtension}`);
         }
 
-        return new Artifact(join(...paths), repoURL + '/' + paths.join('/'));
+        return new Artifact(join(...paths), repo + '/' + paths.join('/'));
     }
 
     constructor(
