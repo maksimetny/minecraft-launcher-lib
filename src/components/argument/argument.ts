@@ -15,13 +15,18 @@ export interface IArgument {
 
 export class Argument implements IArgument {
 
-    static from(child: IArgument['value'] | Partial<IArgument>, parent: Partial<IArgument> = {}): Argument {
-        if (child instanceof Argument) return child;
+    static from(child: IArgument['value'] | Partial<IArgument>, parent?: Partial<IArgument>): Argument {
+        if (!parent) {
+            if (child instanceof Argument) return child;
+            parent = {};
+        }
 
         switch (typeof child) {
             case 'string': break;
             case 'object': {
                 if (Array.isArray(child)) break;
+
+                // TODO child arg' rules extends parent arg rules
 
                 const {
                     value,
