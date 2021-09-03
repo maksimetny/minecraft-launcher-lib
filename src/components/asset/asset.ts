@@ -11,8 +11,11 @@ export interface IAsset {
 
 export class Asset {
 
-    static from(child: Omit<Partial<IAsset>, 'path'>, parent: Partial<IAsset> = {}): Asset {
-        if (child instanceof Asset) return child;
+    static from(child: Omit<Partial<IAsset>, 'path'>, parent?: Partial<IAsset>): Asset {
+        if (!parent) {
+            if (child instanceof Asset) return child;
+            parent = {};
+        }
 
         const {
             hash = parent.hash,

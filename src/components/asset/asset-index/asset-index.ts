@@ -17,14 +17,19 @@ export interface IAssetIndex {
 
 export class AssetIndex {
 
-    static from(child: Partial<IAssetIndex>, parent: Partial<IAssetIndex> = {}): AssetIndex {
-        if (child instanceof AssetIndex) return child;
+    static from(child: Partial<IAssetIndex>, parent?: Partial<IAssetIndex>): AssetIndex {
+        if (!parent) {
+            if (child instanceof AssetIndex) return child;
+            parent = {};
+        }
 
         const {
             objects = parent.objects,
             virtual = parent.virtual,
             map_to_resources = parent.map_to_resources,
         } = child;
+
+        // TODO child objects extends parent objects
 
         return new AssetIndex(
             objects,
