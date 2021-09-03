@@ -18,8 +18,13 @@ import * as os from 'os';
 
 export class Platform implements IPlatform {
 
-    static from(child: Partial<IPlatform>, parent: Partial<IPlatform> = Object.assign({}, Platform.current)): Platform {
-        if (child instanceof Platform) return child;
+    static from(child: Partial<IPlatform>, parent?: Partial<IPlatform>): Platform {
+        if (!parent) {
+            if (child instanceof Platform) return child;
+            else {
+                parent = Object.assign({}, Platform.current);
+            }
+        }
 
         const {
             version = parent.version,

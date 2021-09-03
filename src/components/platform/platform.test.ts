@@ -6,7 +6,7 @@ describe('Platform', () => {
 
     describe('#from', () => {
 
-        it('should be able to replace missing properties with default properties', () => {
+        it('should be able to replace child missing properties with parent properties', () => {
             const parentPlatform: IPlatform = {
                 name: OS.LINUX,
                 arch: 'x64',
