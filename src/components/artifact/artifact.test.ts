@@ -63,12 +63,14 @@ describe('Artifact', () => {
     describe('#toString', () => {
 
         it('should transform artifact to artifact id', () => {
+            const path = 'com/mojang/patchy/1.1/patchy-1.1.jar';
             const artifact = new Artifact(
-                'com/mojang/patchy/1.1/patchy-1.1.jar',
-                '//com/mojang/patchy/1.1/patchy-1.1.jar',
+                path,
+                '//' + path,
                 15817,
                 'aef610b34a1be37fa851825f12372b78424d8903',
             );
+
             expect(artifact.toString()).toBe('com.mojang:patchy:1.1@jar');
         });
 

@@ -4,27 +4,28 @@ import { join } from 'path';
 export interface IArtifact {
     path: string;
     url: string;
-    size: number;
+    size?: number;
     sha1?: string;
 }
 
 export class Artifact implements IArtifact {
 
-    static from(
-        artifact: string | Partial<IArtifact>,
-        parent: Partial<IArtifact> = {},
-    ): Artifact {
-        if (artifact instanceof Artifact) return artifact;
-
-        switch (typeof artifact) {
-            case 'string': return Artifact.fromId(artifact);
+    static from(child: string | Partial<IArtifact>, parent?: string | Partial<IArtifact>): Artifact {
+        switch (typeof child) {
+            case 'string': return Artifact.fromId(child);
             case 'object': {
+                if (!parent) {
+                    if (child instanceof Artifact) return child;
+                    parent = {};
+                }
+
+                const _parent = typeof parent !== 'string' ? parent : Artifact.fromId(parent);
                 const {
-                    path = parent.path,
-                    url = parent.url,
-                    size = parent.size,
-                    sha1 = parent.sha1,
-                } = artifact;
+                    path = _parent.path,
+                    url = _parent.url,
+                    size = _parent.size,
+                    sha1 = _parent.sha1,
+                } = child;
 
                 const errMsg = (param: string) => `missing artifact ${param}`;
 
@@ -70,7 +71,7 @@ export class Artifact implements IArtifact {
     constructor(
         public path: string,
         public url: string,
-        public size: number = 0,
+        public size?: number,
         public sha1?: string,
     ) { }
 
