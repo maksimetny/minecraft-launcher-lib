@@ -23,8 +23,11 @@ export class VersionArguments implements IVersionArguments {
         new Argument(['-cp', '${classpath}']),
     ];
 
-    static from(versionArgs: Partial<IVersionArguments>, parent: Partial<IVersionArguments> = {}): VersionArguments {
-        if (versionArgs instanceof VersionArguments) return versionArgs;
+    static from(child: Partial<IVersionArguments>, parent?: Partial<IVersionArguments>): VersionArguments {
+        if (!parent) {
+            if (child instanceof VersionArguments) return child;
+            parent = {};
+        }
 
         const {
             game: _game = [],
@@ -33,17 +36,13 @@ export class VersionArguments implements IVersionArguments {
         const {
             game = _game,
             jvm = _jvm,
-        } = versionArgs;
+        } = child;
 
         return new VersionArguments(game, jvm);
     }
 
     static fromLegacyArguments(minecraftArguments: string): VersionArguments {
-        return new VersionArguments(
-            minecraftArguments
-                .split(/\s(?!\$)/g)
-                .map(value => Argument.from(value)),
-        );
+        return new VersionArguments(minecraftArguments.split(/\s(?!\$)/g));
     }
 
     private _game: Argument[];
@@ -59,11 +58,15 @@ export class VersionArguments implements IVersionArguments {
 
     get game(): Argument[] { return this._game; }
 
-    set game(game: Argument[]) { this._game = game.map(_gameArg => Argument.from(_gameArg)); }
+    set game(game: Argument[]) {
+        this._game = game.map(gameArg => Argument.from(gameArg));
+    }
 
     get jvm(): Argument[] { return this._jvm; }
 
-    set jvm(jvm: Argument[]) { this._jvm = jvm.map(jvmArg => Argument.from(jvmArg)); }
+    set jvm(jvm: Argument[]) {
+        this._jvm = jvm.map(jvmArg => Argument.from(jvmArg));
+    }
 
     toJSON(): IVersionArguments {
         const {

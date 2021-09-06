@@ -7,17 +7,12 @@ describe('VersionArguments', () => {
     describe('#from', () => {
 
         it('should be able to resolve normal version arguments', () => {
-            const { game, jvm } = VersionArguments.from({
+            const args = VersionArguments.from({
                 game: [
                     '--username ${auth_player_name}',
                     {
                         rules: [
-                            {
-                                action: RuleAction.ALLOW,
-                                features: {
-                                    is_demo_user: true,
-                                },
-                            },
+                            { action: RuleAction.ALLOW, features: { is_demo_user: true } },
                         ],
                         value: '--demo',
                     },
@@ -25,12 +20,7 @@ describe('VersionArguments', () => {
                 jvm: [
                     {
                         rules: [
-                            {
-                                action: RuleAction.ALLOW,
-                                os: {
-                                    arch: 'x86',
-                                },
-                            },
+                            { action: RuleAction.ALLOW, os: { arch: 'x86' } },
                         ],
                         value: '-Xss1M',
                     },
@@ -38,15 +28,27 @@ describe('VersionArguments', () => {
                 ],
             });
 
-            expect(game[0].value).toEqual(['--username', '${auth_player_name}']);
+            const [username, demo] = args.game;
+            const [opt, cp] = args.jvm;
 
-            expect(game[1].value).toEqual(['--demo']);
-            expect(game[1].rules[0].action).toBe('allow');
-            expect(game[1].rules[0].features.is_demo_user).toBeTruthy();
+            expect(username.value).toEqual(['--username', '${auth_player_name}']);
+            expect(cp.value).toEqual(['-cp', '${classpath}']);
 
-            expect(jvm[0].value).toEqual(['-Xss1M']);
-            expect(jvm[0].rules[0].action).toBe('allow');
-            expect(jvm[0].rules[0].os).toEqual({ arch: 'x86' });
+            {
+                expect(demo.value).toEqual(['--demo']);
+
+                const [rule] = demo.rules;
+                expect(rule.action).toBe('allow');
+                expect(rule.features.is_demo_user).toBeTruthy();
+            }
+
+            {
+                expect(opt.value).toEqual(['-Xss1M']);
+
+                const [rule] = opt.rules;
+                expect(rule.action).toBe('allow');
+                expect(rule.os).toEqual({ arch: 'x86' });
+            }
         });
 
     });
@@ -54,11 +56,11 @@ describe('VersionArguments', () => {
     describe('#fromLegacyArguments', () => {
 
         it('should convert string game arguments to an array of resolved arguments', () => {
-            const minecraftArguments: string = '--username ${auth_player_name}';
-            const { game, jvm } = VersionArguments.fromLegacyArguments(minecraftArguments);
+            const minecraftArguments = '--username ${auth_player_name}';
+            const args = VersionArguments.fromLegacyArguments(minecraftArguments);
+            const [argument] = args.game;
 
-            expect(game[0].value).toEqual(['--username', '${auth_player_name}']);
-            expect(jvm[jvm.length - 1].value).toEqual(['-cp', '${classpath}']);
+            expect(argument.value).toEqual(minecraftArguments.split(' '));
         });
 
     });
