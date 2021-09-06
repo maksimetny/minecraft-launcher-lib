@@ -8,8 +8,11 @@ export interface IVersionDownloads {
 
 export class VersionDownloads implements IVersionDownloads {
 
-    static from(versionDownloads: Partial<IVersionDownloads>, parent: Partial<IVersionDownloads> = {}): VersionDownloads {
-        if (versionDownloads instanceof VersionDownloads) return versionDownloads;
+    static from(child: Partial<IVersionDownloads>, parent?: Partial<IVersionDownloads>): VersionDownloads {
+        if (!parent) {
+            if (child instanceof VersionDownloads) return child;
+            parent = {};
+        }
 
         const {
             client: parentClient = {},
@@ -18,7 +21,7 @@ export class VersionDownloads implements IVersionDownloads {
         const {
             client = parentClient,
             server = parentServer,
-        } = versionDownloads;
+        } = child;
 
         return new VersionDownloads(
             Artifact.from(client, { path: 'client.jar' }),
@@ -39,11 +42,11 @@ export class VersionDownloads implements IVersionDownloads {
 
     get client(): Artifact { return this._client; }
 
-    set client(_client: Artifact) { this._client = Artifact.from(_client); }
+    set client(client: Artifact) { this._client = Artifact.from(client); }
 
     get server(): Artifact { return this._server; }
 
-    set server(_server: Artifact) { this._server = Artifact.from(_server); }
+    set server(server: Artifact) { this._server = Artifact.from(server); }
 
     toJSON(): IVersionDownloads {
         const {
