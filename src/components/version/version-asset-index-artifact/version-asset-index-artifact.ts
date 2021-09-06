@@ -14,20 +14,16 @@ export interface IVersionAssetIndexArtifact extends IArtifact {
 
 export class VersionAssetIndexArtifact extends Artifact implements IVersionAssetIndexArtifact {
 
-    static from(
-        assetIndex: Partial<IVersionAssetIndexArtifact>,
-        parent: Partial<IVersionAssetIndexArtifact> = {},
-    ): VersionAssetIndexArtifact {
-        if (assetIndex instanceof VersionAssetIndexArtifact) return assetIndex;
+    static from(child: Partial<IVersionAssetIndexArtifact>, parent?: Partial<IVersionAssetIndexArtifact>): VersionAssetIndexArtifact {
+        if (!parent) {
+            if (child instanceof VersionAssetIndexArtifact) return child;
+            parent = {};
+        }
 
         const {
-            id: _id,
-            totalSize: _totalSize,
-        } = parent;
-        const {
-            id = _id,
-            totalSize = _totalSize,
-        } = assetIndex;
+            id = parent.id,
+            totalSize = parent.totalSize,
+        } = child;
 
         if (!id) throw new Error('missing version asset index id');
         if (!totalSize) throw new Error('missing version asset index total size');
@@ -37,7 +33,7 @@ export class VersionAssetIndexArtifact extends Artifact implements IVersionAsset
             url,
             size,
             sha1,
-        } = Artifact.from(assetIndex, parent);
+        } = Artifact.from(child, parent);
 
         return new VersionAssetIndexArtifact(
             id,
