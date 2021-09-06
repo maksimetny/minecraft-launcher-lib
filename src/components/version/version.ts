@@ -2,7 +2,6 @@
 import { Library, ILibrary } from '../library';
 import { VersionDownloads, IVersionDownloads } from './version-downloads';
 import { VersionArguments, IVersionArguments } from './version-arguments';
-import { MOJANG } from '../../constants/urls';
 import { VersionAssetIndexArtifact, IVersionAssetIndexArtifact } from './version-asset-index-artifact';
 
 export interface IVersion {
@@ -25,7 +24,7 @@ export interface IVersion {
 
 export class Version {
 
-    static from(version: Partial<IVersion>, parent: Partial<IVersion> = {}, repoURL: string = MOJANG.LIBS_REPO): Version {
+    static from(version: Partial<IVersion>, parent: Partial<IVersion> = {}): Version {
         if (version instanceof Version) return version;
 
         const {
@@ -102,7 +101,7 @@ export class Version {
             VersionAssetIndexArtifact.from(assetIndex, { path: assets + '.json' }),
             mainClass,
             VersionDownloads.from(downloads),
-            libs.map(lib => Library.from(lib, repoURL)),
+            libs.map(lib => Library.from(lib)),
             VersionArguments.from(versionArgs),
         );
     }

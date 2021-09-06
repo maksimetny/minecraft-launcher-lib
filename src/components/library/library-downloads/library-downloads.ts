@@ -1,7 +1,6 @@
 
-import { MOJANG } from '../../../constants/urls';
-import { Library, LibraryNatives } from '../library';
 import { Artifact, IArtifact } from '../../artifact';
+import { Library, ILibrary } from '../library';
 
 export interface ILibraryDownloads {
     artifact: Partial<IArtifact>;
@@ -14,11 +13,19 @@ export class LibraryDownloads implements ILibraryDownloads {
 
     static from(
         libraryDownloads: Partial<ILibraryDownloads>,
-        libraryId: string,
-        libraryNatives: LibraryNatives = {},
-        repoURL: string = MOJANG.LIBS_REPO,
+        parentLibrary?: Pick<Partial<ILibrary>, 'name' | 'natives'>,
     ): LibraryDownloads {
-        if (libraryDownloads instanceof LibraryDownloads) return libraryDownloads;
+        if (!parentLibrary) {
+            if (libraryDownloads instanceof LibraryDownloads) return libraryDownloads;
+            parentLibrary = {};
+        }
+
+        const {
+            natives = {},
+            name,
+        } = parentLibrary;
+
+        if (!name) throw new Error('missing parent library name');
 
         const {
             artifact = {},
@@ -26,11 +33,8 @@ export class LibraryDownloads implements ILibraryDownloads {
         } = libraryDownloads;
 
         Object
-            .entries(libraryNatives)
-            .map(([
-                os,
-                classifier,
-            ]) => {
+            .entries(natives)
+            .map(([os, classifier]) => {
                 if (typeof classifier !== 'string') throw new Error('library native artifact classifier is not string');
                 return {
                     classifier,
@@ -39,49 +43,43 @@ export class LibraryDownloads implements ILibraryDownloads {
                 };
             })
             .filter(({ include }) => !include)
-            .forEach(({
-                classifier,
-            }) => {
-                // TODO format classifier
-                const libraryIdWithNativeClassifier = Library.concatNameWithClassifier(libraryId, classifier);
-                classifiers[classifier] = Artifact.fromId(libraryIdWithNativeClassifier, repoURL);
-            });
+            .forEach(({ classifier }) => {
+                const nameWithNativeClassifier = Library.concatNameWithClassifier(name, classifier);
+                classifiers[classifier] = Artifact.from(nameWithNativeClassifier);
+            }); // construct missing natives // TODO format classifier
 
         return new LibraryDownloads(
-            Artifact.from(artifact, Artifact.fromId(libraryId, repoURL)),
+            Artifact.from(artifact, name),
             Object.fromEntries(
                 Object
                     .entries(classifiers)
-                    .map(([
-                        classifier,
-                        artifact,
-                    ]) => {
-                        const libIdWithNativeClassifier = Library.concatNameWithClassifier(libraryId, classifier);
-                        const defaultArtifact = Artifact.fromId(libIdWithNativeClassifier, repoURL);
-                        return [classifier, Artifact.from(artifact, defaultArtifact)];
+                    .map(([classifier, artifact]) => {
+                        const nameWithClassifier = Library.concatNameWithClassifier(name, classifier);
+                        return [classifier, Artifact.from(artifact, nameWithClassifier)];
                     }),
             ),
         );
     }
 
-    private _classifiers: Record<string, Artifact>;
+    private _artifact: Artifact;
+    private _classifiers: Record<string, Artifact> = {};
 
-    constructor(
-        readonly artifact: Artifact,
-        classifiers: {
-            [classifier: string]: Partial<IArtifact>;
-        } = {},
-    ) {
-        this._classifiers = Object.fromEntries(
-            Object
-                .entries(classifiers)
-                .map(([classifier, artifact]) => ([classifier, Artifact.from(artifact)])),
-        );
+    constructor(artifact: Partial<IArtifact>, classifiers: ILibraryDownloads['classifiers'] = {}) {
+        Object.entries(classifiers).forEach(([classifier, artifact]) => this.setArtifactByClassifier(classifier, artifact));
+        this._artifact = Artifact.from(artifact);
+    }
+
+    get artifact(): Artifact { return this._artifact; }
+
+    set artifact(artifact: Artifact) {
+        this._artifact = Artifact.from(artifact);
     }
 
     get classifiers(): Record<string, Artifact> {
         return this._classifiers;
     }
+
+    // TODO set classifiers(classifiers: Record<string, Artifact>) { }
 
     setArtifactByClassifier(classifier: string, artifact: Partial<IArtifact>): Artifact {
         return this._classifiers[classifier] = Artifact.from(artifact);

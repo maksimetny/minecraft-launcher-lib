@@ -1,4 +1,4 @@
 
-export { Library, ILibrary, LibraryExtract, LibraryNatives } from './library';
+export { Library, ILibrary } from './library';
 
 export { LibraryDownloads, ILibraryDownloads } from './library-downloads';
