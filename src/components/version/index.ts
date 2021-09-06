@@ -1,5 +1,5 @@
 
-export * from './version';
+export { Version, IVersion } from './version';
 
 export { VersionDownloads, IVersionDownloads } from './version-downloads';
 

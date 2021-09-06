@@ -1,7 +1,7 @@
 
-import { Library, ILibrary } from '../library';
 import { VersionDownloads, IVersionDownloads } from './version-downloads';
 import { VersionArguments, IVersionArguments } from './version-arguments';
+import { Library, ILibrary } from '../library';
 import { VersionAssetIndexArtifact, IVersionAssetIndexArtifact } from './version-asset-index-artifact';
 
 export interface IVersion {
@@ -24,36 +24,34 @@ export interface IVersion {
 
 export class Version {
 
-    static from(version: Partial<IVersion>, parent: Partial<IVersion> = {}): Version {
-        if (version instanceof Version) return version;
+    static from(child: Partial<IVersion>, parent?: Partial<IVersion>): Version {
+        if (!parent) {
+            if (child instanceof Version) return child;
+            parent = {};
+        }
 
         const {
-            id: _id,
-            type: _type,
-            assets: _assets,
             assetIndex: _assetIndex = {},
-            mainClass: _mainClass,
             downloads: _downloads = {},
             libraries: _libs = [],
             arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS.concat() },
-            minecraftArguments: _minecraftArguments,
         } = parent;
         const {
-            id = _id,
-            type = _type,
-            assets = _assets,
+            id = parent.id,
+            type = parent.type,
+            assets = parent.assets,
             assetIndex = _assetIndex,
-            mainClass = _mainClass,
+            mainClass = parent.mainClass,
             downloads = _downloads,
             libraries: libs = _libs,
             arguments: args = _args,
-            minecraftArguments = _minecraftArguments,
-        } = version;
+            minecraftArguments = parent.minecraftArguments,
+        } = child;
 
-        if (typeof mainClass !== 'string') throw new Error('version main class is not string');
-        if (typeof id !== 'string') throw new Error('version id is not string');
-        if (typeof type !== 'string') throw new Error('version type is not string');
-        if (typeof assets !== 'string') throw new Error('version assets id is not string');
+        if (!mainClass) throw new Error('version main class is not string');
+        if (!id) throw new Error('version id is not string');
+        if (!type) throw new Error('version type is not string');
+        if (!assets) throw new Error('version assets id is not string');
 
         {
             const flatLibs = libs.map(({ name }) => name);
@@ -86,10 +84,7 @@ export class Version {
         } // consolidate args
 
         if (minecraftArguments) {
-            const {
-                game,
-                jvm,
-            } = VersionArguments.fromLegacyArguments(minecraftArguments);
+            const { game, jvm } = VersionArguments.fromLegacyArguments(minecraftArguments);
             versionArgs.game = game.concat(versionArgs.game);
             versionArgs.jvm = jvm.concat(versionArgs.jvm);
         }
@@ -100,60 +95,60 @@ export class Version {
             assets,
             VersionAssetIndexArtifact.from(assetIndex, { path: assets + '.json' }),
             mainClass,
-            VersionDownloads.from(downloads),
-            libs.map(lib => Library.from(lib)),
-            VersionArguments.from(versionArgs),
+            downloads,
+            libs,
+            versionArgs,
         );
     }
 
-    private _id: string;
-    private _type: string;
-    private _assets: string;
     private _assetIndex: VersionAssetIndexArtifact;
-    private _mainClass: string;
     private _downloads: VersionDownloads;
     private _libs: Library[];
     private _args: VersionArguments;
 
     constructor(
-        id: string,
-        type: string,
-        assets: string,
+        public id: string,
+        public type: string,
+        public assets: string,
         assetIndex: Partial<IVersionAssetIndexArtifact>,
-        mainClass: string,
+        public mainClass: string,
         downloads: Partial<IVersionDownloads>,
         libs: Partial<ILibrary>[] = [],
         args: Partial<IVersionArguments> = {},
     ) {
-        this._id = id;
-        this._type = type;
-        this._assets = assets;
         this._assetIndex = VersionAssetIndexArtifact.from(assetIndex);
         this._downloads = VersionDownloads.from(downloads);
-        this._mainClass = mainClass;
         this._args = VersionArguments.from(args);
         this._libs = libs.map(lib => Library.from(lib));
     }
 
-    get id(): string { return this._id; }
-
-    get type(): string { return this._type; }
-
-    get assets(): string { return this._assets; }
-
     get downloads(): VersionDownloads { return this._downloads; }
+
+    set downloads(downloads: VersionDownloads) {
+        this._downloads = VersionDownloads.from(downloads);
+    }
 
     get libraries(): Library[] { return this.libs; }
 
+    set libraries(libs: Library[]) { this.libs = libs; }
+
     get libs(): Library[] { return this._libs; }
+
+    set libs(libs: Library[]) {
+        this._libs = libs.map(lib => Library.from(lib));
+    }
 
     get args(): VersionArguments { return this._args; }
 
+    set args(args: VersionArguments) {
+        this._args = VersionArguments.from(args);
+    }
+
     get assetIndex(): VersionAssetIndexArtifact { return this._assetIndex; }
 
-    get mainClass(): string { return this._mainClass; }
-
-    // TODO isLegacy() { }
+    set assetIndex(assetIndex: VersionAssetIndexArtifact) {
+        this._assetIndex = VersionAssetIndexArtifact.from(assetIndex);
+    }
 
     toString(): string {
         return `${this.type} ${this.id}`;
