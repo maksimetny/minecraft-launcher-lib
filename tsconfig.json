@@ -6,6 +6,7 @@
     "sourceMap": true,
     "strict": true,
     "declaration": true,
+    "esModuleInterop": true,
     "outDir": "lib",
     "lib": [
       "esnext"
