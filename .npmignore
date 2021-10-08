@@ -25,7 +25,8 @@ npm-debug.log
 tslint.json
 .env
 .editorconfig
-example.env
+.*.env
 gulpfile.js
+.eslintrc.*
 .hidden
 .nomedia
