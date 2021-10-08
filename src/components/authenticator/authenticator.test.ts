@@ -1,5 +1,5 @@
 
-import * as nock from 'nock';
+import nock from 'nock';
 import {
     Authenticator,
     IAuthEndpoints,
