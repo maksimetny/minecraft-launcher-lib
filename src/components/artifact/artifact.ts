@@ -44,9 +44,12 @@ export class Artifact implements IArtifact {
 
     /**
      * Transform artifact id to artifact instance.
+     *
      * @param id The artifact id. It should look like `<group>:<artifact>:<version>`, e.g. `com.mojang:patchy:1.1`.
      * @param repo It this usually looks like an URL address.
      * @param defaultExtension The default extension. It should look like `jar`, `tar.xz` or other.
+     *
+     * @return The artifact instance.
      */
     static fromId(id: string, repo: string = '/', defaultExtension: string = 'jar'): Artifact {
         const parts = id.split(':');
@@ -77,6 +80,7 @@ export class Artifact implements IArtifact {
 
     /**
      * Transform this artifact to string representation.
+     *
      * @returns The artifact id. It should look like `<group>:<artifact>:<version>@<extension>`, e.g. `com.mojang:patchy:1.1@jar`.
      */
     toString(defaultExtension = 'jar'): string {

@@ -79,8 +79,8 @@ export class Argument implements IArgument {
         return this.value.join(' ');
     }
 
-    toJSON(): IArgument['value'] | IArgument {
-        const value = this.value.length > 2 ? this.value : this.toString();
+    toJSON(): string | IArgument {
+        const value = this.toString();
         const rules = this.rules;
         return (rules.length) ? { value, rules } : value;
     }
