@@ -4,7 +4,7 @@
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "engines": {
-    "node": ">=6.0"
+    "node": ">=10.0"
   },
   "scripts": {
     "start": "node ./lib/examples/launcher",
