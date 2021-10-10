@@ -7,10 +7,10 @@ describe('Folder', () => {
     describe('#from', () => {
 
         it('should resolve folder from string', () => {
-            const dir = 'launcher';
-            const folder = Folder.from(dir);
+            const folderPath = 'launcher';
+            const folder = Folder.from(folderPath);
 
-            expect(folder.path).toBe(dir);
+            expect(folder.root).toBe(folderPath);
             expect(folder).toBeInstanceOf(Folder);
         });
 
