@@ -1,8 +1,8 @@
 
 /**
- * Containing version metadata.
+ * Containing minecraft version metadata.
  */
-export interface IManifestVersion {
+export interface IManifestItem {
 
     /**
      * The link to `<id>.json`.
