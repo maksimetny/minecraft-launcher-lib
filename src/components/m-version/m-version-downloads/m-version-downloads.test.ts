@@ -1,12 +1,12 @@
 
-import { VersionDownloads, IVersionDownloads } from './version-downloads';
+import { MVersionDownloads, IMVersionDownloads } from './m-version-downloads';
 
-describe('VersionDownloads', () => {
+describe('MVersionDownloads', () => {
 
     describe('#from', () => {
 
         it('should be able to resolve normal version downloads', () => {
-            const versionDownloads: IVersionDownloads = {
+            const versionDownloads: IMVersionDownloads = {
                 client: {
                     sha1: '8c325a0c5bd674dd747d6ebaa4c791fd363ad8a9',
                     size: 25191691,
@@ -21,7 +21,7 @@ describe('VersionDownloads', () => {
 
             versionDownloads.client.path = '1.14.4.jar'; // override local jar path on launching
 
-            const { client, server } = VersionDownloads.from(versionDownloads);
+            const { client, server } = MVersionDownloads.from(versionDownloads);
 
             expect(client.path).toBe('1.14.4.jar');
             expect(client.sha1).toBe(versionDownloads.client.sha1);

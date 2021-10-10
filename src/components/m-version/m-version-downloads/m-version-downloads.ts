@@ -1,16 +1,16 @@
 
 import { Artifact, IArtifact } from '../../artifact';
 
-export interface IVersionDownloads {
+export interface IMVersionDownloads {
     client: Partial<IArtifact>;
     server: Partial<IArtifact>;
 }
 
-export class VersionDownloads implements IVersionDownloads {
+export class MVersionDownloads implements IMVersionDownloads {
 
-    static from(child: Partial<IVersionDownloads>, parent?: Partial<IVersionDownloads>): VersionDownloads {
+    static from(child: Partial<IMVersionDownloads>, parent?: Partial<IMVersionDownloads>): MVersionDownloads {
         if (!parent) {
-            if (child instanceof VersionDownloads) return child;
+            if (child instanceof MVersionDownloads) return child;
             parent = {};
         }
 
@@ -23,7 +23,7 @@ export class VersionDownloads implements IVersionDownloads {
             server = parentServer,
         } = child;
 
-        return new VersionDownloads(
+        return new MVersionDownloads(
             Artifact.from(client, { path: 'client.jar' }),
             Artifact.from(server, { path: 'server.jar' }),
         );
@@ -48,7 +48,7 @@ export class VersionDownloads implements IVersionDownloads {
 
     set server(server: Artifact) { this._server = Artifact.from(server); }
 
-    toJSON(): IVersionDownloads {
+    toJSON(): IMVersionDownloads {
         const {
             client,
             server,

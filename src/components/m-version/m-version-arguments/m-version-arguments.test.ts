@@ -1,13 +1,13 @@
 
-import { VersionArguments } from './version-arguments';
+import { MVersionArguments } from './m-version-arguments';
 import { RuleAction } from '../../rule';
 
-describe('VersionArguments', () => {
+describe('MVersionArguments', () => {
 
     describe('#from', () => {
 
         it('should be able to resolve normal version arguments', () => {
-            const args = VersionArguments.from({
+            const args = MVersionArguments.from({
                 game: [
                     '--username ${auth_player_name}',
                     {
@@ -57,7 +57,7 @@ describe('VersionArguments', () => {
 
         it('should convert string game arguments to an array of resolved arguments', () => {
             const minecraftArguments = '--username ${auth_player_name}';
-            const args = VersionArguments.fromLegacyArguments(minecraftArguments);
+            const args = MVersionArguments.fromLegacyArguments(minecraftArguments);
             const [argument] = args.game;
 
             expect(argument.value).toEqual(minecraftArguments.split(' '));

@@ -1,14 +1,23 @@
 
 import { Argument, IArgument } from '../../argument';
 
-export type VersionArgument = IArgument['value'] | Partial<IArgument>;
+export type MVersionArgument = IArgument['value'] | Partial<IArgument>;
 
-export interface IVersionArguments {
-    game: VersionArgument[];
-    jvm: VersionArgument[];
+export interface IMVersionArguments {
+
+    /**
+     * This contains args for `minecraft.jar`.
+     */
+    game: MVersionArgument[];
+
+    /**
+     * The JVM args.
+     */
+    jvm: MVersionArgument[];
+
 }
 
-export class VersionArguments implements IVersionArguments {
+export class MVersionArguments implements IMVersionArguments {
 
     static readonly DEFAULT_JVM_ARGS: Readonly<Argument[]> = [
         new Argument([
@@ -23,34 +32,34 @@ export class VersionArguments implements IVersionArguments {
         new Argument(['-cp', '${classpath}']),
     ];
 
-    static from(child: Partial<IVersionArguments>, parent?: Partial<IVersionArguments>): VersionArguments {
+    static from(child: Partial<IMVersionArguments>, parent?: Partial<IMVersionArguments>): MVersionArguments {
         if (!parent) {
-            if (child instanceof VersionArguments) return child;
+            if (child instanceof MVersionArguments) return child;
             parent = {};
         }
 
         const {
             game: _game = [],
-            jvm: _jvm = VersionArguments.DEFAULT_JVM_ARGS.concat(),
+            jvm: _jvm = MVersionArguments.DEFAULT_JVM_ARGS.concat(),
         } = parent;
         const {
             game = _game,
             jvm = _jvm,
         } = child;
 
-        return new VersionArguments(game, jvm);
+        return new MVersionArguments(game, jvm);
     }
 
-    static fromLegacyArguments(minecraftArguments: string): VersionArguments {
-        return new VersionArguments(minecraftArguments.split(/\s(?!\$)/g));
+    static fromLegacyArguments(minecraftArguments: string): MVersionArguments {
+        return new MVersionArguments(minecraftArguments.split(/\s(?!\$)/g));
     }
 
     private _game: Argument[];
     private _jvm: Argument[];
 
     constructor(
-        game: VersionArgument[] = [],
-        jvm: VersionArgument[] = VersionArguments.DEFAULT_JVM_ARGS.concat(),
+        game: MVersionArgument[] = [],
+        jvm: MVersionArgument[] = MVersionArguments.DEFAULT_JVM_ARGS.concat(),
     ) {
         this._game = game.map(gameArg => Argument.from(gameArg));
         this._jvm = jvm.map(jvmArg => Argument.from(jvmArg));
@@ -68,7 +77,7 @@ export class VersionArguments implements IVersionArguments {
         this._jvm = jvm.map(jvmArg => Argument.from(jvmArg));
     }
 
-    toJSON(): IVersionArguments {
+    toJSON(): IMVersionArguments {
         const {
             game,
             jvm,

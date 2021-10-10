@@ -1,7 +1,7 @@
 
 import { Artifact, IArtifact } from '../../artifact';
 
-export interface IVersionAssetIndexArtifact extends IArtifact {
+export interface IMVersionAssetIndexArtifact extends IArtifact {
 
     /**
      * This like assets prop in version attrs.
@@ -12,11 +12,11 @@ export interface IVersionAssetIndexArtifact extends IArtifact {
 
 }
 
-export class VersionAssetIndexArtifact extends Artifact implements IVersionAssetIndexArtifact {
+export class MVersionAssetIndexArtifact extends Artifact implements IMVersionAssetIndexArtifact {
 
-    static from(child: Partial<IVersionAssetIndexArtifact>, parent?: Partial<IVersionAssetIndexArtifact>): VersionAssetIndexArtifact {
+    static from(child: Partial<IMVersionAssetIndexArtifact>, parent?: Partial<IMVersionAssetIndexArtifact>): MVersionAssetIndexArtifact {
         if (!parent) {
-            if (child instanceof VersionAssetIndexArtifact) return child;
+            if (child instanceof MVersionAssetIndexArtifact) return child;
             parent = {};
         }
 
@@ -25,8 +25,8 @@ export class VersionAssetIndexArtifact extends Artifact implements IVersionAsset
             totalSize = parent.totalSize,
         } = child;
 
-        if (!id) throw new Error('missing version asset index id');
-        if (!totalSize) throw new Error('missing version asset index total size');
+        if (!id) throw new Error('missing minecraft version asset index id');
+        if (!totalSize) throw new Error('missing minecraft version asset index total size');
 
         const {
             path,
@@ -35,7 +35,7 @@ export class VersionAssetIndexArtifact extends Artifact implements IVersionAsset
             sha1,
         } = Artifact.from(child, parent);
 
-        return new VersionAssetIndexArtifact(
+        return new MVersionAssetIndexArtifact(
             id,
             totalSize,
             path,

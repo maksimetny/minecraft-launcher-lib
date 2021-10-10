@@ -1,10 +1,10 @@
 
-import { VersionAssetIndexArtifact, IVersionAssetIndexArtifact } from './version-asset-index-artifact';
+import { MVersionAssetIndexArtifact, IMVersionAssetIndexArtifact } from './m-version-asset-index-artifact';
 
-describe('VersionAssetIndexArtifact', () => {
+describe('MVersionAssetIndexArtifact', () => {
 
     it('should resolve normal asset index artifact', () => {
-        const assetIndex: IVersionAssetIndexArtifact = {
+        const assetIndex: IMVersionAssetIndexArtifact = {
             url: 'https://launchermeta.mojang.com/v1/packages/d6c94fad4f7a03a8e46083c023926515fc0e551e/1.14.json',
             id: '1.14',
             path: '1.14.json',
@@ -19,7 +19,7 @@ describe('VersionAssetIndexArtifact', () => {
             sha1,
             size,
             totalSize,
-        } = VersionAssetIndexArtifact.from(assetIndex);
+        } = MVersionAssetIndexArtifact.from(assetIndex);
 
         expect(url).toBe(assetIndex.url);
         expect(id).toBe(assetIndex.id);

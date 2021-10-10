@@ -1,19 +1,19 @@
 
-import { VersionDownloads, IVersionDownloads } from './version-downloads';
-import { VersionArguments, IVersionArguments } from './version-arguments';
+import { MVersionDownloads, IMVersionDownloads } from './m-version-downloads';
+import { MVersionArguments, IMVersionArguments } from './m-version-arguments';
 import { Library, ILibrary } from '../library';
-import { VersionAssetIndexArtifact, IVersionAssetIndexArtifact } from './version-asset-index-artifact';
+import { MVersionAssetIndexArtifact, IMVersionAssetIndexArtifact } from './m-version-asset-index-artifact';
 
-export interface IVersion {
+export interface IMVersion {
 
     id: string;
     type: string;
     assets: string;
-    assetIndex: Partial<IVersionAssetIndexArtifact>;
+    assetIndex: Partial<IMVersionAssetIndexArtifact>;
     mainClass: string;
-    downloads: Partial<IVersionDownloads>;
+    downloads: Partial<IMVersionDownloads>;
     libraries: Partial<ILibrary>[];
-    arguments: Partial<IVersionArguments>;
+    arguments: Partial<IMVersionArguments>;
 
     /**
      * *(only old versions)*
@@ -22,11 +22,11 @@ export interface IVersion {
 
 }
 
-export class Version {
+export class MVersion {
 
-    static from(child: Partial<IVersion>, parent?: Partial<IVersion>): Version {
+    static from(child: Partial<IMVersion>, parent?: Partial<IMVersion>): MVersion {
         if (!parent) {
-            if (child instanceof Version) return child;
+            if (child instanceof MVersion) return child;
             parent = {};
         }
 
@@ -34,7 +34,7 @@ export class Version {
             assetIndex: _assetIndex = {},
             downloads: _downloads = {},
             libraries: _libs = [],
-            arguments: _args = { game: [], jvm: VersionArguments.DEFAULT_JVM_ARGS.concat() },
+            arguments: _args = { game: [], jvm: MVersionArguments.DEFAULT_JVM_ARGS.concat() },
         } = parent;
         const {
             id = parent.id,
@@ -48,18 +48,18 @@ export class Version {
             minecraftArguments = parent.minecraftArguments,
         } = child;
 
-        if (!mainClass) throw new Error('version main class is not string');
-        if (!id) throw new Error('version id is not string');
-        if (!type) throw new Error('version type is not string');
-        if (!assets) throw new Error('version assets id is not string');
+        if (!mainClass) throw new Error('minecraft version main class is not string');
+        if (!id) throw new Error('minecraft version id is not string');
+        if (!type) throw new Error('minecraft version type is not string');
+        if (!assets) throw new Error('minecraft version assets id is not string');
 
         {
             const flatLibs = libs.map(({ name }) => name);
             _libs.filter(_lib => !flatLibs.includes(_lib.name)).forEach(_lib => libs.push(_lib));
         } // consolidate libs
 
-        const _versionArgs = VersionArguments.from(_args);
-        const versionArgs = VersionArguments.from(args);
+        const _versionArgs = MVersionArguments.from(_args);
+        const versionArgs = MVersionArguments.from(args);
 
         {
             const flatArgsSep = ' ';
@@ -84,16 +84,16 @@ export class Version {
         } // consolidate args
 
         if (minecraftArguments) {
-            const { game, jvm } = VersionArguments.fromLegacyArguments(minecraftArguments);
+            const { game, jvm } = MVersionArguments.fromLegacyArguments(minecraftArguments);
             versionArgs.game = game.concat(versionArgs.game);
             versionArgs.jvm = jvm.concat(versionArgs.jvm);
         }
 
-        return new Version(
+        return new MVersion(
             id,
             type,
             assets,
-            VersionAssetIndexArtifact.from(assetIndex, { path: assets + '.json' }),
+            MVersionAssetIndexArtifact.from(assetIndex, { path: assets + '.json' }),
             mainClass,
             downloads,
             libs,
@@ -101,60 +101,72 @@ export class Version {
         );
     }
 
-    private _assetIndex: VersionAssetIndexArtifact;
-    private _downloads: VersionDownloads;
+    private _assetIndex: MVersionAssetIndexArtifact;
+    private _downloads: MVersionDownloads;
     private _libs: Library[];
-    private _args: VersionArguments;
+    private _args: MVersionArguments;
 
     constructor(
         public id: string,
         public type: string,
         public assets: string,
-        assetIndex: Partial<IVersionAssetIndexArtifact>,
+        assetIndex: Partial<IMVersionAssetIndexArtifact>,
         public mainClass: string,
-        downloads: Partial<IVersionDownloads>,
+        downloads: Partial<IMVersionDownloads>,
         libs: Partial<ILibrary>[] = [],
-        args: Partial<IVersionArguments> = {},
+        args: Partial<IMVersionArguments> = {},
     ) {
-        this._assetIndex = VersionAssetIndexArtifact.from(assetIndex);
-        this._downloads = VersionDownloads.from(downloads);
-        this._args = VersionArguments.from(args);
+        this._assetIndex = MVersionAssetIndexArtifact.from(assetIndex);
+        this._downloads = MVersionDownloads.from(downloads);
+        this._args = MVersionArguments.from(args);
         this._libs = libs.map(lib => Library.from(lib));
     }
 
-    get downloads(): VersionDownloads { return this._downloads; }
-
-    set downloads(downloads: VersionDownloads) {
-        this._downloads = VersionDownloads.from(downloads);
+    get downloads(): MVersionDownloads {
+        return this._downloads;
     }
 
-    get libraries(): Library[] { return this.libs; }
+    set downloads(downloads: MVersionDownloads) {
+        this._downloads = MVersionDownloads.from(downloads);
+    }
 
-    set libraries(libs: Library[]) { this.libs = libs; }
+    get libraries(): Library[] {
+        return this.libs;
+    }
 
-    get libs(): Library[] { return this._libs; }
+    set libraries(libs: Library[]) {
+        this.libs = libs;
+    }
+
+    get libs(): Library[] {
+        return this._libs;
+    }
 
     set libs(libs: Library[]) {
         this._libs = libs.map(lib => Library.from(lib));
     }
 
-    get args(): VersionArguments { return this._args; }
-
-    set args(args: VersionArguments) {
-        this._args = VersionArguments.from(args);
+    get args(): MVersionArguments {
+        return this._args;
     }
 
-    get assetIndex(): VersionAssetIndexArtifact { return this._assetIndex; }
+    set args(args: MVersionArguments) {
+        this._args = MVersionArguments.from(args);
+    }
 
-    set assetIndex(assetIndex: VersionAssetIndexArtifact) {
-        this._assetIndex = VersionAssetIndexArtifact.from(assetIndex);
+    get assetIndex(): MVersionAssetIndexArtifact {
+        return this._assetIndex;
+    }
+
+    set assetIndex(assetIndex: MVersionAssetIndexArtifact) {
+        this._assetIndex = MVersionAssetIndexArtifact.from(assetIndex);
     }
 
     toString(): string {
         return `${this.type} ${this.id}`;
     }
 
-    toJSON(): IVersion {
+    toJSON(): IMVersion {
         const {
             id,
             type,
