@@ -1,7 +1,7 @@
 
 import { MVersion } from './m-version';
 import { join } from 'path';
-import { readJson } from '../../util';
+import { readJson } from '../util';
 
 describe('MVersion', () => {
 

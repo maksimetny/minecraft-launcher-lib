@@ -1,5 +1,5 @@
 
-import { readJson } from '../../util';
+import { readJson } from '../util';
 import { join } from 'path';
 import { Library } from './library';
 import { OS } from '../platform';

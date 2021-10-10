@@ -1,6 +1,6 @@
 
 import { readJson } from './util';
-import { ILibrary } from './components/library';
+import { ILibrary } from '../library';
 
 describe('util', () => {
 
