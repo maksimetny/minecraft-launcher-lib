@@ -34,7 +34,7 @@ export class MVersion {
             assetIndex: _assetIndex = {},
             downloads: _downloads = {},
             libraries: _libs = [],
-            arguments: _args = {},
+            arguments: _args = { game: [], jvm: [] },
         } = parent;
         const {
             id = parent.id,
