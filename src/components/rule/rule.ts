@@ -87,12 +87,17 @@ export class Rule implements IRule {
             }
         } // compare platform
 
-        Object.entries(Rule.sanitizeFeatures(this.features)).forEach(([feature, value]) => {
-            allowable = this.compare(
-                features[feature] === value,
-                features[feature] !== value,
-            );
-        }); // compare features
+        {
+            const secureRuleFeatures = Rule.sanitizeFeatures(this.features);
+            const secureFeatures = Rule.sanitizeFeatures(features); // secure enabled features
+
+            Object.entries(secureRuleFeatures).forEach(([feature, value]) => {
+                allowable = this.compare(
+                    secureFeatures[feature] === value,
+                    secureFeatures[feature] !== value,
+                );
+            });
+        }  // compare features
 
         return allowable;
     }
