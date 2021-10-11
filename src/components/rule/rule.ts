@@ -1,10 +1,10 @@
 
+import { Platform, IPlatform } from '../platform';
+
 export enum RuleAction {
     ALLOW = 'allow',
     DISALLOW = 'disallow',
 }
-
-import { Platform, IPlatform } from '../platform';
 
 export interface IRule {
 
@@ -18,7 +18,7 @@ export interface IRule {
     /**
      * The enabled or disabled features.
      */
-    features: Record<string, boolean>;
+    features: Record<string, unknown>;
 
 }
 
@@ -37,10 +37,14 @@ export class Rule implements IRule {
         );
     }
 
+    static sanitizeFeatures(features: Record<string, unknown>): Record<string, boolean> {
+        return Object.fromEntries(Object.entries(features).map(([feature, value]) => [feature, Boolean(value)]));
+    }
+
     constructor(
         public action = RuleAction.ALLOW,
         public os: Partial<IPlatform> = {},
-        public features: Record<string, boolean> = {},
+        public features: Record<string, unknown> = {},
     ) { }
 
     /**
@@ -54,7 +58,7 @@ export class Rule implements IRule {
      */
     isAllowable(
         platform: Partial<IPlatform> = {},
-        features: Record<string, boolean> = {},
+        features: Record<string, unknown> = {},
     ): boolean {
         const currentPlatform = Platform.from(platform);
         let allowable = true;
@@ -83,16 +87,12 @@ export class Rule implements IRule {
             }
         } // compare platform
 
-        {
-            Object
-                .entries(this.features)
-                .forEach(([feature, value]) => {
-                    allowable = this.compare(
-                        features[feature] === value,
-                        features[feature] !== value,
-                    );
-                });
-        } // compare features
+        Object.entries(Rule.sanitizeFeatures(this.features)).forEach(([feature, value]) => {
+            allowable = this.compare(
+                features[feature] === value,
+                features[feature] !== value,
+            );
+        }); // compare features
 
         return allowable;
     }

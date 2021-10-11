@@ -64,7 +64,7 @@ export class Argument implements IArgument {
      *
      * @returns Is argument applicable?
      */
-    isApplicable(platform: Partial<IPlatform>, features: Record<string, boolean> = {}): boolean {
+    isApplicable(platform: Partial<IPlatform>, features: Record<string, unknown> = {}): boolean {
         return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 

@@ -111,7 +111,7 @@ export class Library implements ILibrary {
      */
     isApplicable(
         platform: Partial<IPlatform> = {},
-        features: Record<string, boolean> = {},
+        features: Record<string, unknown> = {},
     ): boolean {
         return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
