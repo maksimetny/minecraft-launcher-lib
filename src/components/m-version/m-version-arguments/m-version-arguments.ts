@@ -19,17 +19,11 @@ export interface IMVersionArguments {
 
 export class MVersionArguments implements IMVersionArguments {
 
-    static readonly DEFAULT_JVM_ARGS: Readonly<Argument[]> = [
-        new Argument([
-            '-Dminecraft.launcher.brand=${launcher_name}',
-        ]),
-        new Argument([
-            '-Dminecraft.launcher.version=${launcher_version}',
-        ]),
-        new Argument([
-            '-Djava.library.path=${natives_directory}',
-        ]),
-        new Argument(['-cp', '${classpath}']),
+    static readonly DEFAULT_JVM_ARGS: Readonly<MVersionArgument[]> = [
+        ['-Dminecraft.launcher.brand=${launcher_name}'],
+        ['-Dminecraft.launcher.version=${launcher_version}'],
+        ['-Djava.library.path=${natives_directory}'],
+        ['-cp', '${classpath}'],
     ];
 
     static from(child: Partial<IMVersionArguments>, parent?: Partial<IMVersionArguments>): MVersionArguments {
