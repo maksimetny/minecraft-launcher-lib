@@ -39,12 +39,8 @@ export class MVersionArguments implements IMVersionArguments {
         }
 
         const {
-            game: _game = [],
-            jvm: _jvm = MVersionArguments.DEFAULT_JVM_ARGS.concat(),
-        } = parent;
-        const {
-            game = _game,
-            jvm = _jvm,
+            game = parent.game,
+            jvm = parent.jvm,
         } = child;
 
         return new MVersionArguments(game, jvm);
