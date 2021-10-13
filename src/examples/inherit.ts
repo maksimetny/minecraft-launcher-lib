@@ -1,33 +1,22 @@
 
-import { config } from 'dotenv';
-config();
+import { MVersion, IMVersion } from '../components/m-version';
+import { readJson } from '../components/util';
+import { join } from 'path';
 
-const {
-    PARENT_VERSION_ID: parentId,
-    MODDED_VERSION_ID: moddedId,
-} = process.env;
+async function bootstrap(): Promise<void> {
+    const parentId = '1.14.4';
+    const moddedId = '1.14.4-forge-28.0.47';
 
-import { readJson } from '../util';
+    const _readJson = (id: string): Promise<Partial<IMVersion>> => readJson(join('mock', 'versions', id, id + '.json'));
 
-import {
-    resolve,
-    join,
-} from 'path';
+    const parent: Partial<IMVersion> = await _readJson(parentId);
+    console.log('parent => ', parent);
 
-import { Version, IVersion } from '../index';
+    const modded: Partial<IMVersion> = await _readJson(moddedId);
+    console.log('modded => ', modded);
 
-(async () => {
-    const directory = resolve('mock', 'versions');
+    const result = MVersion.from(modded, parent);
+    console.log('result => ', result);
+}
 
-    if (!parentId) throw new Error('parent id is undefined');
-    if (!moddedId) throw new Error('modded id is undefined');
-
-    const parent: Partial<IVersion> = await readJson(join(directory, parentId, parentId + '.json'));
-    console.log(parent);
-
-    const modded: Partial<IVersion> = await readJson(join(directory, moddedId, moddedId + '.json'));
-    console.log(modded);
-
-    const result = Version.from(modded, parent);
-    console.log(result);
-})().catch(err => console.error(err));
+bootstrap().catch(err => console.error(err));
