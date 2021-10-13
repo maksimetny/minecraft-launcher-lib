@@ -116,6 +116,8 @@ export class Library implements ILibrary {
         return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 
+    hasNative = (os: OS = Platform.current.name): boolean => os in this.natives;
+
     /**
      * Gets its native classifier or throws an error, if library has not native classifier.
      *
