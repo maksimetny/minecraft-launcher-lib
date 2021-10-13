@@ -16,6 +16,11 @@ export interface IMVersion {
     arguments: Partial<IMVersionArguments>;
 
     /**
+     * *(only child versions)*
+     */
+    inheritsFrom?: string;
+
+    /**
      * *(only old versions)*
      */
     minecraftArguments?: string;
@@ -115,6 +120,7 @@ export class MVersion {
         downloads: Partial<IMVersionDownloads>,
         libs: Partial<ILibrary>[] = [],
         args: Partial<IMVersionArguments> = {},
+        public inheritsFrom?: string,
     ) {
         this._assetIndex = MVersionAssetIndexArtifact.from(assetIndex);
         this._downloads = MVersionDownloads.from(downloads);
@@ -176,6 +182,7 @@ export class MVersion {
             libraries,
             mainClass,
             assetIndex,
+            inheritsFrom,
         } = this;
         return {
             id,
@@ -186,6 +193,7 @@ export class MVersion {
             libraries,
             mainClass,
             assetIndex,
+            inheritsFrom,
         };
     }
 
