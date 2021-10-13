@@ -1,4 +1,8 @@
 
-export * from './launcher';
-export * from './folder';
-export * from './options';
+export { Launcher } from './launcher';
+
+export * from './launcher-folder';
+
+export * from './launcher-options';
+
+export * from './launcher-features';
