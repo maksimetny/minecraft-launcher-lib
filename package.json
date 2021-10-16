@@ -39,6 +39,7 @@
   "homepage": "https://github.com/maksimetny/minecraft-launcher-lib#readme",
   "dependencies": {
     "axios": "^0.22.0",
+    "mkdirp": "^1.0.4",
     "uuid": "^8.3.2",
     "yauzl": "^2.10.0"
   },
@@ -50,6 +51,7 @@
     "@babel/preset-typescript": "^7.15.0",
     "@types/axios": "^0.14.0",
     "@types/jest": "^27.0.2",
+    "@types/mkdirp": "^1.0.2",
     "@types/node": "^16.10.3",
     "@types/uuid": "^8.3.1",
     "@types/yauzl": "^2.9.2",
