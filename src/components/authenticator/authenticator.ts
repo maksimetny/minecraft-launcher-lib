@@ -3,10 +3,10 @@ import * as uuid from 'uuid';
 
 export interface IAuth {
     accessToken: string;
-    uuid: string;
     user: {
         name: string;
         type: string;
+        uuid: string;
         properties: {
             [prop: number]: { name: string; value: string };
         };

@@ -146,7 +146,7 @@ export class LauncherOptions implements ILauncherOptions {
         switch (field) {
             case 'auth_access_token':
             case 'auth_session': return [field, this.auth.accessToken];
-            case 'auth_uuid': return [field, this.auth.uuid];
+            case 'auth_uuid': return [field, this.auth.user.uuid];
             case 'auth_player_name': return [field, this.auth.user.name];
 
             case 'user_type': return [field, this.auth.user.type];

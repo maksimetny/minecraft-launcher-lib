@@ -13,9 +13,9 @@ export class OfflineAuthenticator extends Authenticator implements IAuthProvider
     getAuth(): IAuth {
         return {
             accessToken: Authenticator.generateToken(),
-            uuid: this.uuid,
             user: {
                 name: this.username,
+                uuid: this.uuid,
                 type: 'legacy',
                 properties: {},
             },
