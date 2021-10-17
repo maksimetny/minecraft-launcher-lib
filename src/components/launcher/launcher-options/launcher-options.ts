@@ -35,6 +35,7 @@ export interface ILauncherOptions {
     extraArgs?: Partial<IMVersionArguments>;
 
     /**
+     * The extra argument fields.
      * This allows you to override values of argument fields.
      *
      * If you use this, you can override some of the `MCLL` functions.
