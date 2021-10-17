@@ -1,5 +1,7 @@
 
-import { join } from 'path';
+import { join, dirname, basename } from 'path';
+import { ArtifactDownloadTask } from './artifact-task/artifact-download-task';
+import { ArtifactExtractTask } from './artifact-task/artifact-extract-task';
 
 export interface IArtifact {
     path: string;
@@ -106,6 +108,26 @@ export class Artifact implements IArtifact {
         const splittedExtension = ext.split(extSep);
         const classifier = splittedExtension.shift();
         return [group, artifact, version, classifier].join(idSep) + '@' + splittedExtension.join(extSep);
+    }
+
+    downloadTo(directory: string): ArtifactDownloadTask {
+        return new ArtifactDownloadTask(this, directory);
+    }
+
+    extractTo(
+        artifactDirectory: string,
+        extractionDirectory: string,
+        exclude?: string[],
+    ): ArtifactExtractTask {
+        return new ArtifactExtractTask(this, artifactDirectory, extractionDirectory, exclude);
+    }
+
+    get filename(): string {
+        return basename(this.path);
+    }
+
+    get directory(): string {
+        return dirname(this.path);
     }
 
 }
