@@ -1,2 +1,2 @@
 
-export { MOJANG } from './urls';
+export * from './urls';
