@@ -1,2 +1,2 @@
 
-export { readJson } from './util';
+export * from './util';
