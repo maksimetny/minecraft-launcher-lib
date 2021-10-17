@@ -1,2 +1,4 @@
 
-export * from './artifact';
+export { Artifact, IArtifact } from './artifact';
+
+export * from './artifact-task';

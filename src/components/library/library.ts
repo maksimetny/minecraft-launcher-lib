@@ -1,139 +1,146 @@
 
-import { urls } from '../../constants/urls';
 import { Rule, IRule } from '../rule';
-
-import {
-    Platform,
-    IPlatform,
-    OS,
-} from '../platform';
-
-import { LibraryDownloads, ILibraryDownloads } from './downloads';
-
-export type LibraryNatives = Record<string, string>; // TODO key => OS
-
-export type LibraryExtract = {
-    exclude: string[];
-};
+import { Platform, OS, IPlatform } from '../platform';
+import { Argument } from '../argument';
+import { LibraryDownloads, ILibraryDownloads } from './library-downloads';
 
 export interface ILibrary {
 
-    downloads: ILibraryDownloads;
+    downloads: Partial<ILibraryDownloads>;
 
     /**
-     * A maven name for library,
-     * in form of `group:artifact:version`.
+     * The library id, it like `<group>:<artifact>:<version>` or `<group>:<artifact>:<version>@<ext>`.
      */
     name: string;
 
-    natives: LibraryNatives;
+    /**
+     * The native atrifacts classifiers, e.g. `'linux': 'natives-linux'`.
+     */
+    natives: Partial<Record<OS, string>>;
 
-    rules: IRule[];
+    extract: {
+        exclude?: string[];
+    };
 
-    extract: LibraryExtract;
+    rules: Partial<IRule>[];
 
 }
 
-import {
-    Argument,
-} from '../argument';
-
 export class Library implements ILibrary {
 
-    static from(_lib: Partial<ILibrary>, _repo: string = urls.DEFAULT_LIBS_REPO): Library {
-        if (_lib instanceof Library) {
-            return _lib;
+    static from(lib: string | Partial<ILibrary>): Library {
+        if (typeof lib !== 'string') {
+            if (lib instanceof Library) return lib;
+        } else {
+            return new Library(lib);
         }
 
         const {
-            name: _name,
-            downloads: _downloads = { /* artifact, classifiers */ },
-            extract: _extract = {
-                exclude: [
-                    'META-INF/',
-                ],
-            },
-            rules: _rules = [],
-            natives: _natives = { /* `${os}`: `natives-${os}` or `natives-${os}-${arch}` */ },
-        } = _lib;
+            name,
+            downloads = {},
+            extract,
+            rules,
+            natives,
+        } = lib;
 
-        if (typeof _name !== 'string') throw new Error('library name not string');
+        if (!name) throw new Error('missing library name');
 
         return new Library(
-            _name,
-            LibraryDownloads.from(_downloads, _name, _natives, _repo),
-            _natives,
-            _extract,
-            _rules.map(_rule => Rule.from(_rule)),
+            name,
+            LibraryDownloads.from(downloads, { name, natives }),
+            natives,
+            extract,
+            rules,
         );
     }
 
+    static concatNameWithClassifier(name: string, classifier: string): string {
+        const s = ':';
+        const parts = name.split(s);
+        const [group, artifact, unsplittedVersion] = parts;
+        const [version, versionExtension] = unsplittedVersion.split('@');
+
+        return [
+            group,
+            artifact,
+            version,
+            versionExtension ? classifier + '@' + versionExtension : classifier,
+        ].join(s);
+    }
+
+    private _downloads: LibraryDownloads;
+    private _extract: Required<ILibrary['extract']>;
+    private _rules: Rule[];
+
     constructor(
-        private _name: string,
-        private _downloads: LibraryDownloads,
-        private _natives: LibraryNatives,
-        private _extract: LibraryExtract,
-        private _rules: Rule[],
-    ) { }
+        public name: string,
+        downloads: Partial<ILibraryDownloads> = {},
+        public natives: ILibrary['natives'] = {},
+        extract: ILibrary['extract'] = {},
+        rules: Partial<IRule>[] = [],
+    ) {
+        this._downloads = LibraryDownloads.from(downloads, { name, natives });
 
-    get name(): string {
-        return this._name;
+        const { exclude = ['META-INF/'] } = extract;
+        this._extract = { exclude };
+
+        this._rules = rules.map(rule => Rule.from(rule));
     }
 
-    get downloads(): LibraryDownloads {
-        return this._downloads;
+    get downloads(): LibraryDownloads { return this._downloads; }
+
+    set downloads(downloads: LibraryDownloads) {
+        this._downloads = LibraryDownloads.from(downloads, this);
     }
 
-    get natives(): LibraryNatives {
-        return this._natives;
+    get extract(): Required<ILibrary['extract']> { return this._extract; }
+
+    get rules(): Rule[] { return this._rules; }
+
+    set rules(rules: Rule[]) {
+        this._rules = rules.map(rule => Rule.from(rule));
     }
 
-    get extract(): LibraryExtract {
-        return this._extract;
+    /**
+     * Checks if this library is applicable to the current platform and features.
+     *
+     * @param platform The current platform.
+     * @param features The current featutes.
+     *
+     * @returns Is library applicable?
+     */
+    isApplicable(
+        platform: Partial<IPlatform> = {},
+        features: Record<string, unknown> = {},
+    ): boolean {
+        return !this.rules.map(rule => rule.isAllowable(platform, features)).includes(false);
     }
 
-    get rules(): Rule[] {
-        return this._rules;
+    hasNative = (os: OS = Platform.current.name): boolean => os in this.natives;
+
+    /**
+     * Gets its native classifier or throws an error, if library has not native classifier.
+     *
+     * @param platform The current platform.
+     * @param format Format the result?
+     *
+     * @returns The native classifier.
+     */
+    getNativeClassifier(platform: Partial<IPlatform> = {}, format = false): string {
+        const { name, arch } = Platform.from(platform);
+        const classifier = this.natives[name];
+
+        if (!classifier) throw new Error('library has not native classifier');
+
+        return format ? Argument.format(
+            classifier,
+            new Map([
+                ['arch', arch.match(/\d\d/g)?.shift() ?? '32'],
+            ]),
+        ) : classifier;
     }
 
-    isApplicable(platform: Partial<IPlatform> = { /* platform */ }, features: Record<string, boolean> = { /* features */ }): boolean {
-        return !this.rules.map(rule => {
-            return rule.isAllowable(platform, features);
-        }).includes(false);
-    }
-
-    hasNative(os: OS = Platform.current.name): boolean {
-        return os in this.natives;
-    }
-
-    getNativeClassifier(platform: Partial<IPlatform> = { /* platform */ }): string {
-        const {
-            name = Platform.current.name,
-            arch = Platform.current.arch,
-        } = platform;
-
-        const format = (_arch: string) => {
-            const classifier = this.natives[name];
-            const fields = new Map([
-                ['arch', _arch],
-            ]);
-
-            return Argument.format(classifier, fields);
-        };
-
-        switch (arch) {
-            case 'x64': {
-                return format('64');
-            }
-            default: {
-                return format('32');
-            } // x32 or unknown
-        }
-    }
-
-    toString(): string {
-        return this.name;
-    }
+    toString(): string { return this.name; }
 
     toJSON(): ILibrary {
         const {

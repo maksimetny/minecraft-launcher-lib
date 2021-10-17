@@ -1,7 +1,7 @@
 
-import { Artifact } from '../artifact';
+import { MOJANG } from '../../constants';
 import { join } from 'path';
-import { urls } from '../../constants';
+import { Artifact } from '../artifact';
 
 export interface IAsset {
     path: string;
@@ -11,63 +11,75 @@ export interface IAsset {
 
 export class Asset {
 
+    static from(child: Omit<Partial<IAsset>, 'path'>, parent?: Partial<IAsset>): Asset {
+        if (!parent) {
+            if (child instanceof Asset) return child;
+            parent = {};
+        }
+
+        const {
+            hash = parent.hash,
+            size = parent.size,
+        } = child;
+
+        if (!parent.path) throw new Error('missing parent asset path');
+        if (!hash) throw new Error('missing asset hash');
+        if (!size) throw new Error('missing asset size');
+
+        return new Asset(
+            parent.path,
+            hash,
+            size,
+        );
+    }
+
     constructor(
-        private _path: string,
-        private _hash: string,
-        private _size: number,
+        public path: string,
+        public hash: string,
+        public size: number,
     ) { }
 
-    get path(): string {
-        return this._path;
-    }
-
-    get hash(): string {
-        return this._hash;
-    }
-
+    /**
+     * The first 2 hex letters of hash.
+     */
     get subhash(): string {
-        return this._hash.substring(0, 2);
-    }
-
-    get size(): number {
-        return this._size;
+        return this.hash.substring(0, 2);
     }
 
     /**
-     * @returns path, e.g. `virtual/legacy/lang/ru_RU.lang`.
+     * The legacy path. It should look like `virtual/legacy/<path>`, e.g. `virtual/legacy/lang/ru_RU.lang`.
      */
-    get objectLegacyPath(): string {
+    get legacyPath(): string {
         return join('virtual', 'legacy', this.path);
     }
 
     /**
-     * @returns path, e.g. `objects/00/00..b8f`.
+     * The object path. It should look like `objects/<subhash>/<hash>`, e.g. `objects/00/00..b8f`.
      **/
     get objectPath(): string {
         return join('objects', this.subhash, this.hash);
     }
 
-    toArtifact(legacy = false, repoURL = urls.DEFAULT_RESOURCE_REPO): Artifact {
-        const path = legacy ? this.objectLegacyPath : this.objectPath;
-        const url = `${repoURL}/${this.subhash}/${this.hash}`;
-        const sha1 = this.hash;
-
-        return new Artifact(path, url, sha1);
+    toArtifact(legacy = false, repoURL = MOJANG.RESOURCE_REPO): Artifact {
+        return new Artifact(
+            legacy ? this.legacyPath : this.objectPath,
+            `${repoURL}/${this.subhash}/${this.hash}`,
+            this.size,
+            this.hash,
+        );
     }
 
     toString(): string {
-        return this.objectLegacyPath;
+        return this.legacyPath;
     }
 
-    toJSON(): IAsset {
+    toJSON(): Omit<IAsset, 'path'> {
         const {
             hash,
-            path,
             size,
         } = this;
         return {
             hash,
-            path,
             size,
         };
     }

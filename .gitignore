@@ -1,10 +1,10 @@
 # see https://help.github.com/ignore-files/ for more about ignoring files
 
-## game launcher folder
+## launcher root
 /launcher
 
 ## compiled output
-/dist
+/lib
 
 ## dependencies
 node_modules/

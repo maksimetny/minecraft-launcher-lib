@@ -2,7 +2,7 @@
 import { join } from 'path';
 
 export interface IFolder {
-    path: string;
+    root: string;
 }
 
 export class Folder implements IFolder {
@@ -13,36 +13,25 @@ export class Folder implements IFolder {
         switch (typeof location) {
             case 'string': return new Folder(location);
             case 'object': {
-                if (typeof location.path !== 'string') break;
-                return new Folder(location.path);
+                if (location.root) return new Folder(location.root);
             }
         }
 
-        throw new Error('path is not a string');
+        throw new Error('missing folder path');
     }
 
-    private _path: string;
-
-    constructor(path: string) { this._path = path; }
+    constructor(public root: string) { }
 
     join(...parts: string[]): string {
-        return join(this.path, ...parts);
-    }
-
-    get path(): string {
-        return this._path;
-    }
-
-    set path(path: string) {
-        this._path = path;
+        return join(this.root, ...parts);
     }
 
     toString(): string {
-        return this._path;
+        return this.root;
     }
 
     toJSON(): string {
-        return this.toString();
+        return this.root;
     }
 
 }

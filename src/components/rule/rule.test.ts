@@ -9,18 +9,23 @@ describe('Rule', () => {
 
     describe('#from', () => {
 
-        it('should be able to replace missing properties with default properties', () => {
+        it('should be able to replace child missing properties with parent properties', () => {
             const {
                 action,
                 os,
-                features,
-            } = Rule.from({
-                action: RuleAction.DISALLOW,
-            });
+            } = Rule.from(
+                {
+                    action: RuleAction.DISALLOW,
+                    os: { name: OS.OSX },
+                },
+                {
+                    os: { arch: 'arm' },
+                },
+            );
 
             expect(action).toBe('disallow');
-            expect(os).toBeTruthy();
-            expect(features).toBeTruthy();
+            expect(os.name).toBe(OS.OSX);
+            expect(os.arch).toBe('arm');
         });
 
     });

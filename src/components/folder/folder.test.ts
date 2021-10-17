@@ -6,9 +6,11 @@ describe('Folder', () => {
 
     describe('#from', () => {
 
-        it('should instantiate folder from string', () => {
-            const folder = Folder.from('launcher');
-            expect(folder.path).toBe('launcher');
+        it('should resolve folder from string', () => {
+            const folderPath = 'launcher';
+            const folder = Folder.from(folderPath);
+
+            expect(folder.root).toBe(folderPath);
             expect(folder).toBeInstanceOf(Folder);
         });
 
@@ -16,8 +18,9 @@ describe('Folder', () => {
 
     describe('#join', () => {
 
-        it('should return path', () => {
-            expect(new Folder('launcher').join('path', 'to', 'target')).toBe(join('launcher', 'path', 'to', 'target'));
+        it('should returns correct path', () => {
+            const paths = ['launcher', 'path', 'to', 'target'];
+            expect(new Folder(paths[0]).join(...paths.slice(1))).toBe(join(...paths));
         });
 
     });

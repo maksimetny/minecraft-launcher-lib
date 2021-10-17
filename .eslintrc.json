@@ -7,7 +7,7 @@
     "sourceType": "module"
   },
   "ignorePatterns": [
-    "dist/**/*"
+    "lib/**/*"
   ],
   "extends": [
     "eslint:recommended",

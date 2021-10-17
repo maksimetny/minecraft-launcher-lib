@@ -1,3 +1,2 @@
 
-export { baseEvents } from './events';
-export { urls } from './urls';
+export * from './urls';

@@ -6,17 +6,17 @@ describe('Platform', () => {
 
     describe('#from', () => {
 
-        it('should be able to replace missing properties with default properties', () => {
-            const defaultPlatform: IPlatform = {
+        it('should be able to replace child missing properties with parent properties', () => {
+            const parentPlatform: IPlatform = {
                 name: OS.LINUX,
                 arch: 'x64',
                 version: 'release',
             };
-            const platform = Platform.from({ /* target */ }, defaultPlatform);
+            const platform = Platform.from({}, parentPlatform);
 
-            expect(platform.version).toBe(defaultPlatform.version);
-            expect(platform.name).toBe(defaultPlatform.name);
-            expect(platform.arch).toBe(defaultPlatform.arch);
+            expect(platform.version).toBe(parentPlatform.version);
+            expect(platform.name).toBe(parentPlatform.name);
+            expect(platform.arch).toBe(parentPlatform.arch);
         });
 
     });
@@ -24,7 +24,6 @@ describe('Platform', () => {
     describe('#current', () => {
 
         it('returns current platform name', () => {
-            const { name }: Platform = Platform.current;
             let expectedName: string;
 
             switch (os.platform()) {
@@ -42,17 +41,15 @@ describe('Platform', () => {
                 } // linux and unknown
             }
 
-            expect(name).toBe(expectedName);
+            expect(Platform.current.name).toBe(expectedName);
         });
 
         it('returns current platform arch', () => {
-            const { arch }: Platform = Platform.current;
-            expect(arch).toBe(os.arch());
+            expect(Platform.current.arch).toBe(os.arch());
         });
 
         it('returns current platform version', () => {
-            const { version }: Platform = Platform.current;
-            expect(version).toBe(os.release());
+            expect(Platform.current.version).toBe(os.release());
         });
 
     });
@@ -62,13 +59,11 @@ describe('Platform', () => {
         describe('returns current classpath separator', () => {
 
             it('on windows', () => {
-                const platform: Platform = new Platform(OS.WINDOWS);
-                expect(platform.classpathSeparator).toBe(';');
+                expect(new Platform(OS.WINDOWS).classpathSeparator).toBe(';');
             });
 
             it('on linux and osx', () => {
-                const platform: Platform = new Platform(OS.LINUX);
-                expect(platform.classpathSeparator).toBe(':');
+                expect(new Platform(OS.LINUX).classpathSeparator).toBe(':');
             });
 
         });
