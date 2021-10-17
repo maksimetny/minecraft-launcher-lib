@@ -169,7 +169,7 @@ export class MVersion {
     }
 
     toString(): string {
-        return `${this.type} ${this.id}`;
+        return this.id;
     }
 
     toJSON(): IMVersion {
